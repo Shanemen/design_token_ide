@@ -130,11 +130,8 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
   // Layout inspiration for block components
   const renderLayoutInspiration = () => {
     if (!compDef.hasLayout) return null;
-    const filtered = compDef.layoutFilter
-      ? LAYOUT_IDEAS.map(cat => ({
-          ...cat,
-          items: cat.items.filter(item => compDef.layoutFilter.includes(item.name)),
-        })).filter(cat => cat.items.length > 0)
+    const filtered = compDef.layouts
+      ? LAYOUT_IDEAS.filter(cat => compDef.layouts.includes(cat.category))
       : LAYOUT_IDEAS;
 
     return (
@@ -221,34 +218,10 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
 
   return (
     <div>
-      {/* Back button */}
-      <button
-        onClick={onBack}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "6px 12px",
-          borderRadius: 6,
-          border: `1px solid ${t.border}`,
-          background: "transparent",
-          color: t.dim,
-          fontSize: 12,
-          fontFamily: "'JetBrains Mono', monospace",
-          cursor: "pointer",
-          marginBottom: 16,
-          transition: "all 0.15s",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent; e.currentTarget.style.color = t.accent; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.color = t.dim; }}
-      >
-        ← Back to components
-      </button>
-
-      {/* Component header */}
+      {/* Component header with close button */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
         <span style={{ fontSize: 22, color: t.accent, opacity: 0.7 }}>{compDef.icon}</span>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{
             fontFamily: "'Space Grotesk', sans-serif",
             fontSize: 17,
@@ -261,6 +234,23 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
             color: t.dim,
           }}>{compDef.desc}</div>
         </div>
+        <button
+          onClick={onBack}
+          style={{
+            background: "none",
+            border: "none",
+            color: t.dim,
+            fontSize: 18,
+            cursor: "pointer",
+            padding: "4px 8px",
+            lineHeight: 1,
+            borderRadius: 4,
+            transition: "color 0.15s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = t.accent; }}
+          onMouseLeave={e => { e.currentTarget.style.color = t.dim; }}
+          title="Back to components"
+        >×</button>
       </div>
 
       {/* Config fields */}
@@ -269,16 +259,6 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
       {/* Layout inspiration for blocks */}
       {renderLayoutInspiration()}
 
-      {/* General notes */}
-      <div style={{ marginTop: 16 }}>
-        <TextArea
-          label="Notes"
-          value={config.notes || ""}
-          onChange={v => updateField("notes", v)}
-          placeholder="Any additional notes for this component..."
-          rows={3}
-        />
-      </div>
     </div>
   );
 }

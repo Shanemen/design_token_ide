@@ -7,6 +7,27 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   // IDE theme (for chrome/labels)
   const t = theme;
 
+  // Progressive preview: check which steps have been visited
+  const visited = tokens.visitedSections || {};
+  const hasAnyVisited = Object.keys(visited).length > 0;
+
+  // If no sections visited, show empty state
+  if (!hasAnyVisited) {
+    return (
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        height: "100%", opacity: 0.5, textAlign: "center", padding: 40,
+      }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: t.dim, marginBottom: 8 }}>
+          Open a step on the left to start
+        </div>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.faint }}>
+          Your design library will build up here as you configure tokens
+        </div>
+      </div>
+    );
+  }
+
   // User tokens
   const hFont = tokens.headingFont || "Space Grotesk";
   const bFont = tokens.bodyFont || "JetBrains Mono";
@@ -33,6 +54,8 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const textPrimary = isPrimaryDark ? darkTextPrimary : lightTextPrimary;
   const textSecondary = isPrimaryDark ? darkTextSecondary : lightTextSecondary;
   const accent = isPrimaryDark ? darkAccent : lightAccent;
+
+  const densityMul = tokens.density === "airy" ? 1.5 : tokens.density === "compact" ? 0.7 : 1;
 
   const radius = parseInt(tokens.borderRadius) || 8;
   const bw = parseInt(tokens.borderWidth) || 1;
@@ -81,8 +104,12 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
       {googleFonts && (
         <link href={`https://fonts.googleapis.com/css2?family=${googleFonts}&display=swap`} rel="stylesheet" />
       )}
+      <style>{`
+        @keyframes previewFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
 
       {/* -- Typography -- */}
+      {visited["step-1"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
       <div style={highlightStyle("step-1")}>
         {sectionLabel("Typography")}
         <div style={{
@@ -125,6 +152,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         {sectionLabel("Colors")}
         <div style={{ display: "flex", gap: 12 }}>
           {/* Dark palette */}
+          {(tokens.colorMode === "dark-only" || tokens.colorMode === "dual") && (
           <div style={{
             flex: 1,
             padding: 16,
@@ -163,7 +191,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               ))}
             </div>
           </div>
+          )}
           {/* Light palette */}
+          {(tokens.colorMode === "light-only" || tokens.colorMode === "dual") && (
           <div style={{
             flex: 1,
             padding: 16,
@@ -202,18 +232,29 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               ))}
             </div>
           </div>
+          )}
         </div>
       </div>
 
       {/* -- Spacing Scale -- */}
       <div style={highlightStyle("step-1")}>
-        {sectionLabel("Spacing Scale")}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+          {sectionLabel("Spacing Scale")}
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 9,
+            color: t.dim,
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            opacity: 0.5,
+          }}>DENSITY: {(tokens.density || "balanced").toUpperCase()}</span>
+        </div>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
           {spacings.map((sp, i) => (
             <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
               <div style={{
-                width: Math.min(sp, 64),
-                height: Math.min(sp, 64),
+                width: Math.min(Math.round(sp * densityMul), 64),
+                height: Math.min(Math.round(sp * densityMul), 64),
                 borderRadius: Math.min(radius, 4),
                 background: accent,
                 opacity: 0.25 + (i * 0.18),
@@ -222,7 +263,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 10,
                 color: t.dim,
-              }}>{sp}px</span>
+              }}>{Math.round(sp * densityMul)}px</span>
             </div>
           ))}
         </div>
@@ -281,7 +322,10 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         </div>
       </div>
 
+      </div>}
+
       {/* -- Components -- */}
+      {visited["step-2"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
       <div style={highlightStyle("step-2")}>
         {sectionLabel("Components")}
 
@@ -292,7 +336,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             <button style={{
-              padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
               borderRadius: radius,
               border: "none",
               background: accent,
@@ -304,7 +348,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               transition: `all ${dur}ms ${easing}`,
             }}>Primary</button>
             <button style={{
-              padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
               borderRadius: radius,
               border: `${bw}px solid ${t.border}`,
               background: "transparent",
@@ -314,7 +358,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               cursor: "pointer",
             }}>Secondary</button>
             <button style={{
-              padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
               borderRadius: radius,
               border: "none",
               background: "transparent",
@@ -324,7 +368,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               cursor: "pointer",
             }}>Ghost</button>
             <button disabled style={{
-              padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
               borderRadius: radius,
               border: "none",
               background: `${t.dim}20`,
@@ -341,7 +385,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginBottom: 10, letterSpacing: 1, textTransform: "uppercase" }}>
             Card
           </div>
-          <div style={{ display: "flex", gap: spacings[1] || 12 }}>
+          <div style={{ display: "flex", gap: Math.round((spacings[1] || 12) * densityMul) }}>
             {[1, 2].map(n => (
               <div
                 key={n}
@@ -349,7 +393,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 onMouseLeave={() => setHoverDemo(false)}
                 style={{
                   flex: 1,
-                  padding: spacings[1] || 16,
+                  padding: Math.round((spacings[1] || 16) * densityMul),
                   background: t.surface,
                   borderRadius: radius,
                   border: `${bw}px solid ${t.border}`,
@@ -390,7 +434,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{
               flex: 1,
-              padding: `${spacings[0] || 8}px ${Math.round((spacings[0] || 8) * 1.5)}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[0] || 8) * 1.5 * densityMul)}px`,
               background: t.bg,
               border: `${bw}px solid ${t.border}`,
               borderRadius: radius,
@@ -401,7 +445,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             }}>Placeholder text...</div>
             <div style={{
               flex: 1,
-              padding: `${spacings[0] || 8}px ${Math.round((spacings[0] || 8) * 1.5)}px`,
+              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[0] || 8) * 1.5 * densityMul)}px`,
               background: t.bg,
               border: `${bw}px solid ${accent}60`,
               borderRadius: radius,
@@ -413,7 +457,10 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         </div>
       </div>
 
+      </div>}
+
       {/* -- Motion -- */}
+      {visited["step-3"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
       <div style={highlightStyle("step-3")}>
         {sectionLabel("Motion")}
         <style>{`
@@ -465,9 +512,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           )}
         </div>
       </div>
+      </div>}
 
       {/* -- Layout -- */}
-      {selectedLayout && (
+      {visited["step-1"] && selectedLayout && (
+        <div style={{ animation: "previewFadeIn 0.4s ease" }}>
         <div style={highlightStyle("step-1")}>
           {sectionLabel(`Layout: ${selectedLayout}`)}
           <div style={{
@@ -479,6 +528,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           }}>
             Layout pattern applied to generated components.
           </div>
+        </div>
         </div>
       )}
     </div>

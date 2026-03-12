@@ -80,6 +80,9 @@ export const defaultState = {
   // 9. States
   states: "default / hover / active / disabled / loading / empty",
 
+  // Progressive preview: track which steps the user has visited
+  visitedSections: {},
+
   // NEW: Step 0 Visual Direction
   moodboardLinks: [],
   toneDescription: "",

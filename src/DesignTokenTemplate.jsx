@@ -42,7 +42,13 @@ export default function DesignTokenTemplate() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const toggle = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
+  const toggle = (key) => {
+    setOpenSections(s => {
+      const willOpen = !s[key];
+      if (willOpen) dispatch({ type: "MARK_VISITED", key });
+      return { ...s, [key]: willOpen };
+    });
+  };
   const toggleSub = (key) => setOpenSub(s => ({ ...s, [key]: !s[key] }));
 
   const handleGenerate = async () => {

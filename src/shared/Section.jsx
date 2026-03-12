@@ -5,7 +5,7 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
   const t = useContext(ThemeContext);
   return (
     <div style={{
-      marginBottom: 2,
+      marginBottom: 8,
       background: isOpen ? t.surface : "transparent",
       borderRadius: 12,
       border: isOpen ? `1px solid ${t.border}` : "1px solid transparent",
@@ -18,7 +18,7 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
           display: "flex",
           alignItems: "center",
           gap: 14,
-          padding: "18px 22px",
+          padding: "20px 22px",
           background: "none",
           border: "none",
           cursor: "pointer",

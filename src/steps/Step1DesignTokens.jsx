@@ -157,7 +157,55 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
           <Input label="Border Radius (px)" value={state.borderRadius} onChange={v => update("borderRadius", v)} mono small />
           <Input label="Border Width (px)" value={state.borderWidth} onChange={v => update("borderWidth", v)} mono small />
         </div>
-        <Input label="Border Color" value={state.borderColor} onChange={v => update("borderColor", v)} mono />
+        <div style={{ marginBottom: 16 }}>
+          <label style={{
+            display: "block",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            color: t.label,
+            marginBottom: 8,
+            textTransform: "uppercase",
+            letterSpacing: 1.5,
+          }}>Border Color</label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {[...state.darkColors, ...state.lightColors].map((c, i) => (
+              <div
+                key={i}
+                onClick={() => update("borderColor", c.value)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 4,
+                  cursor: "pointer",
+                  padding: 4,
+                  borderRadius: 6,
+                  border: state.borderColor === c.value ? `2px solid ${t.accent}` : "2px solid transparent",
+                  background: state.borderColor === c.value ? `${t.accent}15` : "transparent",
+                }}
+              >
+                <div style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  background: c.value,
+                  border: `1px solid ${t.border}`,
+                }} />
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 8,
+                  color: t.dim,
+                  maxWidth: 48,
+                  textAlign: "center",
+                  lineHeight: 1.2,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}>{c.name || c.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
         <Input label="Shadow Levels" value={state.shadowLevels} onChange={v => update("shadowLevels", v)} placeholder="none / sm / md / lg" mono />
       </Section>
     </>

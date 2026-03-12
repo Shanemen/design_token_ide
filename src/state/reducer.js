@@ -25,6 +25,8 @@ export function reducer(state, action) {
     }
     case "SET_ACTIVE_COMPONENT":
       return { ...state, activeComponent: action.component };
+    case "MARK_VISITED":
+      return { ...state, visitedSections: { ...state.visitedSections, [action.key]: true } };
     case "UPDATE_COMPONENT": {
       return {
         ...state,

@@ -10,6 +10,7 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
   const radius = parseInt(tokens.borderRadius) || 8;
   const bw = parseInt(tokens.borderWidth) || 1;
   const spacings = tokens.spacingScales.split("/").map(s => parseInt(s.trim())).filter(Boolean);
+  const densityMul = tokens.density === "airy" ? 1.5 : tokens.density === "compact" ? 0.7 : 1;
 
   // Get user accent color
   const isPrimaryDark = tokens.colorMode !== "light-only";
@@ -50,7 +51,7 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
   const renderButton = () => {
     const variants = config.variants || ["primary", "secondary", "ghost"];
     const sizes = config.sizes || ["sm", "md", "lg"];
-    const sizeMap = { sm: { px: 10, py: 6, fs: 12 }, md: { px: 16, py: 8, fs: 13 }, lg: { px: 24, py: 12, fs: 15 } };
+    const sizeMap = { sm: { px: Math.round(10 * densityMul), py: Math.round(6 * densityMul), fs: 12 }, md: { px: Math.round(16 * densityMul), py: Math.round(8 * densityMul), fs: 13 }, lg: { px: Math.round(24 * densityMul), py: Math.round(12 * densityMul), fs: 15 } };
 
     return (
       <div>
@@ -99,6 +100,7 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     const isHorizontal = config.orientation === "horizontal";
     const ratio = config.thumbnailRatio || "16:9";
     const ratioMap = { "16:9": 56.25, "4:3": 75, "3:2": 66.67, "1:1": 100 };
+    const horizontalWidthMap = { "16:9": "45%", "4:3": "40%", "3:2": "42%", "1:1": "35%" };
 
     return (
       <div>
@@ -112,7 +114,7 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
               style={{
                 flex: 1,
                 display: isHorizontal ? "flex" : "block",
-                padding: spacings[1] || 16,
+                padding: Math.round((spacings[1] || 16) * densityMul),
                 background: t.surface,
                 borderRadius: radius,
                 border: `${bw}px solid ${t.border}`,
@@ -122,9 +124,10 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
               }}
             >
               <div style={{
-                width: isHorizontal ? 100 : "100%",
+                width: isHorizontal ? (horizontalWidthMap[ratio] || "40%") : "100%",
                 paddingBottom: isHorizontal ? 0 : `${ratioMap[ratio] * 0.4}%`,
-                height: isHorizontal ? 70 : undefined,
+                height: isHorizontal ? "auto" : undefined,
+                alignSelf: isHorizontal ? "stretch" : undefined,
                 borderRadius: Math.max(radius - 4, 2),
                 background: `${accent}18`,
                 marginBottom: isHorizontal ? 0 : spacings[0] || 8,
@@ -148,14 +151,17 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     );
   };
 
+  // D1: Navbar — "centered" uses column layout (logo on top, links below);
+  // all other layouts use row with gap: 16 between logo and links
   const renderNavbar = () => (
     <div>
       {sectionLabel("Navbar")}
       <div style={{
         display: "flex",
-        justifyContent: config.layout === "centered" ? "center" : "space-between",
-        alignItems: "center",
-        padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
+        ...(config.layout === "centered"
+          ? { flexDirection: "column", alignItems: "center", gap: 8 }
+          : { justifyContent: "space-between", alignItems: "center", gap: 16 }),
+        padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
         background: config.transparent ? "transparent" : t.surface,
         borderRadius: radius,
         border: `${bw}px solid ${t.border}`,
@@ -177,44 +183,145 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     </div>
   );
 
-  const renderHero = () => (
-    <div>
-      {sectionLabel("Hero")}
-      <div style={{
-        padding: spacings[2] || 32,
-        background: t.surface,
+  // D2: Hero — layout-aware rendering based on Layout Inspiration card names
+  const renderHero = () => {
+    const layout = config.layout || "Centered Classic";
+    const basePad = Math.round((spacings[2] || 32) * densityMul);
+    const baseBox = {
+      background: t.surface,
+      borderRadius: radius,
+      border: `${bw}px solid ${t.border}`,
+    };
+
+    const titleStyle = {
+      fontFamily: `'${hFont}', sans-serif`,
+      fontWeight: 700,
+      color: t.text,
+    };
+
+    const subtitleStyle = {
+      fontFamily: `'${bFont}', monospace`,
+      fontSize: 14,
+      color: t.dim,
+    };
+
+    const ctaButton = (label = "Get Started") => (
+      <button style={{
+        padding: "10px 24px",
         borderRadius: radius,
-        border: `${bw}px solid ${t.border}`,
-        textAlign: "center",
-      }}>
-        <div style={{
-          fontFamily: `'${hFont}', sans-serif`,
-          fontSize: 28,
-          fontWeight: 700,
-          color: t.text,
-          marginBottom: 8,
-        }}>Hero Title</div>
-        <div style={{
-          fontFamily: `'${bFont}', monospace`,
-          fontSize: 14,
-          color: t.dim,
-          marginBottom: 16,
-        }}>Subtitle text goes here</div>
-        <button style={{
-          padding: "10px 24px",
-          borderRadius: radius,
-          border: "none",
-          background: accent,
-          color: "#fff",
-          fontFamily: `'${bFont}', monospace`,
-          fontSize: 13,
-          cursor: "pointer",
-        }}>Get Started</button>
+        border: "none",
+        background: accent,
+        color: "#fff",
+        fontFamily: `'${bFont}', monospace`,
+        fontSize: 13,
+        cursor: "pointer",
+      }}>{label}</button>
+    );
+
+    const renderHeroContent = () => {
+      switch (layout) {
+        case "Split Screen":
+          return (
+            <div style={{ ...baseBox, padding: basePad, display: "flex", gap: 24, alignItems: "center" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ ...titleStyle, fontSize: 28, marginBottom: 8 }}>Hero Title</div>
+                <div style={{ ...subtitleStyle, marginBottom: 16 }}>Subtitle text goes here</div>
+                {ctaButton()}
+              </div>
+              <div style={{
+                flex: 1,
+                height: 120,
+                borderRadius: Math.max(radius - 4, 2),
+                background: `${accent}20`,
+              }} />
+            </div>
+          );
+
+        case "Full Bleed Sections":
+          return (
+            <div style={{
+              ...baseBox,
+              padding: basePad * 1.5,
+              background: t.text,
+              textAlign: "center",
+              borderRadius: 0,
+            }}>
+              <div style={{ ...titleStyle, fontSize: 28, color: t.surface || t.bg || "#0A0A0F", marginBottom: 8 }}>Hero Title</div>
+              <div style={{ ...subtitleStyle, color: `${t.surface || t.bg || "#0A0A0F"}99`, marginBottom: 16 }}>Subtitle text goes here</div>
+              <button style={{
+                padding: "10px 24px",
+                borderRadius: radius,
+                border: `2px solid ${t.surface || t.bg || "#0A0A0F"}`,
+                background: "transparent",
+                color: t.surface || t.bg || "#0A0A0F",
+                fontFamily: `'${bFont}', monospace`,
+                fontSize: 13,
+                cursor: "pointer",
+              }}>Get Started</button>
+            </div>
+          );
+
+        case "Giant Typography":
+          return (
+            <div style={{ ...baseBox, padding: basePad, textAlign: "center" }}>
+              <div style={{ ...titleStyle, fontSize: 48, lineHeight: 1.1, marginBottom: 12 }}>Hero Title</div>
+              <div style={{ ...subtitleStyle, marginBottom: 16 }}>Subtitle text goes here</div>
+            </div>
+          );
+
+        case "Whitespace Canvas":
+          return (
+            <div style={{ ...baseBox, padding: basePad * 2, textAlign: "center" }}>
+              <div style={{ ...titleStyle, fontSize: 28, marginBottom: 8 }}>Hero Title</div>
+              <div style={{ ...subtitleStyle, marginBottom: 16 }}>Subtitle text goes here</div>
+              {ctaButton()}
+            </div>
+          );
+
+        case "Single Element Focus":
+          return (
+            <div style={{
+              ...baseBox,
+              padding: basePad * 1.5,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+              <button style={{
+                padding: "16px 48px",
+                borderRadius: radius,
+                border: "none",
+                background: accent,
+                color: "#fff",
+                fontFamily: `'${bFont}', monospace`,
+                fontSize: 18,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}>Get Started</button>
+            </div>
+          );
+
+        case "Centered Classic":
+        default:
+          return (
+            <div style={{ ...baseBox, padding: basePad, textAlign: "center" }}>
+              <div style={{ ...titleStyle, fontSize: 28, marginBottom: 8 }}>Hero Title</div>
+              <div style={{ ...subtitleStyle, marginBottom: 16 }}>Subtitle text goes here</div>
+              {ctaButton()}
+            </div>
+          );
+      }
+    };
+
+    return (
+      <div>
+        {sectionLabel("Hero")}
+        {renderHeroContent()}
+        {config.layout && subLabel(`Layout: ${config.layout}`)}
+        {config.visualType && subLabel(`Visual: ${config.visualType}`)}
       </div>
-      {config.layout && subLabel(`Layout: ${config.layout}`)}
-      {config.visualType && subLabel(`Visual: ${config.visualType}`)}
-    </div>
-  );
+    );
+  };
 
   const renderDivider = () => {
     const styleMap = {
@@ -226,12 +333,22 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     return (
       <div>
         {sectionLabel("Divider")}
-        {["line", "dashed", "dot", "space"].map(s => (
-          <div key={s} style={{ marginBottom: 16 }}>
-            {subLabel(s)}
-            <div style={{ ...styleMap[s], marginBottom: 8 }} />
-          </div>
-        ))}
+        {["line", "dashed", "dot", "space"].map(s => {
+          const isSelected = s === config.style;
+          return (
+            <div key={s} style={{
+              marginBottom: 16,
+              opacity: isSelected ? 1 : 0.3,
+              padding: isSelected ? "8px 10px" : undefined,
+              background: isSelected ? `${accent}10` : undefined,
+              border: isSelected ? `1px solid ${accent}30` : "1px solid transparent",
+              borderRadius: isSelected ? radius : undefined,
+            }}>
+              {subLabel(s)}
+              <div style={{ ...styleMap[s], marginBottom: 8 }} />
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -258,7 +375,9 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
           }}>{label}</span>
         ))}
       </div>
-      {subLabel(`variant: ${config.variant || "filled"}`)}
+      <div style={{ marginTop: 16 }}>
+        {subLabel(`variant: ${config.variant || "filled"}`)}
+      </div>
     </div>
   );
 
@@ -289,79 +408,132 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
   const renderGallery = () => {
     const cols = parseInt(config.columns) || 3;
     const isScroll = config.style === "horizontal-scroll";
+    const isMasonry = config.style === "masonry";
+    const masonryHeights = [80, 120, 60, 100, 140, 70, 110, 90];
     return (
       <div>
         {sectionLabel("Gallery / Grid")}
-        <div style={{
-          display: isScroll ? "flex" : "grid",
-          gridTemplateColumns: isScroll ? undefined : `repeat(${cols}, 1fr)`,
-          gap: 8,
-          overflowX: isScroll ? "auto" : undefined,
-        }}>
-          {Array.from({ length: cols * 2 }, (_, i) => (
-            <div key={i} style={{
-              minWidth: isScroll ? 120 : undefined,
-              height: config.style === "masonry" ? (60 + (i % 3) * 20) : 60,
-              borderRadius: radius,
-              background: `${accent}${15 + (i % 4) * 8}`,
-              border: `${bw}px solid ${t.border}`,
-            }} />
-          ))}
-        </div>
+        {isMasonry ? (
+          <div style={{
+            columnCount: cols,
+            columnGap: 8,
+          }}>
+            {Array.from({ length: cols * 2 }, (_, i) => (
+              <div key={i} style={{
+                height: masonryHeights[i % masonryHeights.length],
+                borderRadius: radius,
+                background: `${accent}${15 + (i % 4) * 8}`,
+                border: `${bw}px solid ${t.border}`,
+                marginBottom: 8,
+                breakInside: "avoid",
+              }} />
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            display: isScroll ? "flex" : "grid",
+            gridTemplateColumns: isScroll ? undefined : `repeat(${cols}, 1fr)`,
+            gap: 8,
+            overflowX: isScroll ? "auto" : undefined,
+          }}>
+            {Array.from({ length: cols * 2 }, (_, i) => (
+              <div key={i} style={{
+                minWidth: isScroll ? 120 : undefined,
+                height: 60,
+                borderRadius: radius,
+                background: `${accent}${15 + (i % 4) * 8}`,
+                border: `${bw}px solid ${t.border}`,
+              }} />
+            ))}
+          </div>
+        )}
         {subLabel(`${cols} cols \u00b7 ${config.style || "grid"}`)}
       </div>
     );
   };
 
-  const renderFooter = () => (
-    <div>
-      {sectionLabel("Footer")}
-      <div style={{
-        padding: spacings[1] || 16,
-        background: t.surface,
-        borderRadius: radius,
-        border: `${bw}px solid ${t.border}`,
-      }}>
-        {config.structure === "simple" ? (
-          <div style={{ textAlign: "center", fontFamily: `'${bFont}', monospace`, fontSize: 12, color: t.dim }}>
-            &copy; 2026 Company Name
+  const renderFooter = () => {
+    const footerPad = Math.round((spacings[1] || 16) * densityMul);
+    const footerBox = {
+      padding: footerPad,
+      background: t.surface,
+      borderRadius: radius,
+      border: `${bw}px solid ${t.border}`,
+    };
+
+    const renderMultiColumnBody = () => (
+      <div style={{ display: "flex", gap: 24 }}>
+        {["Product", "Company", "Resources"].map(col => (
+          <div key={col} style={{ flex: 1 }}>
+            <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 12, fontWeight: 600, color: t.text, marginBottom: 8 }}>{col}</div>
+            {["Link 1", "Link 2", "Link 3"].map(link => (
+              <div key={link} style={{ fontFamily: `'${bFont}', monospace`, fontSize: 11, color: t.dim, marginBottom: 4 }}>{link}</div>
+            ))}
           </div>
-        ) : (
-          <div style={{ display: "flex", gap: 24 }}>
-            {["Product", "Company", "Resources"].map(col => (
-              <div key={col} style={{ flex: 1 }}>
-                <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 12, fontWeight: 600, color: t.text, marginBottom: 8 }}>{col}</div>
-                {["Link 1", "Link 2", "Link 3"].map(link => (
-                  <div key={link} style={{ fontFamily: `'${bFont}', monospace`, fontSize: 11, color: t.dim, marginBottom: 4 }}>{link}</div>
+        ))}
+      </div>
+    );
+
+    const renderNewsletterRow = () => (
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8,
+        marginTop: footerPad,
+        paddingTop: footerPad,
+        borderTop: `${bw}px solid ${t.border}`,
+      }}>
+        <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 11, fontWeight: 600, color: t.text, whiteSpace: "nowrap" }}>Newsletter</div>
+        <div style={{
+          flex: 1, padding: "6px 10px",
+          background: t.bg || "#0A0A0F",
+          border: `${bw}px solid ${t.border}`,
+          borderRadius: radius,
+          fontFamily: `'${bFont}', monospace`,
+          fontSize: 11, color: t.dim,
+        }}>your@email.com</div>
+        <button style={{
+          padding: "6px 14px", borderRadius: radius, border: "none",
+          background: accent, color: "#fff",
+          fontFamily: `'${bFont}', monospace`, fontSize: 11, cursor: "pointer",
+        }}>Subscribe</button>
+      </div>
+    );
+
+    return (
+      <div>
+        {sectionLabel("Footer")}
+        <div style={footerBox}>
+          {config.structure === "simple" ? (
+            <div style={{ textAlign: "center", fontFamily: `'${bFont}', monospace`, fontSize: 12, color: t.dim }}>
+              &copy; 2026 Company Name
+            </div>
+          ) : config.structure === "minimal" ? (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontFamily: `'${bFont}', monospace`, fontSize: 12, color: t.dim }}>
+                &copy; 2026 Company Name
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                {["Twitter", "GitHub", "LinkedIn"].map(s => (
+                  <span key={s} style={{ fontFamily: `'${bFont}', monospace`, fontSize: 11, color: t.dim }}>{s}</span>
                 ))}
               </div>
-            ))}
-            {config.hasNewsletter && (
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 12, fontWeight: 600, color: t.text, marginBottom: 8 }}>Newsletter</div>
-                <div style={{
-                  padding: "6px 10px",
-                  background: t.bg || "#0A0A0F",
-                  border: `${bw}px solid ${t.border}`,
-                  borderRadius: radius,
-                  fontFamily: `'${bFont}', monospace`,
-                  fontSize: 11,
-                  color: t.dim,
-                }}>your@email.com</div>
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          ) : (
+            <>
+              {renderMultiColumnBody()}
+              {config.hasNewsletter && renderNewsletterRow()}
+            </>
+          )}
+        </div>
+        {subLabel(`${config.structure || "multi-column"} \u00b7 newsletter: ${config.hasNewsletter ? "yes" : "no"}`)}
       </div>
-      {subLabel(`${config.structure || "multi-column"} \u00b7 newsletter: ${config.hasNewsletter ? "yes" : "no"}`)}
-    </div>
-  );
+    );
+  };
 
   const renderCTA = () => (
     <div>
       {sectionLabel("CTA Section")}
       <div style={{
-        padding: spacings[2] || 32,
+        padding: Math.round((spacings[2] || 32) * densityMul),
         background: t.surface,
         borderRadius: radius,
         border: `${bw}px solid ${t.border}`,
@@ -393,25 +565,94 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     </div>
   );
 
-  const renderSection = () => (
-    <div>
-      {sectionLabel("Section")}
-      <div style={{
-        padding: spacings[2] || 32,
-        background: t.surface,
-        borderRadius: radius,
-        border: `${bw}px solid ${t.border}`,
-      }}>
-        <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 18, fontWeight: 600, color: t.text, marginBottom: 8 }}>
-          Section Title
-        </div>
-        <div style={{ fontFamily: `'${bFont}', monospace`, fontSize: 13, color: t.dim, lineHeight: 1.6 }}>
-          Section content goes here. This demonstrates the default section layout with your design tokens applied.
-        </div>
+  // D3: Section — variant-aware rendering
+  const renderSection = () => {
+    const variant = config.variant || "centered";
+    const basePad = Math.round((spacings[2] || 32) * densityMul);
+    const baseBox = {
+      background: t.surface,
+      borderRadius: radius,
+      border: `${bw}px solid ${t.border}`,
+    };
+
+    const titleEl = (
+      <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 18, fontWeight: 600, color: t.text, marginBottom: 8 }}>
+        Section Title
       </div>
-      {config.variant && subLabel(`variant: ${config.variant}`)}
-    </div>
-  );
+    );
+
+    const textEl = (
+      <div style={{ fontFamily: `'${bFont}', monospace`, fontSize: 13, color: t.dim, lineHeight: 1.6 }}>
+        Section content goes here. This demonstrates the default section layout with your design tokens applied.
+      </div>
+    );
+
+    const imagePlaceholder = (
+      <div style={{
+        flex: 1,
+        minHeight: 100,
+        borderRadius: Math.max(radius - 4, 2),
+        background: `${accent}20`,
+      }} />
+    );
+
+    const renderSectionContent = () => {
+      switch (variant) {
+        case "left-image":
+          return (
+            <div style={{ ...baseBox, padding: basePad, display: "flex", gap: 24, alignItems: "center" }}>
+              {imagePlaceholder}
+              <div style={{ flex: 1 }}>
+                {titleEl}
+                {textEl}
+              </div>
+            </div>
+          );
+
+        case "right-image":
+          return (
+            <div style={{ ...baseBox, padding: basePad, display: "flex", gap: 24, alignItems: "center" }}>
+              <div style={{ flex: 1 }}>
+                {titleEl}
+                {textEl}
+              </div>
+              {imagePlaceholder}
+            </div>
+          );
+
+        case "full-width":
+          return (
+            <div style={{
+              ...baseBox,
+              padding: basePad * 1.25,
+              borderRadius: 0,
+              textAlign: "left",
+            }}>
+              {titleEl}
+              {textEl}
+            </div>
+          );
+
+        case "centered":
+        default:
+          return (
+            <div style={{ ...baseBox, padding: basePad }}>
+              {titleEl}
+              {textEl}
+            </div>
+          );
+      }
+    };
+
+    return (
+      <div>
+        {sectionLabel("Section")}
+        {renderSectionContent()}
+        {config.variant && subLabel(`variant: ${config.variant}`)}
+        {config.layout && subLabel(`layout: ${config.layout}`)}
+      </div>
+    );
+  };
 
   const renderText = () => (
     <div>
@@ -431,34 +672,69 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
     </div>
   );
 
-  const renderIcon = () => (
-    <div>
-      {sectionLabel("Icon")}
-      <div style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 12,
-        color: t.dim,
-        lineHeight: 1.8,
-      }}>
-        <div>Source: <span style={{ color: t.text }}>{config.source || "library"}</span></div>
-        {config.source === "library" && <div>Library: <span style={{ color: t.text }}>{config.library || "Lucide"}</span></div>}
-        <div>Style: <span style={{ color: t.text }}>{config.style || "outline"}</span></div>
-        <div>Weight: <span style={{ color: t.text }}>{config.weight || "1.5"}</span></div>
+  const renderIcon = () => {
+    const sw = parseFloat(config.weight) || 1.5;
+    const iconSvgs = [
+      // Menu (hamburger)
+      <svg key="menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>,
+      // X (close)
+      <svg key="x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>,
+      // Arrow right
+      <svg key="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12" />
+        <polyline points="12 5 19 12 12 19" />
+      </svg>,
+      // Heart
+      <svg key="heart" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>,
+      // Settings (gear)
+      <svg key="settings" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>,
+      // Search
+      <svg key="search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>,
+    ];
+
+    return (
+      <div>
+        {sectionLabel("Icon")}
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 12,
+          color: t.dim,
+          lineHeight: 1.8,
+        }}>
+          <div>Source: <span style={{ color: t.text }}>{config.source || "library"}</span></div>
+          {config.source === "library" && <div>Library: <span style={{ color: t.text }}>{config.library || "Lucide"}</span></div>}
+          <div>Style: <span style={{ color: t.text }}>{config.style || "outline"}</span></div>
+          <div>Weight: <span style={{ color: t.text }}>{config.weight || "1.5"}</span></div>
+        </div>
+        <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+          {iconSvgs.map((icon, i) => (
+            <span key={i} style={{
+              width: 36, height: 36,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: radius,
+              border: `${bw}px solid ${t.border}`,
+              color: t.text,
+            }}>{icon}</span>
+          ))}
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
-        {["\u2630", "\u2715", "\u2192", "\u2661", "\u2699", "\uD83D\uDD0D"].map((icon, i) => (
-          <span key={i} style={{
-            width: 36, height: 36,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            borderRadius: radius,
-            border: `${bw}px solid ${t.border}`,
-            fontSize: 16,
-            color: t.text,
-          }}>{icon}</span>
-        ))}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderers = {
     Button: renderButton,

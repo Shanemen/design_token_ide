@@ -6,9 +6,7 @@ export const ATOMIC_COMPONENTS = [
     ]
   },
   { id: "Text", label: "Text", icon: "T", desc: "Typography component (configured in Step 1)",
-    fields: [
-      { key: "notes", type: "textarea", label: "Notes", placeholder: "Additional notes about text usage..." },
-    ]
+    fields: []
   },
   { id: "Divider", label: "Divider", icon: "—", desc: "Visual separator",
     fields: [
@@ -29,7 +27,7 @@ export const ATOMIC_COMPONENTS = [
   { id: "Icon", label: "Icon", icon: "✦", desc: "Icon system",
     fields: [
       { key: "source", type: "pill", options: ["library", "custom-ai ⚑", "custom-hand ⚑"], label: "Source" },
-      { key: "library", type: "input", label: "Library Name", placeholder: "Lucide / Phosphor / Heroicons", showIf: (config) => config.source === "library" },
+      { key: "library", type: "pill", options: ["Lucide", "Heroicons", "Phosphor", "Feather", "Tabler"], label: "Library", showIf: (config) => config.source === "library" },
       { key: "style", type: "pill", options: ["outline", "filled", "duotone"], label: "Style" },
       { key: "weight", type: "input", label: "Stroke Weight", placeholder: "1.5", mono: true, small: true },
     ]
@@ -38,7 +36,7 @@ export const ATOMIC_COMPONENTS = [
 
 export const BLOCK_COMPONENTS = [
   { id: "Navbar", label: "Navbar", icon: "▔", desc: "Navigation bar", hasLayout: true,
-    layoutFilter: ["Single Column", "Split Screen"],
+    layouts: ["经典结构", "Minimal 极简"],
     fields: [
       { key: "layout", type: "pill", options: ["logo-left", "centered", "hamburger-only"], label: "Layout" },
       { key: "sticky", type: "bool", label: "Sticky?" },
@@ -46,7 +44,7 @@ export const BLOCK_COMPONENTS = [
     ]
   },
   { id: "Hero", label: "Hero", icon: "◆", desc: "Hero section", hasLayout: true, hasVisualAsset: true,
-    layoutFilter: ["Split Screen", "Full Bleed Sections", "Giant Typography", "Whitespace Canvas", "Single Element Focus"],
+    layouts: ["经典结构", "Editorial 编辑式", "Artistic 艺术感", "Immersive 沉浸式", "Minimal 极简"],
     fields: [
       { key: "visualType", type: "pill-flagged", options: [
         { id: "illustration", canAI: false },
@@ -60,12 +58,13 @@ export const BLOCK_COMPONENTS = [
     ]
   },
   { id: "Section", label: "Section", icon: "▭", desc: "Content section", hasLayout: true, hasVisualAsset: true,
-    layoutFilter: null, // all layouts available
+    layouts: null, // all layouts available
     fields: [
       { key: "variant", type: "pill", options: ["centered", "left-image", "right-image", "full-width"], label: "Default Variant" },
     ]
   },
-  { id: "Card", label: "Card", icon: "▢", desc: "Content card",
+  { id: "Card", label: "Card", icon: "▢", desc: "Content card", hasLayout: true,
+    layouts: ["经典结构", "Minimal 极简"],
     fields: [
       { key: "orientation", type: "pill", options: ["vertical", "horizontal"], label: "Orientation" },
       { key: "thumbnailRatio", type: "pill", options: ["16:9", "4:3", "3:2", "1:1"], label: "Thumbnail Ratio" },
@@ -73,21 +72,21 @@ export const BLOCK_COMPONENTS = [
     ]
   },
   { id: "Gallery", label: "Gallery / Grid", icon: "▦", desc: "Grid layout", hasLayout: true,
-    layoutFilter: ["Grid Cards", "Horizontal Scroll", "Scattered / Organic"],
+    layouts: ["经典结构", "Artistic 艺术感", "Minimal 极简"],
     fields: [
       { key: "columns", type: "pill", options: ["2", "3", "4"], label: "Columns" },
       { key: "style", type: "pill", options: ["grid", "masonry", "horizontal-scroll"], label: "Style" },
     ]
   },
   { id: "Footer", label: "Footer", icon: "▁", desc: "Page footer", hasLayout: true,
-    layoutFilter: ["Single Column", "Grid Cards"],
+    layouts: ["经典结构", "Minimal 极简"],
     fields: [
       { key: "structure", type: "pill", options: ["simple", "multi-column", "multi-column-newsletter"], label: "Structure" },
       { key: "hasNewsletter", type: "bool", label: "Newsletter signup?" },
     ]
   },
   { id: "CTA", label: "CTA Section", icon: "◈", desc: "Call to action", hasLayout: true,
-    layoutFilter: ["Single Element Focus", "Split Screen", "Full Bleed Sections"],
+    layouts: ["经典结构", "Minimal 极简", "Artistic 艺术感"],
     fields: [
       { key: "structure", type: "pill", options: ["centered", "left-text-right-button", "with-background"], label: "Structure" },
     ]
