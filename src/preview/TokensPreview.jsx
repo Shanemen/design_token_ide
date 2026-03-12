@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function TokensPreview({ tokens, openSections, selectedLayout, theme }) {
+export default function TokensPreview({ tokens, openSections, selectedLayout, theme, scrollTarget }) {
   const [replayKey, setReplayKey] = useState(0);
   const [hoverDemo, setHoverDemo] = useState(false);
+  const scrollRef = useRef(null);
 
   // IDE theme (for chrome/labels)
   const t = theme;
 
-  // Progressive preview: check which steps have been visited
+  // Progressive preview: check which sub-sections have been visited
   const visited = tokens.visitedSections || {};
   const hasAnyVisited = Object.keys(visited).length > 0;
+
+  // Auto-scroll when user opens a section on the left
+  useEffect(() => {
+    if (!scrollTarget || !scrollRef.current) return;
+    const key = scrollTarget.key;
+    setTimeout(() => {
+      const el = scrollRef.current?.querySelector(`[data-section="${key}"]`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+  }, [scrollTarget]);
 
   // If no sections visited, show empty state
   if (!hasAnyVisited) {
@@ -84,10 +95,19 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
     }}>{label}</div>
   );
 
+  const subLabel = {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 9, color: t.dim, opacity: 0.5,
+    marginBottom: 10, letterSpacing: 1, textTransform: "uppercase",
+  };
+
   const sectionWrap = { marginBottom: 28 };
+  const comp = tokens.components || {};
+  const pad = spacings[0] || 8;
+  const pad2 = spacings[1] || 16;
 
   return (
-    <div style={{
+    <div ref={scrollRef} style={{
       padding: "28px 28px",
       height: "100%",
       overflow: "auto",
@@ -101,8 +121,8 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
       `}</style>
 
       {/* -- Colors -- */}
-      {visited["colors"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["colors"] && (
+      <div data-section="colors" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Colors")}
         <div style={{ display: "flex", gap: 12 }}>
           {/* Dark palette */}
@@ -189,12 +209,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           )}
         </div>
       </div>
-
-      </div>}
+      )}
 
       {/* -- Typography -- */}
-      {visited["typography"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["typography"] && (
+      <div data-section="typography" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Typography")}
         <div style={{
           background: bg,
@@ -202,40 +221,43 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           padding: "20px 24px",
           border: `1px solid ${surface}`,
         }}>
-          {tokens.typeLevels.map((lv, i) => (
-            <div key={i} style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 16,
-              padding: "10px 0",
-              borderBottom: i < tokens.typeLevels.length - 1 ? `1px solid ${surface}` : "none",
-            }}>
-              <span style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                color: textSecondary,
-                minWidth: 56,
-                opacity: 0.5,
-              }}>{lv.name || "\u2014"}</span>
-              <span style={{
-                fontFamily: `'${/display|heading|title|^h[1-6]$/i.test(lv.name) ? hFont : bFont}', sans-serif`,
-                fontSize: `${lv.size || 16}px`,
-                fontWeight: lv.weight || 400,
-                lineHeight: lv.lineHeight || 1.5,
-                color: textPrimary,
+          {tokens.typeLevels.map((lv, i) => {
+            const isHeading = /display|heading|title|^h[1-6]$/i.test(lv.name);
+            const font = isHeading ? hFont : bFont;
+            return (
+              <div key={i} style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: 16,
+                padding: "10px 0",
+                borderBottom: i < tokens.typeLevels.length - 1 ? `1px solid ${surface}` : "none",
               }}>
-                The quick brown fox
-              </span>
-            </div>
-          ))}
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  color: textSecondary,
+                  minWidth: 56,
+                  opacity: 0.5,
+                }}>{lv.name || "\u2014"}</span>
+                <span style={{
+                  fontFamily: `'${font}', sans-serif`,
+                  fontSize: `${lv.size || 16}px`,
+                  fontWeight: lv.weight || 400,
+                  lineHeight: lv.lineHeight || 1.5,
+                  color: textPrimary,
+                }}>
+                  The quick brown fox
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      </div>}
+      )}
 
       {/* -- Spacing Scale -- */}
-      {visited["spacing"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["spacing"] && (
+      <div data-section="spacing" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
           {sectionLabel("Spacing Scale")}
           <span style={{
@@ -266,12 +288,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           ))}
         </div>
       </div>
-
-      </div>}
+      )}
 
       {/* -- Micro Details -- */}
-      {visited["micro"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["micro"] && (
+      <div data-section="micro" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Micro Details")}
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
@@ -322,120 +343,147 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           </div>
         </div>
       </div>
-
-      </div>}
+      )}
 
       {/* -- Components -- */}
-      {visited["step-2"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["step-2"] && (
+      <div data-section="step-2" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Components")}
 
-        {/* Buttons */}
+        {/* Button — reads variants & sizes from config */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginBottom: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-            Button
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-            <button style={{
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
-              borderRadius: radius,
-              border: "none",
-              background: accent,
-              color: "#fff",
-              fontFamily: `'${bFont}', monospace`,
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: "pointer",
-              transition: `all ${dur}ms ${easing}`,
-            }}>Primary</button>
-            <button style={{
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
-              borderRadius: radius,
-              border: `${bw}px solid ${t.border}`,
-              background: "transparent",
-              color: t.text,
-              fontFamily: `'${bFont}', monospace`,
-              fontSize: 13,
-              cursor: "pointer",
-            }}>Secondary</button>
-            <button style={{
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
-              borderRadius: radius,
-              border: "none",
-              background: "transparent",
-              color: accent,
-              fontFamily: `'${bFont}', monospace`,
-              fontSize: 13,
-              cursor: "pointer",
-            }}>Ghost</button>
-            <button disabled style={{
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[1] || 16) * densityMul)}px`,
-              borderRadius: radius,
-              border: "none",
-              background: `${t.dim}20`,
-              color: `${t.dim}60`,
-              fontFamily: `'${bFont}', monospace`,
-              fontSize: 13,
-              cursor: "not-allowed",
-            }}>Disabled</button>
+          <div style={subLabel}>Button</div>
+          {(comp.Button?.sizes || ["md"]).map(size => {
+            const scale = size === "sm" ? 0.8 : size === "lg" ? 1.2 : 1;
+            return (
+              <div key={size} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, minWidth: 20, opacity: 0.4 }}>{size}</span>
+                {(comp.Button?.variants || ["primary", "secondary", "ghost"]).map(v => (
+                  <button key={v} style={{
+                    padding: `${Math.round(pad * densityMul * scale)}px ${Math.round(pad2 * densityMul * scale)}px`,
+                    borderRadius: radius,
+                    fontFamily: `'${bFont}', monospace`,
+                    fontSize: Math.round(13 * scale),
+                    cursor: "pointer",
+                    transition: `all ${dur}ms ${easing}`,
+                    ...(v === "primary" ? { background: accent, color: "#fff", border: "none", fontWeight: 500 }
+                      : v === "secondary" ? { background: "transparent", color: t.text, border: `${bw}px solid ${t.border}` }
+                      : { background: "transparent", color: accent, border: "none" }),
+                  }}>{v.charAt(0).toUpperCase() + v.slice(1)}</button>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Divider — reads style from config */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Divider · {comp.Divider?.style || "line"}</div>
+          <div style={{
+            borderTop: (comp.Divider?.style || "line") === "dashed" ? `${bw}px dashed ${t.border}`
+              : (comp.Divider?.style) === "dot" ? `${bw}px dotted ${t.border}`
+              : (comp.Divider?.style) === "space" ? "none"
+              : `${bw}px solid ${t.border}`,
+            height: (comp.Divider?.style) === "space" ? 16 : 0,
+          }} />
+        </div>
+
+        {/* Badge — reads variant from config */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Badge · {comp.Badge?.variant || "filled"}</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {["New", "Beta", "Pro"].map(label => (
+              <span key={label} style={{
+                padding: `2px ${Math.round(pad * 0.8)}px`,
+                borderRadius: Math.min(radius, 12),
+                fontFamily: `'${bFont}', monospace`,
+                fontSize: 11,
+                fontWeight: 500,
+                ...(comp.Badge?.variant === "outline"
+                  ? { background: "transparent", color: accent, border: `1px solid ${accent}` }
+                  : { background: `${accent}20`, color: accent, border: "1px solid transparent" }),
+              }}>{label}</span>
+            ))}
           </div>
         </div>
 
-        {/* Card */}
+        {/* Avatar — reads shape & filter from config */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginBottom: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-            Card
-          </div>
-          <div style={{ display: "flex", gap: Math.round((spacings[1] || 12) * densityMul) }}>
-            {[1, 2].map(n => (
-              <div
-                key={n}
-                onMouseEnter={() => setHoverDemo(n)}
-                onMouseLeave={() => setHoverDemo(false)}
-                style={{
-                  flex: 1,
-                  padding: Math.round((spacings[1] || 16) * densityMul),
-                  background: t.surface,
-                  borderRadius: radius,
-                  border: `${bw}px solid ${t.border}`,
-                  cursor: "pointer",
-                  transition: `all ${dur}ms ${easing}`,
-                  transform: hoverDemo === n && tokens.hoverEffects ? "translateY(-2px)" : "none",
-                }}
-              >
-                <div style={{
-                  width: "100%",
-                  height: 40,
-                  borderRadius: Math.max(radius - 4, 2),
-                  background: `${accent}18`,
-                  marginBottom: spacings[0] || 8,
-                }} />
-                <div style={{
-                  fontFamily: `'${hFont}', sans-serif`,
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: t.text,
-                  marginBottom: 4,
-                }}>Card {n}</div>
-                <div style={{
-                  fontFamily: `'${bFont}', monospace`,
-                  fontSize: 12,
-                  color: t.dim,
-                }}>Caption text</div>
-              </div>
+          <div style={subLabel}>Avatar · {comp.Avatar?.shape || "circle"}</div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {[32, 40, 48].map(s => (
+              <div key={s} style={{
+                width: s, height: s,
+                borderRadius: (comp.Avatar?.shape || "circle") === "circle" ? "50%"
+                  : (comp.Avatar?.shape) === "rounded-square" ? Math.max(radius, 6) : 0,
+                background: `${accent}25`,
+                border: `${bw}px solid ${t.border}`,
+                filter: (comp.Avatar?.filter) === "grayscale" ? "grayscale(1)"
+                  : (comp.Avatar?.filter) === "b&w" ? "grayscale(1) contrast(1.2)" : "none",
+              }} />
             ))}
+          </div>
+        </div>
+
+        {/* Card — reads orientation & hover from config */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Card · {comp.Card?.orientation || "vertical"}</div>
+          <div style={{ display: "flex", gap: Math.round(pad2 * densityMul) }}>
+            {[1, 2].map(n => {
+              const isHoriz = (comp.Card?.orientation) === "horizontal";
+              return (
+                <div
+                  key={n}
+                  onMouseEnter={() => setHoverDemo(n)}
+                  onMouseLeave={() => setHoverDemo(false)}
+                  style={{
+                    display: isHoriz ? "flex" : "block",
+                    gap: isHoriz ? 12 : 0,
+                    flex: 1,
+                    padding: Math.round(pad2 * densityMul),
+                    background: t.surface,
+                    borderRadius: radius,
+                    border: `${bw}px solid ${t.border}`,
+                    cursor: "pointer",
+                    transition: `all ${dur}ms ${easing}`,
+                    transform: hoverDemo === n && (comp.Card?.hoverEffect !== false) ? "translateY(-2px)" : "none",
+                  }}
+                >
+                  <div style={{
+                    width: isHoriz ? 80 : "100%",
+                    height: isHoriz ? 60 : 40,
+                    borderRadius: Math.max(radius - 4, 2),
+                    background: `${accent}18`,
+                    marginBottom: isHoriz ? 0 : (pad || 8),
+                    flexShrink: 0,
+                  }} />
+                  <div>
+                    <div style={{
+                      fontFamily: `'${hFont}', sans-serif`,
+                      fontSize: 15,
+                      fontWeight: 600,
+                      color: t.text,
+                      marginBottom: 4,
+                    }}>Card {n}</div>
+                    <div style={{
+                      fontFamily: `'${bFont}', monospace`,
+                      fontSize: 12,
+                      color: t.dim,
+                    }}>Caption text</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Input */}
         <div>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginBottom: 10, letterSpacing: 1, textTransform: "uppercase" }}>
-            Input
-          </div>
+          <div style={subLabel}>Input</div>
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{
               flex: 1,
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[0] || 8) * 1.5 * densityMul)}px`,
+              padding: `${Math.round(pad * densityMul)}px ${Math.round(pad * 1.5 * densityMul)}px`,
               background: t.bg,
               border: `${bw}px solid ${t.border}`,
               borderRadius: radius,
@@ -446,7 +494,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             }}>Placeholder text...</div>
             <div style={{
               flex: 1,
-              padding: `${Math.round((spacings[0] || 8) * densityMul)}px ${Math.round((spacings[0] || 8) * 1.5 * densityMul)}px`,
+              padding: `${Math.round(pad * densityMul)}px ${Math.round(pad * 1.5 * densityMul)}px`,
               background: t.bg,
               border: `${bw}px solid ${accent}60`,
               borderRadius: radius,
@@ -457,12 +505,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           </div>
         </div>
       </div>
-
-      </div>}
+      )}
 
       {/* -- Motion -- */}
-      {visited["step-3"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={sectionWrap}>
+      {visited["step-3"] && (
+      <div data-section="step-3" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Motion")}
         <style>{`
           @keyframes libFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -513,24 +560,22 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           )}
         </div>
       </div>
-      </div>}
+      )}
 
       {/* -- Layout -- */}
       {selectedLayout && (
-        <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-        <div style={sectionWrap}>
-          {sectionLabel(`Layout: ${selectedLayout}`)}
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
-            color: t.dim,
-            opacity: 0.5,
-            lineHeight: 1.6,
-          }}>
-            Layout pattern applied to generated components.
-          </div>
+      <div data-section="layout" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
+        {sectionLabel(`Layout: ${selectedLayout}`)}
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11,
+          color: t.dim,
+          opacity: 0.5,
+          lineHeight: 1.6,
+        }}>
+          Layout pattern applied to generated components.
         </div>
-        </div>
+      </div>
       )}
     </div>
   );

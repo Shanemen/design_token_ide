@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect } from "react";
+import { useState, useReducer, useEffect, useRef } from "react";
 import { themes, ThemeContext } from "./theme";
 import { defaultState, STORAGE_KEY } from "./state/defaultState";
 import { reducer, migrateState } from "./state/reducer";
@@ -35,6 +35,9 @@ export default function DesignTokenTemplate() {
   const [generating, setGenerating] = useState(false);
   const [generated, setGenerated] = useState(false);
 
+  const scrollCounterRef = useRef(0);
+  const [scrollTarget, setScrollTarget] = useState(null);
+
   const t = themes[mode];
 
   // Persist state
@@ -45,14 +48,22 @@ export default function DesignTokenTemplate() {
   const toggle = (key) => {
     setOpenSections(s => {
       const willOpen = !s[key];
-      if (willOpen) dispatch({ type: "MARK_VISITED", key });
+      if (willOpen) {
+        dispatch({ type: "MARK_VISITED", key });
+        scrollCounterRef.current += 1;
+        setScrollTarget({ key, counter: scrollCounterRef.current });
+      }
       return { ...s, [key]: willOpen };
     });
   };
   const toggleSub = (key) => {
     setOpenSub(s => {
       const willOpen = !s[key];
-      if (willOpen) dispatch({ type: "MARK_VISITED", key });
+      if (willOpen) {
+        dispatch({ type: "MARK_VISITED", key });
+        scrollCounterRef.current += 1;
+        setScrollTarget({ key, counter: scrollCounterRef.current });
+      }
       return { ...s, [key]: willOpen };
     });
   };
@@ -204,53 +215,36 @@ export default function DesignTokenTemplate() {
               textTransform: "uppercase",
               opacity: 0.7,
             }}>
-              {state.activeComponent ? `Component: ${state.activeComponent}` : "Live Preview"}
+              Design System
             </div>
-            {state.activeComponent ? (
-              <button
-                onClick={() => dispatch({ type: "SET_ACTIVE_COMPONENT", component: null })}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: 12,
-                  border: `1px solid ${t.border}`,
-                  background: "transparent",
-                  color: t.dim,
-                  fontSize: 11,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  cursor: "pointer",
-                }}
-              >
-                back to overview
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  if (confirm("Reset all tokens to defaults?")) {
-                    dispatch({ type: "SET_STATE", payload: defaultState });
-                    setOpenSections({});
-                    setOpenSub({});
-                  }
-                }}
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: 12,
-                  border: `1px solid ${t.border}`,
-                  background: "transparent",
-                  color: t.dim,
-                  fontSize: 11,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  cursor: "pointer",
-                }}
-              >
-                reset
-              </button>
-            )}
+            <button
+              onClick={() => {
+                if (confirm("Reset all tokens to defaults?")) {
+                  dispatch({ type: "SET_STATE", payload: defaultState });
+                  setOpenSections({});
+                  setOpenSub({});
+                }
+              }}
+              style={{
+                padding: "4px 10px",
+                borderRadius: 12,
+                border: `1px solid ${t.border}`,
+                background: "transparent",
+                color: t.dim,
+                fontSize: 11,
+                fontFamily: "'JetBrains Mono', monospace",
+                cursor: "pointer",
+              }}
+            >
+              reset
+            </button>
           </div>
           <div style={{ flex: 1, minHeight: 0 }}>
             <PreviewRouter
               state={state}
               openSections={openSections}
               theme={t}
+              scrollTarget={scrollTarget}
             />
           </div>
         </div>
