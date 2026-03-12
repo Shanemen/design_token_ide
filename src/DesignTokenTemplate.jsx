@@ -1,65 +1,67 @@
-import { useState, useRef, createContext, useContext } from "react";
+import { useState, useRef, createContext, useContext, useEffect } from "react";
+import LayoutPreview from "./LayoutPreview";
+import { generateAndDownload } from "./generateComponents";
 
 const themes = {
   light: {
     bg: "#F5F5F7",
     surface: "#FFFFFF",
     text: "#1A1A2E",
-    accent: "#D45A2A",
+    accent: "#C04B22",
     accentText: "#fff",
-    accentBg: "#D45A2A12",
-    accentBorder: "#D45A2A",
-    label: "#777",
-    muted: "#666",
-    dim: "#999",
-    faint: "#AAA",
+    accentBg: "#C04B2212",
+    accentBorder: "#C04B22",
+    label: "#616161",
+    muted: "#555555",
+    dim: "#6B6B6B",
+    faint: "#757575",
     border: "#E0E0E0",
     borderLight: "#D0D0D0",
     inputBg: "#FAFAFA",
-    focusBorder: "#D45A2A",
+    focusBorder: "#C04B22",
     blurBorder: "#E0E0E0",
     successBg: "#e8f5e9",
     successText: "#2e7d32",
     pillBorder: "#E0E0E0",
-    pillActiveBorder: "#D45A2A",
-    pillActiveBg: "#D45A2A12",
-    pillActiveText: "#D45A2A",
-    pillText: "#888",
+    pillActiveBorder: "#C04B22",
+    pillActiveBg: "#C04B2212",
+    pillActiveText: "#C04B22",
+    pillText: "#616161",
     selectBg: "#FAFAFA",
     selectBorder: "#E0E0E0",
-    selectText: "#666",
+    selectText: "#555555",
     swatchBorder: "#D0D0D0",
-    removeBtnColor: "#BBB",
+    removeBtnColor: "#757575",
   },
   dark: {
     bg: "#0A0A0F",
     surface: "#111116",
     text: "#E8E8ED",
-    accent: "#E8734A",
-    accentText: "#fff",
-    accentBg: "#E8734A18",
-    accentBorder: "#E8734A",
-    label: "#666",
-    muted: "#888",
-    dim: "#555",
-    faint: "#444",
+    accent: "#E87850",
+    accentText: "#1A1008",
+    accentBg: "#E8785018",
+    accentBorder: "#E87850",
+    label: "#8A8A9A",
+    muted: "#9A9AAA",
+    dim: "#7A7A8A",
+    faint: "#747488",
     border: "#222233",
     borderLight: "#333",
     inputBg: "#0A0A0F",
-    focusBorder: "#E8734A55",
+    focusBorder: "#E8785055",
     blurBorder: "#222233",
     successBg: "#1a3a1a",
     successText: "#4ade80",
     pillBorder: "#222233",
-    pillActiveBorder: "#E8734A",
-    pillActiveBg: "#E8734A18",
-    pillActiveText: "#E8734A",
-    pillText: "#666",
+    pillActiveBorder: "#E87850",
+    pillActiveBg: "#E8785018",
+    pillActiveText: "#E87850",
+    pillText: "#8A8A9A",
     selectBg: "#0A0A0F",
     selectBorder: "#222233",
-    selectText: "#888",
+    selectText: "#9A9AAA",
     swatchBorder: "#333",
-    removeBtnColor: "#444",
+    removeBtnColor: "#8A8A9A",
   },
 };
 
@@ -75,6 +77,7 @@ const defaultState = {
   maxContentWidth: "1200",
   gridColumns: "12",
   layoutNotes: "",
+  selectedLayout: "",
   // 2. Typography
   headingFont: "",
   bodyFont: "",
@@ -501,12 +504,10 @@ function AddButton({ onClick, label }) {
 
 export default function DesignTokenTemplate() {
   const [state, setState] = useState(defaultState);
-  const [openSections, setOpenSections] = useState({ 1: true });
-  const [exported, setExported] = useState(false);
+  const [openSections, setOpenSections] = useState({});
   const [mode, setMode] = useState("light");
-  const [showPreview, setShowPreview] = useState(false);
-  const [replayKey, setReplayKey] = useState(0);
-  const outputRef = useRef(null);
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState(false);
 
   const t = themes[mode];
 
@@ -536,108 +537,15 @@ export default function DesignTokenTemplate() {
     update("typeLevels", next);
   };
 
-  const generateOutput = () => {
-    const lines = [];
-    lines.push(`# Design Tokens — ${state.projectName || "Untitled Project"}`);
-    lines.push(`\n## Spacing & Layout`);
-    lines.push(`- Base unit: ${state.spacingUnit}px`);
-    lines.push(`- Scales: ${state.spacingScales}`);
-    lines.push(`- Max width: ${state.maxContentWidth}px`);
-    lines.push(`- Grid: ${state.gridColumns} columns`);
-    if (state.layoutNotes) lines.push(`- Notes: ${state.layoutNotes}`);
-
-    lines.push(`\n## Typography`);
-    lines.push(`- Heading font: ${state.headingFont || "(未定)"}`);
-    lines.push(`- Body font: ${state.bodyFont || "(未定)"}`);
-    lines.push(`- Levels:`);
-    state.typeLevels.forEach(t => {
-      lines.push(`  - ${t.name}: ${t.size}px / ${t.weight} / ${t.lineHeight} (${t.font})`);
-    });
-
-    lines.push(`\n## Colors`);
-    lines.push(`- Mode: ${state.colorMode}`);
-    if (state.colorMode === "dark-only" || state.colorMode === "dual") {
-      lines.push(`- Dark palette:`);
-      state.darkColors.forEach(c => {
-        lines.push(`  - ${c.name}: ${c.value} → ${c.usage}`);
-      });
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      await generateAndDownload(state);
+      setGenerated(true);
+      setTimeout(() => setGenerated(false), 2500);
+    } finally {
+      setGenerating(false);
     }
-    if (state.colorMode === "light-only" || state.colorMode === "dual") {
-      lines.push(`- Light palette:`);
-      state.lightColors.forEach(c => {
-        lines.push(`  - ${c.name}: ${c.value} → ${c.usage}`);
-      });
-    }
-
-    lines.push(`\n## Micro-Details`);
-    lines.push(`- Border radius: ${state.borderRadius}px`);
-    lines.push(`- Border: ${state.borderWidth}px ${state.borderColor}`);
-    lines.push(`- Shadows: ${state.shadowLevels}`);
-
-    lines.push(`\n## Visual Assets`);
-    lines.push(`- Hero visual: ${state.heroVisual}`);
-    if (state.heroStyle) lines.push(`  - Style: ${state.heroStyle}`);
-    lines.push(`- Section illustrations: ${state.sectionIllustrations ? "yes" : "no"}`);
-    if (state.sectionIllustrations && state.sectionIllustrationNotes) lines.push(`  - Notes: ${state.sectionIllustrationNotes}`);
-    lines.push(`- Photo style: ${state.imageStyle}`);
-    if (state.imageTreatment) lines.push(`  - Treatment: ${state.imageTreatment}`);
-    lines.push(`- Icons: ${state.iconSource}${state.iconSource === "library" ? ` (${state.iconLibrary})` : ""} / ${state.iconStyle} / stroke ${state.iconWeight}`);
-    lines.push(`- Card thumbnails: ${state.cardThumbnailRatio}`);
-    if (state.cardThumbnailEffect) lines.push(`  - Effect: ${state.cardThumbnailEffect}`);
-    lines.push(`- Background decorations: ${state.bgDecorations}`);
-    if (state.bgDecorations !== "none" && state.bgDecorationNotes) lines.push(`  - Details: ${state.bgDecorationNotes}`);
-    lines.push(`- Section divider: ${state.sectionDivider}`);
-    lines.push(`- Avatar: ${state.avatarShape} / ${state.avatarFilter}`);
-    if (state.logoTreatment) lines.push(`- Logo: ${state.logoTreatment}`);
-    if (state.decorations) lines.push(`- Other notes: ${state.decorations}`);
-
-    lines.push(`\n## Motion Design`);
-    lines.push(`- Motion level: ${state.motionLevel}`);
-    lines.push(`- Easing: ${state.easingStyle}`);
-    lines.push(`- Default duration: ${state.defaultDuration}ms`);
-    if (state.pageLoadAnimation) {
-      lines.push(`- Page load: yes → ${state.pageLoadStyle}`);
-    } else {
-      lines.push(`- Page load: no`);
-    }
-    if (state.scrollAnimation) {
-      lines.push(`- Scroll animation: yes${state.scrollAnimationStyle ? ` → ${state.scrollAnimationStyle}` : ""}`);
-    } else {
-      lines.push(`- Scroll animation: no`);
-    }
-    if (state.hoverEffects) {
-      lines.push(`- Hover effects: yes → ${state.hoverStyle}`);
-    } else {
-      lines.push(`- Hover effects: no`);
-    }
-    lines.push(`- Page transitions: ${state.pageTransition}`);
-    if (state.microInteractions) lines.push(`- Micro-interactions: ${state.microInteractions}`);
-    if (state.motionNotes) lines.push(`- Notes: ${state.motionNotes}`);
-
-    lines.push(`\n## Constraints (不做什么)`);
-    state.dontList.split("\n").filter(Boolean).forEach(d => {
-      lines.push(`- ${d}`);
-    });
-
-    lines.push(`\n## Responsive`);
-    lines.push(`- Breakpoints: ${state.breakpoints}`);
-    lines.push(`- Strategy: ${state.mobileFirst ? "mobile-first" : "desktop-first"}`);
-
-    lines.push(`\n## Component States`);
-    lines.push(`- ${state.states}`);
-
-    return lines.join("\n");
-  };
-
-  const handleExport = () => {
-    const output = generateOutput();
-    navigator.clipboard.writeText(output).then(() => {
-      setExported(true);
-      setTimeout(() => setExported(false), 2000);
-    }).catch(() => {
-      setExported(true);
-      setTimeout(() => setExported(false), 2000);
-    });
   };
 
   return (
@@ -651,20 +559,43 @@ export default function DesignTokenTemplate() {
     }}>
       <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px 80px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: 48 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 11,
-              color: t.accent,
-              letterSpacing: 3,
-              textTransform: "uppercase",
-              opacity: 0.7,
-            }}>
-              Design Token Template
-            </div>
+      {/* Global Header */}
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "16px 24px",
+        borderBottom: `1px solid ${t.border}`,
+        background: t.surface,
+      }}>
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11,
+          color: t.accent,
+          letterSpacing: 3,
+          textTransform: "uppercase",
+          opacity: 0.7,
+        }}>
+          Design Token IDE
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <input
+            value={state.projectName}
+            onChange={e => update("projectName", e.target.value)}
+            placeholder="Project Name"
+            style={{
+              padding: "4px 8px",
+              background: "none",
+              border: `1px solid ${t.border}`,
+              borderRadius: 6,
+              color: t.text,
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: "'Space Grotesk', sans-serif",
+              outline: "none",
+              width: 180,
+            }}
+          />
             <button
               onClick={() => setMode(m => m === "light" ? "dark" : "light")}
               style={{
@@ -681,34 +612,21 @@ export default function DesignTokenTemplate() {
             >
               {mode === "light" ? "☽ Dark" : "☀ Light"}
             </button>
-          </div>
-          <input
-            value={state.projectName}
-            onChange={e => update("projectName", e.target.value)}
-            placeholder="Project Name"
-            style={{
-              width: "100%",
-              padding: 0,
-              background: "none",
-              border: "none",
-              color: t.text,
-              fontSize: 36,
-              fontWeight: 600,
-              fontFamily: "'Space Grotesk', sans-serif",
-              outline: "none",
-              boxSizing: "border-box",
-            }}
-          />
-          <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 12,
-            color: t.faint,
-            marginTop: 12,
-          }}>
-            填完 → 复制 → 粘贴给 AI → 让它帮你建组件
-          </div>
         </div>
+      </div>
 
+      {/* Two-column layout */}
+      <div style={{
+        display: "flex",
+        height: "calc(100vh - 53px)",
+      }}>
+        {/* Left Panel - Form */}
+        <div style={{
+          width: "40%",
+          overflowY: "auto",
+          padding: "24px 20px 80px",
+          boxSizing: "border-box",
+        }}>
         {/* Sections */}
         <Section number={1} title="Spacing & Layout" subtitle="间距与布局" isOpen={openSections[1]} onToggle={() => toggle(1)}>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -797,18 +715,19 @@ export default function DesignTokenTemplate() {
                           <button
                             key={ii}
                             onClick={() => {
-                              const addition = state.layoutNotes
-                                ? `\n${item.name}: ${item.desc}`
-                                : `${item.name}: ${item.desc}`;
-                              update("layoutNotes", state.layoutNotes + addition);
+                              const isSelected = state.selectedLayout === item.name;
+                              update("selectedLayout", isSelected ? "" : item.name);
+                              if (!isSelected) {
+                                update("layoutNotes", `${item.name}: ${item.desc}`);
+                              }
                             }}
                             style={{
                               flex: "1 1 calc(50% - 4px)",
                               minWidth: 200,
                               padding: "12px 14px",
                               borderRadius: 8,
-                              border: `1px solid ${state.layoutNotes.includes(item.name) ? t.accent + "50" : t.border}`,
-                              background: state.layoutNotes.includes(item.name) ? `${t.accent}08` : t.inputBg,
+                              border: `1px solid ${state.selectedLayout === item.name ? t.accent + "50" : t.border}`,
+                              background: state.selectedLayout === item.name ? `${t.accent}08` : t.inputBg,
                               cursor: "pointer",
                               textAlign: "left",
                               transition: "all 0.15s",
@@ -824,7 +743,7 @@ export default function DesignTokenTemplate() {
                                   marginBottom: 4,
                                 }}>
                                   {item.name}
-                                  {state.layoutNotes.includes(item.name) && (
+                                  {state.selectedLayout === item.name && (
                                     <span style={{ color: t.accent, marginLeft: 6, fontSize: 11 }}>✓</span>
                                   )}
                                 </div>
@@ -1625,564 +1544,102 @@ export default function DesignTokenTemplate() {
           <Input value={state.states} onChange={v => update("states", v)} placeholder="default / hover / active / disabled / loading / empty" mono />
         </Section>
 
-        {/* Live Preview */}
+        {/* Generate Components */}
         <div style={{
           marginTop: 24,
-          borderRadius: 12,
-          border: `1px solid ${t.border}`,
-          overflow: "hidden",
-        }}>
-          <button
-            onClick={() => setShowPreview(p => !p)}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "16px 22px",
-              background: t.surface,
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            <span style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 16,
-              fontWeight: 500,
-              color: t.text,
-            }}>
-              Live Preview
-            </span>
-            <span style={{
-              color: t.dim,
-              fontSize: 18,
-              transition: "transform 0.2s",
-              transform: showPreview ? "rotate(180deg)" : "rotate(0deg)",
-            }}>▾</span>
-          </button>
-
-          {showPreview && (() => {
-            const hFont = state.headingFont || "Space Grotesk";
-            const bFont = state.bodyFont || "JetBrains Mono";
-            const googleFonts = [hFont, bFont].filter(f => f && !["JetBrains Mono", "Space Grotesk"].includes(f)).map(f => f.replace(/ /g, "+")).join("&family=");
-            const previewColors = state.colorMode === "light-only" ? state.lightColors : state.darkColors;
-            const previewBg = previewColors.find(c => c.name.toLowerCase().includes("background"))?.value || "#0A0A0F";
-            const previewSurface = previewColors.find(c => c.name.toLowerCase().includes("surface"))?.value || "#141419";
-            const previewTextPrimary = previewColors.find(c => c.name.toLowerCase().includes("primary"))?.value || "#E8E8ED";
-            const previewTextSecondary = previewColors.find(c => c.name.toLowerCase().includes("secondary"))?.value || "#8A8A9A";
-            const previewAccent = previewColors.find(c => c.name.toLowerCase().includes("accent"))?.value || "#E8734A";
-            // For dual mode, also extract light palette
-            const lightColors = state.lightColors;
-            const lightBg = lightColors.find(c => c.name.toLowerCase().includes("background"))?.value || "#FAFAFA";
-            const lightSurface = lightColors.find(c => c.name.toLowerCase().includes("surface"))?.value || "#FFFFFF";
-            const lightTextPrimary = lightColors.find(c => c.name.toLowerCase().includes("primary"))?.value || "#1A1A2E";
-            const lightTextSecondary = lightColors.find(c => c.name.toLowerCase().includes("secondary"))?.value || "#6B7094";
-            const lightAccent = lightColors.find(c => c.name.toLowerCase().includes("accent"))?.value || "#E8734A";
-            const radius = parseInt(state.borderRadius) || 8;
-            const bw = parseInt(state.borderWidth) || 1;
-            const bc = state.borderColor || "#222233";
-            const spacings = state.spacingScales.split("/").map(s => parseInt(s.trim())).filter(Boolean);
-            const dur = parseInt(state.defaultDuration) || 300;
-            const easing = state.easingStyle === "spring" ? "cubic-bezier(0.34, 1.56, 0.64, 1)" : state.easingStyle === "ease-out" ? "cubic-bezier(0.22, 1, 0.36, 1)" : state.easingStyle === "ease-in-out" ? "cubic-bezier(0.45, 0, 0.55, 1)" : "linear";
-            const useStagger = state.pageLoadAnimation && state.pageLoadStyle === "stagger-fade";
-            const useSlideUp = state.pageLoadAnimation && state.pageLoadStyle === "slide-up";
-            const useScaleIn = state.pageLoadAnimation && state.pageLoadStyle === "scale-in";
-
-            return (
-              <div style={{ padding: "24px 22px", background: t.bg }}>
-                {googleFonts && <link href={`https://fonts.googleapis.com/css2?family=${googleFonts}&display=swap`} rel="stylesheet" />}
-
-                {/* Typography Preview */}
-                <div style={{ marginBottom: 32 }}>
-                  <div style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10,
-                    color: t.accent,
-                    opacity: 0.6,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    marginBottom: 16,
-                  }}>Typography</div>
-                  <div style={{
-                    padding: 24,
-                    background: previewBg,
-                    borderRadius: radius,
-                    border: `${bw}px solid ${bc}`,
-                  }}>
-                    {state.typeLevels.map((lv, i) => (
-                      <div key={i} style={{
-                        marginBottom: i < state.typeLevels.length - 1 ? 16 : 0,
-                        display: "flex",
-                        alignItems: "baseline",
-                        gap: 16,
-                      }}>
-                        <span style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 10,
-                          color: previewTextSecondary,
-                          minWidth: 60,
-                          opacity: 0.6,
-                        }}>{lv.name || "—"}</span>
-                        <span style={{
-                          fontFamily: `'${lv.font === "heading" ? hFont : bFont}', sans-serif`,
-                          fontSize: `${lv.size || 16}px`,
-                          fontWeight: lv.weight || 400,
-                          lineHeight: lv.lineHeight || 1.5,
-                          color: previewTextPrimary,
-                        }}>
-                          The quick brown fox
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Color Palette */}
-                <div style={{ marginBottom: 32 }}>
-                  <div style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10,
-                    color: t.accent,
-                    opacity: 0.6,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    marginBottom: 16,
-                  }}>Colors</div>
-
-                  {state.colorMode === "dual" ? (
-                    <div style={{ display: "flex", gap: 12 }}>
-                      {/* Dark palette preview */}
-                      <div style={{
-                        flex: 1,
-                        padding: 16,
-                        background: state.darkColors.find(c => c.name.toLowerCase().includes("background"))?.value || "#0A0A0F",
-                        borderRadius: radius,
-                        border: `${bw}px solid ${bc}`,
-                      }}>
-                        <div style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 9,
-                          color: state.darkColors.find(c => c.name.toLowerCase().includes("secondary"))?.value || "#8A8A9A",
-                          letterSpacing: 2,
-                          textTransform: "uppercase",
-                          marginBottom: 12,
-                          opacity: 0.7,
-                        }}>Dark</div>
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          {state.darkColors.map((c, i) => (
-                            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                              <div style={{
-                                width: 40, height: 40,
-                                borderRadius: Math.max(radius - 2, 2),
-                                background: c.value,
-                                border: `1px solid ${t.border}`,
-                              }} />
-                              <span style={{
-                                fontFamily: "'JetBrains Mono', monospace",
-                                fontSize: 8,
-                                color: state.darkColors.find(cc => cc.name.toLowerCase().includes("secondary"))?.value || "#8A8A9A",
-                                textAlign: "center",
-                                maxWidth: 48,
-                                opacity: 0.8,
-                              }}>{c.name || "—"}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      {/* Light palette preview */}
-                      <div style={{
-                        flex: 1,
-                        padding: 16,
-                        background: lightBg,
-                        borderRadius: radius,
-                        border: `${bw}px solid #E0E0E0`,
-                      }}>
-                        <div style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 9,
-                          color: lightTextSecondary,
-                          letterSpacing: 2,
-                          textTransform: "uppercase",
-                          marginBottom: 12,
-                          opacity: 0.7,
-                        }}>Light</div>
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                          {state.lightColors.map((c, i) => (
-                            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                              <div style={{
-                                width: 40, height: 40,
-                                borderRadius: Math.max(radius - 2, 2),
-                                background: c.value,
-                                border: "1px solid #E0E0E0",
-                              }} />
-                              <span style={{
-                                fontFamily: "'JetBrains Mono', monospace",
-                                fontSize: 8,
-                                color: lightTextSecondary,
-                                textAlign: "center",
-                                maxWidth: 48,
-                                opacity: 0.8,
-                              }}>{c.name || "—"}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {previewColors.map((c, i) => (
-                        <div key={i} style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 8,
-                        }}>
-                          <div style={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: radius,
-                            background: c.value,
-                            border: `1px solid ${t.border}`,
-                          }} />
-                          <span style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: 10,
-                            color: t.dim,
-                            textAlign: "center",
-                            maxWidth: 64,
-                          }}>{c.name || "—"}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Spacing Preview */}
-                {spacings.length > 0 && (
-                  <div style={{ marginBottom: 32 }}>
-                    <div style={{
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 10,
-                      color: t.accent,
-                      opacity: 0.6,
-                      letterSpacing: 2,
-                      textTransform: "uppercase",
-                      marginBottom: 16,
-                    }}>Spacing Scale</div>
-                    <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
-                      {spacings.map((sp, i) => (
-                        <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                          <div style={{
-                            width: sp,
-                            height: sp,
-                            maxWidth: 80,
-                            maxHeight: 80,
-                            borderRadius: Math.min(radius, 4),
-                            background: previewAccent,
-                            opacity: 0.25 + (i * 0.18),
-                          }} />
-                          <span style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: 10,
-                            color: t.dim,
-                          }}>{sp}px</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Component Preview */}
-                <div style={{ marginBottom: 32 }}>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: 16,
-                  }}>
-                    <div style={{
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 10,
-                      color: t.accent,
-                      opacity: 0.6,
-                      letterSpacing: 2,
-                      textTransform: "uppercase",
-                    }}>Component Preview</div>
-                    {state.pageLoadAnimation && (
-                      <button
-                        onClick={() => setReplayKey(k => k + 1)}
-                        style={{
-                          padding: "4px 12px",
-                          borderRadius: 12,
-                          border: `1px solid ${t.border}`,
-                          background: "transparent",
-                          color: t.dim,
-                          fontSize: 11,
-                          fontFamily: "'JetBrains Mono', monospace",
-                          cursor: "pointer",
-                        }}
-                      >
-                        ▶ replay animation
-                      </button>
-                    )}
-                  </div>
-
-                  <style>{`
-                    @keyframes previewFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-                    @keyframes previewSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-                    @keyframes previewScaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
-                    .preview-card:hover .preview-card-inner { opacity: 0.85; transform: translateY(-2px); }
-                  `}</style>
-
-                  <div key={replayKey} style={{
-                    padding: 32,
-                    background: previewBg,
-                    borderRadius: radius,
-                    border: `${bw}px solid ${bc}`,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: spacings[2] || 32,
-                  }}>
-                    {/* Mini nav */}
-                    <div style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      animation: state.pageLoadAnimation ? `${useSlideUp ? "previewSlideUp" : useScaleIn ? "previewScaleIn" : "previewFadeIn"} ${dur}ms ${easing} both` : "none",
-                    }}>
-                      <span style={{
-                        fontFamily: `'${hFont}', sans-serif`,
-                        fontSize: 18,
-                        fontWeight: 600,
-                        color: previewTextPrimary,
-                      }}>Logo</span>
-                      <div style={{ display: "flex", gap: spacings[1] || 16 }}>
-                        {["About", "Work", "Contact"].map(item => (
-                          <span key={item} style={{
-                            fontFamily: `'${bFont}', monospace`,
-                            fontSize: 13,
-                            color: previewTextSecondary,
-                            cursor: "pointer",
-                          }}>{item}</span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Mini hero */}
-                    <div style={{
-                      animation: state.pageLoadAnimation ? `${useSlideUp ? "previewSlideUp" : useScaleIn ? "previewScaleIn" : "previewFadeIn"} ${dur}ms ${easing} ${useStagger ? `${dur * 0.3}ms` : "0ms"} both` : "none",
-                    }}>
-                      {state.typeLevels[0] && (
-                        <div style={{
-                          fontFamily: `'${hFont}', sans-serif`,
-                          fontSize: Math.min(parseInt(state.typeLevels[0].size) || 48, 36),
-                          fontWeight: state.typeLevels[0].weight || 700,
-                          lineHeight: state.typeLevels[0].lineHeight || 1.1,
-                          color: previewTextPrimary,
-                          marginBottom: spacings[1] || 16,
-                        }}>
-                          Design with intent
-                        </div>
-                      )}
-                      <div style={{
-                        fontFamily: `'${bFont}', monospace`,
-                        fontSize: parseInt(state.typeLevels[2]?.size) || 16,
-                        lineHeight: state.typeLevels[2]?.lineHeight || 1.6,
-                        color: previewTextSecondary,
-                        maxWidth: "80%",
-                      }}>
-                        A preview of your design tokens working together in harmony.
-                      </div>
-                    </div>
-
-                    {/* Mini cards */}
-                    <div style={{
-                      display: "flex",
-                      gap: spacings[1] || 16,
-                      animation: state.pageLoadAnimation ? `${useSlideUp ? "previewSlideUp" : useScaleIn ? "previewScaleIn" : "previewFadeIn"} ${dur}ms ${easing} ${useStagger ? `${dur * 0.6}ms` : "0ms"} both` : "none",
-                    }}>
-                      {[1, 2].map(n => (
-                        <div key={n} className="preview-card" style={{
-                          flex: 1,
-                          padding: spacings[1] || 16,
-                          background: previewSurface,
-                          borderRadius: radius,
-                          border: `${bw}px solid ${bc}`,
-                          cursor: "pointer",
-                          transition: `all ${dur}ms ${easing}`,
-                        }}>
-                          <div className="preview-card-inner" style={{ transition: `all ${dur}ms ${easing}` }}>
-                            <div style={{
-                              width: "100%",
-                              height: 48,
-                              borderRadius: Math.max(radius - 4, 2),
-                              background: `${previewAccent}18`,
-                              marginBottom: spacings[0] || 8,
-                            }} />
-                            <div style={{
-                              fontFamily: `'${hFont}', sans-serif`,
-                              fontSize: parseInt(state.typeLevels[1]?.size) || 18,
-                              fontWeight: state.typeLevels[1]?.weight || 600,
-                              color: previewTextPrimary,
-                              marginBottom: 4,
-                            }}>Card Title {n}</div>
-                            <div style={{
-                              fontFamily: `'${bFont}', monospace`,
-                              fontSize: parseInt(state.typeLevels[3]?.size) || 13,
-                              color: previewTextSecondary,
-                            }}>Caption text here</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Mini button */}
-                    <div style={{
-                      animation: state.pageLoadAnimation ? `${useSlideUp ? "previewSlideUp" : useScaleIn ? "previewScaleIn" : "previewFadeIn"} ${dur}ms ${easing} ${useStagger ? `${dur * 0.9}ms` : "0ms"} both` : "none",
-                    }}>
-                      <button style={{
-                        padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
-                        borderRadius: radius,
-                        border: "none",
-                        background: previewAccent,
-                        color: "#fff",
-                        fontFamily: `'${bFont}', monospace`,
-                        fontSize: 13,
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        transition: `all ${dur}ms ${easing}`,
-                        letterSpacing: 0.5,
-                      }}>Get Started</button>
-                      <button style={{
-                        marginLeft: spacings[0] || 8,
-                        padding: `${spacings[0] || 8}px ${spacings[1] || 16}px`,
-                        borderRadius: radius,
-                        border: `${bw}px solid ${bc}`,
-                        background: "transparent",
-                        color: previewTextSecondary,
-                        fontFamily: `'${bFont}', monospace`,
-                        fontSize: 13,
-                        cursor: "pointer",
-                        transition: `all ${dur}ms ${easing}`,
-                      }}>Learn More</button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Micro Details Preview */}
-                <div>
-                  <div style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10,
-                    color: t.accent,
-                    opacity: 0.6,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    marginBottom: 16,
-                  }}>Micro Details</div>
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <div style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 8,
-                    }}>
-                      <div style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: radius,
-                        background: previewSurface,
-                        border: `${bw}px solid ${bc}`,
-                      }} />
-                      <span style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: 10,
-                        color: t.dim,
-                      }}>radius: {state.borderRadius}px</span>
-                    </div>
-                    <div style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 8,
-                    }}>
-                      <div style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: radius,
-                        background: previewSurface,
-                        border: `${bw}px solid ${bc}`,
-                        boxShadow: state.shadowLevels.includes("md") ? `0 4px 12px ${previewBg}40` : state.shadowLevels.includes("sm") ? `0 2px 6px ${previewBg}30` : "none",
-                      }} />
-                      <span style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: 10,
-                        color: t.dim,
-                      }}>shadow</span>
-                    </div>
-                    <div style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: 8,
-                    }}>
-                      <div style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: radius,
-                        background: previewAccent,
-                      }} />
-                      <span style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: 10,
-                        color: t.dim,
-                      }}>accent</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-        </div>
-
-        {/* Export */}
-        <div style={{
-          marginTop: 40,
-          padding: 24,
+          padding: 20,
           background: t.surface,
           borderRadius: 12,
           border: `1px solid ${t.border}`,
         }}>
           <button
-            onClick={handleExport}
+            onClick={handleGenerate}
+            disabled={generating}
             style={{
               width: "100%",
-              padding: "14px 0",
+              padding: "12px 0",
               borderRadius: 8,
               border: "none",
-              background: exported ? t.successBg : t.accent,
-              color: exported ? t.successText : t.accentText,
-              fontSize: 15,
+              background: generated ? t.successBg : t.accent,
+              color: generated ? t.successText : t.accentText,
+              fontSize: 14,
               fontWeight: 600,
               fontFamily: "'Space Grotesk', sans-serif",
-              cursor: "pointer",
+              cursor: generating ? "wait" : "pointer",
               transition: "all 0.2s",
               letterSpacing: 0.5,
+              opacity: generating ? 0.7 : 1,
             }}
           >
-            {exported ? "✓ Copied to Clipboard" : "Export as Text → Copy to Clipboard"}
+            {generated ? "✓ Downloaded" : generating ? "Generating…" : "Generate Components"}
           </button>
           <div style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: 10,
             color: t.faint,
-            marginTop: 12,
+            marginTop: 10,
             textAlign: "center",
+            lineHeight: 1.6,
           }}>
-            复制后粘贴给 Claude Code：「根据这份 token，帮我建基础组件」
+            TypeScript + CSS Variables
+            <br />
+            tokens.css · tokens.ts · Text · Button · Card · Section
           </div>
         </div>
-      </div>
+        </div>{/* end left panel */}
+
+        {/* Right Panel - Live Preview */}
+        <div style={{
+          width: "60%",
+          borderLeft: `1px solid ${t.border}`,
+          padding: 20,
+          overflowY: "auto",
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+        }}>
+          <div style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11,
+              color: t.accent,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              opacity: 0.7,
+            }}>
+              {state.selectedLayout ? `Layout: ${state.selectedLayout}` : "Layout Preview"}
+            </div>
+            {state.selectedLayout && (
+              <button
+                onClick={() => update("selectedLayout", "")}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: 12,
+                  border: `1px solid ${t.border}`,
+                  background: "transparent",
+                  color: t.dim,
+                  fontSize: 11,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  cursor: "pointer",
+                }}
+              >
+                clear
+              </button>
+            )}
+          </div>
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <LayoutPreview
+              selectedLayout={state.selectedLayout}
+              tokens={state}
+            />
+          </div>
+        </div>
+      </div>{/* end two-column */}
     </div>
     </ThemeContext.Provider>
   );
