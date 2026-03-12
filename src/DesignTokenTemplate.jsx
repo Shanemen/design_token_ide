@@ -1,5 +1,5 @@
 import { useState, useRef, createContext, useContext, useEffect } from "react";
-import LayoutPreview from "./LayoutPreview";
+import DesignLibraryPreview from "./DesignLibraryPreview";
 import { generateAndDownload } from "./generateComponents";
 
 const themes = {
@@ -937,7 +937,7 @@ export default function DesignTokenTemplate() {
               marginBottom: 10,
               textTransform: "uppercase",
               letterSpacing: 1.5,
-            }}>Layout Inspiration — 点击添加到 notes</label>
+            }}>Layout Inspiration</label>
 
             {(() => {
               const layoutIdeas = [
@@ -1926,9 +1926,11 @@ export default function DesignTokenTemplate() {
             )}
           </div>
           <div style={{ flex: 1, minHeight: 0 }}>
-            <LayoutPreview
-              selectedLayout={state.selectedLayout}
+            <DesignLibraryPreview
               tokens={state}
+              openSections={openSections}
+              selectedLayout={state.selectedLayout}
+              theme={t}
             />
           </div>
         </div>
