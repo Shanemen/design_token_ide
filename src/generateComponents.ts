@@ -266,7 +266,7 @@ function generateTextTSX(s: DesignState): string {
 
   code += `export function Text({ level = "body", as, children, className, style }: TextProps) {\n`;
   code += `  const Component = as || defaultTag[level];\n`;
-  code += `  const font = level === ${levelNames.filter((n) => { const t = levels.find((l) => toCamel(l.name) === n); return t?.font === "heading"; }).map((n) => `"${n}"`).join(" || level === ")} ? "var(--font-heading)" : "var(--font-body)";\n\n`;
+  code += `  const font = level === ${levelNames.filter((n) => /display|heading|title|^h[1-6]$/i.test(n)).map((n) => `"${n}"`).join(" || level === ")} ? "var(--font-heading)" : "var(--font-body)";\n\n`;
 
   code += `  return (\n`;
   code += `    <Component\n`;

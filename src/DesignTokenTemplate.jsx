@@ -49,7 +49,13 @@ export default function DesignTokenTemplate() {
       return { ...s, [key]: willOpen };
     });
   };
-  const toggleSub = (key) => setOpenSub(s => ({ ...s, [key]: !s[key] }));
+  const toggleSub = (key) => {
+    setOpenSub(s => {
+      const willOpen = !s[key];
+      if (willOpen) dispatch({ type: "MARK_VISITED", key });
+      return { ...s, [key]: willOpen };
+    });
+  };
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -200,7 +206,7 @@ export default function DesignTokenTemplate() {
             }}>
               {state.activeComponent ? `Component: ${state.activeComponent}` : "Live Preview"}
             </div>
-            {state.activeComponent && (
+            {state.activeComponent ? (
               <button
                 onClick={() => dispatch({ type: "SET_ACTIVE_COMPONENT", component: null })}
                 style={{
@@ -215,6 +221,28 @@ export default function DesignTokenTemplate() {
                 }}
               >
                 back to overview
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  if (confirm("Reset all tokens to defaults?")) {
+                    dispatch({ type: "SET_STATE", payload: defaultState });
+                    setOpenSections({});
+                    setOpenSub({});
+                  }
+                }}
+                style={{
+                  padding: "4px 10px",
+                  borderRadius: 12,
+                  border: `1px solid ${t.border}`,
+                  background: "transparent",
+                  color: t.dim,
+                  fontSize: 11,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  cursor: "pointer",
+                }}
+              >
+                reset
               </button>
             )}
           </div>

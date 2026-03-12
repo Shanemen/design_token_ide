@@ -84,15 +84,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
     }}>{label}</div>
   );
 
-  // Highlight when Step 1 (tokens) is open — all token sections belong to step-1
-  const highlightStyle = (sectionKey) => ({
-    marginBottom: 28,
-    padding: openSections[sectionKey] ? 16 : 0,
-    borderRadius: 12,
-    border: openSections[sectionKey] ? `1.5px solid ${t.accent}30` : "1.5px solid transparent",
-    background: openSections[sectionKey] ? `${t.accent}08` : "transparent",
-    transition: "all 0.3s ease",
-  });
+  const sectionWrap = { marginBottom: 28 };
 
   return (
     <div style={{
@@ -108,47 +100,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         @keyframes previewFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
-      {/* -- Typography -- */}
-      {visited["step-1"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={highlightStyle("step-1")}>
-        {sectionLabel("Typography")}
-        <div style={{
-          background: darkBg,
-          borderRadius: radius,
-          padding: "20px 24px",
-          border: `1px solid ${darkSurface}`,
-        }}>
-          {tokens.typeLevels.map((lv, i) => (
-            <div key={i} style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 16,
-              padding: "10px 0",
-              borderBottom: i < tokens.typeLevels.length - 1 ? `1px solid ${darkSurface}` : "none",
-            }}>
-              <span style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                color: darkTextSecondary,
-                minWidth: 56,
-                opacity: 0.5,
-              }}>{lv.name || "\u2014"}</span>
-              <span style={{
-                fontFamily: `'${lv.font === "heading" ? hFont : bFont}', sans-serif`,
-                fontSize: `${lv.size || 16}px`,
-                fontWeight: lv.weight || 400,
-                lineHeight: lv.lineHeight || 1.5,
-                color: darkTextPrimary,
-              }}>
-                The quick brown fox
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* -- Colors -- */}
-      <div style={highlightStyle("step-1")}>
+      {visited["colors"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
+      <div style={sectionWrap}>
         {sectionLabel("Colors")}
         <div style={{ display: "flex", gap: 12 }}>
           {/* Dark palette */}
@@ -236,8 +190,52 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         </div>
       </div>
 
+      </div>}
+
+      {/* -- Typography -- */}
+      {visited["typography"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
+      <div style={sectionWrap}>
+        {sectionLabel("Typography")}
+        <div style={{
+          background: bg,
+          borderRadius: radius,
+          padding: "20px 24px",
+          border: `1px solid ${surface}`,
+        }}>
+          {tokens.typeLevels.map((lv, i) => (
+            <div key={i} style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: 16,
+              padding: "10px 0",
+              borderBottom: i < tokens.typeLevels.length - 1 ? `1px solid ${surface}` : "none",
+            }}>
+              <span style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                color: textSecondary,
+                minWidth: 56,
+                opacity: 0.5,
+              }}>{lv.name || "\u2014"}</span>
+              <span style={{
+                fontFamily: `'${/display|heading|title|^h[1-6]$/i.test(lv.name) ? hFont : bFont}', sans-serif`,
+                fontSize: `${lv.size || 16}px`,
+                fontWeight: lv.weight || 400,
+                lineHeight: lv.lineHeight || 1.5,
+                color: textPrimary,
+              }}>
+                The quick brown fox
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      </div>}
+
       {/* -- Spacing Scale -- */}
-      <div style={highlightStyle("step-1")}>
+      {visited["spacing"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
+      <div style={sectionWrap}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
           {sectionLabel("Spacing Scale")}
           <span style={{
@@ -269,8 +267,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         </div>
       </div>
 
+      </div>}
+
       {/* -- Micro Details -- */}
-      <div style={highlightStyle("step-1")}>
+      {visited["micro"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
+      <div style={sectionWrap}>
         {sectionLabel("Micro Details")}
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
@@ -326,7 +327,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
 
       {/* -- Components -- */}
       {visited["step-2"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={highlightStyle("step-2")}>
+      <div style={sectionWrap}>
         {sectionLabel("Components")}
 
         {/* Buttons */}
@@ -461,7 +462,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
 
       {/* -- Motion -- */}
       {visited["step-3"] && <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-      <div style={highlightStyle("step-3")}>
+      <div style={sectionWrap}>
         {sectionLabel("Motion")}
         <style>{`
           @keyframes libFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -515,9 +516,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
       </div>}
 
       {/* -- Layout -- */}
-      {visited["step-1"] && selectedLayout && (
+      {selectedLayout && (
         <div style={{ animation: "previewFadeIn 0.4s ease" }}>
-        <div style={highlightStyle("step-1")}>
+        <div style={sectionWrap}>
           {sectionLabel(`Layout: ${selectedLayout}`)}
           <div style={{
             fontFamily: "'JetBrains Mono', monospace",

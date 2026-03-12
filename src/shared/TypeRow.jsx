@@ -13,6 +13,8 @@ export default function TypeRow({ level, onChange, onRemove }) {
     fontFamily: "'JetBrains Mono', monospace",
     outline: "none",
     textAlign: "center",
+    minWidth: 0,
+    boxSizing: "border-box",
   };
   return (
     <div style={{
@@ -20,6 +22,7 @@ export default function TypeRow({ level, onChange, onRemove }) {
       alignItems: "center",
       gap: 8,
       marginBottom: 10,
+      width: "100%",
     }}>
       <input
         value={level.name}
@@ -30,23 +33,6 @@ export default function TypeRow({ level, onChange, onRemove }) {
       <input value={level.size} onChange={e => onChange({ ...level, size: e.target.value })} placeholder="px" style={{ ...inputStyle, flex: "0 0 50px" }} />
       <input value={level.weight} onChange={e => onChange({ ...level, weight: e.target.value })} placeholder="wt" style={{ ...inputStyle, flex: "0 0 50px" }} />
       <input value={level.lineHeight} onChange={e => onChange({ ...level, lineHeight: e.target.value })} placeholder="lh" style={{ ...inputStyle, flex: "0 0 50px" }} />
-      <select
-        value={level.font}
-        onChange={e => onChange({ ...level, font: e.target.value })}
-        style={{
-          padding: "8px 10px",
-          background: t.selectBg,
-          border: `1px solid ${t.selectBorder}`,
-          borderRadius: 6,
-          color: t.selectText,
-          fontSize: 12,
-          fontFamily: "'JetBrains Mono', monospace",
-          outline: "none",
-        }}
-      >
-        <option value="heading">heading</option>
-        <option value="body">body</option>
-      </select>
       <button
         onClick={onRemove}
         style={{

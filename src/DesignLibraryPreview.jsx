@@ -108,7 +108,7 @@ export default function DesignLibraryPreview({ tokens, openSections, selectedLay
                 opacity: 0.5,
               }}>{lv.name || "—"}</span>
               <span style={{
-                fontFamily: `'${lv.font === "heading" ? hFont : bFont}', sans-serif`,
+                fontFamily: `'${/display|heading|title|^h[1-6]$/i.test(lv.name) ? hFont : bFont}', sans-serif`,
                 fontSize: `${lv.size || 16}px`,
                 fontWeight: lv.weight || 400,
                 lineHeight: lv.lineHeight || 1.5,

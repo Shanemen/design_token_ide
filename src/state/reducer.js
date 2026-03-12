@@ -56,5 +56,7 @@ export function migrateState(saved, defaults) {
   if (saved.lightColors) merged.lightColors = saved.lightColors;
   if (saved.typeLevels) merged.typeLevels = saved.typeLevels;
   if (saved.moodboardLinks) merged.moodboardLinks = saved.moodboardLinks;
+  // Reset visitedSections for users migrating from before progressive preview
+  if (!saved.visitedSections) merged.visitedSections = {};
   return merged;
 }

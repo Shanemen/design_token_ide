@@ -661,7 +661,7 @@ export default function ComponentPreview({ componentId, config, tokens, theme })
         <div key={i} style={{ marginBottom: 12 }}>
           {subLabel(lv.name || "\u2014")}
           <span style={{
-            fontFamily: `'${lv.font === "heading" ? hFont : bFont}', sans-serif`,
+            fontFamily: `'${/display|heading|title|^h[1-6]$/i.test(lv.name) ? hFont : bFont}', sans-serif`,
             fontSize: `${lv.size || 16}px`,
             fontWeight: lv.weight || 400,
             lineHeight: lv.lineHeight || 1.5,

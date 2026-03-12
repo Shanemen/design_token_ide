@@ -40,7 +40,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
   return (
     <>
       {/* Colors */}
-      <Section number="1a" title="Colors" subtitle="调色板" isOpen={openSub.colors} onToggle={() => toggleSub("colors")}>
+      <Section number="1a" title="Colors" subtitle="调色板" isOpen={openSub.colors} onToggle={() => toggleSub("colors")} nested>
         {/* Mode selector */}
         <div style={{ marginBottom: 20 }}>
           <label style={{
@@ -93,7 +93,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       </Section>
 
       {/* Typography */}
-      <Section number="1b" title="Typography" subtitle="文字层级" isOpen={openSub.typography} onToggle={() => toggleSub("typography")}>
+      <Section number="1b" title="Typography" subtitle="文字层级" isOpen={openSub.typography} onToggle={() => toggleSub("typography")} nested>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
           <Input label="Heading Font" value={state.headingFont} onChange={v => update("headingFont", v)} placeholder="e.g. Syne, Playfair Display" />
           <Input label="Body Font" value={state.bodyFont} onChange={v => update("bodyFont", v)} placeholder="e.g. JetBrains Mono, Inter" />
@@ -104,13 +104,13 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
           color: t.dim,
           marginBottom: 10,
           display: "flex",
-          gap: 36,
+          gap: 8,
+          paddingRight: 26,
         }}>
-          <span style={{ width: 100 }}>NAME</span>
-          <span style={{ width: 56, textAlign: "center" }}>SIZE</span>
-          <span style={{ width: 56, textAlign: "center" }}>WEIGHT</span>
-          <span style={{ width: 56, textAlign: "center" }}>L-H</span>
-          <span>FONT</span>
+          <span style={{ flex: "1 1 80px" }}>NAME</span>
+          <span style={{ flex: "0 0 50px", textAlign: "center" }}>SIZE</span>
+          <span style={{ flex: "0 0 50px", textAlign: "center" }}>WEIGHT</span>
+          <span style={{ flex: "0 0 50px", textAlign: "center" }}>L-H</span>
         </div>
         {state.typeLevels.map((lv, i) => (
           <TypeRow
@@ -124,7 +124,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       </Section>
 
       {/* Spacing */}
-      <Section number="1c" title="Spacing & Layout" subtitle="间距与布局" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")}>
+      <Section number="1c" title="Spacing & Layout" subtitle="间距与布局" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")} nested>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <Input label="Base Unit (px)" value={state.spacingUnit} onChange={v => update("spacingUnit", v)} mono small />
           <Input label="Max Width (px)" value={state.maxContentWidth} onChange={v => update("maxContentWidth", v)} mono small />
@@ -152,7 +152,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       </Section>
 
       {/* Micro-Details */}
-      <Section number="1d" title="Micro-Details" subtitle="圆角 / 边框 / 阴影" isOpen={openSub.micro} onToggle={() => toggleSub("micro")}>
+      <Section number="1d" title="Micro-Details" subtitle="圆角 / 边框 / 阴影" isOpen={openSub.micro} onToggle={() => toggleSub("micro")} nested>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <Input label="Border Radius (px)" value={state.borderRadius} onChange={v => update("borderRadius", v)} mono small />
           <Input label="Border Width (px)" value={state.borderWidth} onChange={v => update("borderWidth", v)} mono small />

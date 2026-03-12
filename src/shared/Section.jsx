@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { ThemeContext } from "../theme";
 
-export default function Section({ number, title, subtitle, children, isOpen, onToggle }) {
+export default function Section({ number, title, subtitle, children, isOpen, onToggle, nested }) {
   const t = useContext(ThemeContext);
   return (
     <div style={{
@@ -61,7 +61,7 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
         </span>
       </button>
       {isOpen && (
-        <div style={{ padding: "4px 22px 24px 60px" }}>
+        <div style={{ padding: nested ? "4px 16px 20px 36px" : "4px 22px 24px 60px" }}>
           {children}
         </div>
       )}
