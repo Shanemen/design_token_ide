@@ -179,9 +179,9 @@ export default function DesignTokenTemplate() {
                 textAlign: "center",
                 lineHeight: 1.6,
               }}>
-                TypeScript + CSS Variables
+                CLAUDE.md + TypeScript + CSS Variables
                 <br />
-                tokens.css · tokens.ts · Text · Button · Card · Section
+                tokens · primitives · blocks · sections
               </div>
             </div>
           </>)}
