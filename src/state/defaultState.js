@@ -10,8 +10,8 @@ export const defaultState = {
   layoutNotes: "",
   selectedLayout: "",
   // 2. Typography
-  headingFont: "",
-  bodyFont: "",
+  headingFont: "Syne",
+  bodyFont: "JetBrains Mono",
   typeLevels: [
     { name: "Display", size: "48", weight: "700", lineHeight: "1.1", font: "heading" },
     { name: "Heading", size: "28", weight: "600", lineHeight: "1.2", font: "heading" },

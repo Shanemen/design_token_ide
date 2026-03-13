@@ -552,11 +552,11 @@ function generateTextCode(s: DesignState): string {
   if (variants.includes("blockquote")) {
     c += `  if (variant === "blockquote") {\n`;
     if (quoteStyle === "large-italic") {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontStyle: "italic", fontWeight: 500, color: "var(--color-text-primary)", padding: "12px 0", margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontStyle: "italic", fontWeight: 500, color: "var(--color-text-primary)", padding: "calc(var(--space-1) * 1.5) 0", margin: 0, ...style }}>{children}</blockquote>;\n`;
     } else if (quoteStyle === "centered") {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontStyle: "italic", color: "var(--color-text-primary)", textAlign: "center", padding: "16px 24px", margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontStyle: "italic", color: "var(--color-text-primary)", textAlign: "center", padding: "var(--space-2) var(--space-3)", margin: 0, ...style }}>{children}</blockquote>;\n`;
     } else {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-body)", fontSize: 14, lineHeight: 1.7, color: "var(--color-text-primary)", borderLeft: "3px solid var(--color-accent)", paddingLeft: 16, margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-body)", fontSize: 14, lineHeight: 1.7, color: "var(--color-text-primary)", borderLeft: "3px solid var(--color-accent)", paddingLeft: "var(--space-2)", margin: 0, ...style }}>{children}</blockquote>;\n`;
     }
     c += `  }\n`;
   }
@@ -581,7 +581,7 @@ function generateDividerCode(s: DesignState): string {
   c += `export function Divider({ style }: { style?: React.CSSProperties }) {\n`;
 
   if (divStyle === "space") {
-    c += `  return <div style={{ height: 24, ...style }} />;\n`;
+    c += `  return <div style={{ height: "var(--space-3)", ...style }} />;\n`;
   } else {
     const borderStyle = divStyle === "dashed" ? "dashed" : divStyle === "dot" ? "dotted" : "solid";
     c += `  return <hr style={{ border: "none", borderTop: "${bw}px ${borderStyle} var(--border-color)", margin: 0, ...style }} />;\n`;
@@ -711,7 +711,7 @@ function generateCardCode(s: DesignState): string {
     c += `    }}>\n`;
     c += `      {thumbnail && <div style={{ width: 100, height: ${Math.round(100 * rh / rw)}, borderRadius: "calc(var(--radius) - 4px)", background: \`url(\${thumbnail}) center/cover\`, flexShrink: 0 }} />}\n`;
     c += `      <div>\n`;
-    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>{title}</div>}\n`;
+    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
     c += `        {children}\n`;
     c += `      </div>\n`;
@@ -730,7 +730,7 @@ function generateCardCode(s: DesignState): string {
     c += `    }}>\n`;
     c += `      {thumbnail && <div style={{ width: "100%", aspectRatio: "${rw}/${rh}", background: \`url(\${thumbnail}) center/cover\` }} />}\n`;
     c += `      <div style={{ padding: "var(--space-2)" }}>\n`;
-    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>{title}</div>}\n`;
+    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
     c += `        {children}\n`;
     c += `      </div>\n`;
@@ -820,7 +820,7 @@ function generateNavbarCode(s: DesignState): string {
     c += `  );\n`;
   } else if (layout === "centered") {
     c += `  return (\n`;
-    c += `    <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "var(--space-1) var(--space-2)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
+    c += `    <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-1)", padding: "var(--space-1) var(--space-2)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
     c += `      <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)" }}>{logo}</div>\n`;
     c += `      <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>\n`;
     c += `        {links.map(l => <a key={l.href} href={l.href} style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)", textDecoration: "none" }}>{l.label}</a>)}\n`;
@@ -867,9 +867,9 @@ function generateHeroCode(s: DesignState): string {
   c += `  return (\n`;
   c += `    <div style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Hero") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-3)", display: "flex", gap: "var(--space-2)", alignItems: "center", ...style }}>\n`;
   c += `      <div style={{ flex: 1 }}>\n`;
-  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, margin: "0 0 8px" }}>{title}</h1>\n`;
-  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 12px" }}>{subtitle}</p>}\n`;
-  c += `        <div style={{ display: "flex", gap: 8 }}>\n`;
+  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, margin: "0 0 var(--space-1)" }}>{title}</h1>\n`;
+  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 calc(var(--space-1) * 1.5)" }}>{subtitle}</p>}\n`;
+  c += `        <div style={{ display: "flex", gap: "var(--space-1)" }}>\n`;
   c += `          {primaryAction && <a href={primaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{primaryAction.label}</a>}\n`;
   c += `          {secondaryAction && <a href={secondaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", border: "1px solid var(--border-color)", color: "var(--color-text-secondary)", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", textDecoration: "none" }}>{secondaryAction.label}</a>}\n`;
   c += `        </div>\n`;
@@ -908,21 +908,21 @@ function generateFooterCode(s: DesignState): string {
     c += `        <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)" }}>© {new Date().getFullYear()} Company</span>\n`;
     c += `      </div>\n`;
   } else {
-    c += `      <div style={{ display: "flex", gap: "var(--space-3)", marginBottom: 16 }}>\n`;
+    c += `      <div style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-2)" }}>\n`;
     c += `        {columns.map(col => (\n`;
     c += `          <div key={col.title} style={{ flex: 1 }}>\n`;
-    c += `            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 8 }}>{col.title}</div>\n`;
-    c += `            {col.links.map(l => <a key={l.href} href={l.href} style={{ display: "block", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", marginBottom: 4, textDecoration: "none" }}>{l.label}</a>)}\n`;
+    c += `            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "var(--space-1)" }}>{col.title}</div>\n`;
+    c += `            {col.links.map(l => <a key={l.href} href={l.href} style={{ display: "block", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", marginBottom: "calc(var(--space-1) / 2)", textDecoration: "none" }}>{l.label}</a>)}\n`;
     c += `          </div>\n`;
     c += `        ))}\n`;
     c += `      </div>\n`;
     if (newsletter) {
-      c += `      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>\n`;
+      c += `      <div style={{ display: "flex", gap: "var(--space-1)", marginBottom: "calc(var(--space-1) * 1.5)" }}>\n`;
       c += `        <input placeholder="Enter your email" style={{ flex: 1, padding: "var(--space-1)", border: "1px solid var(--border-color)", borderRadius: "var(--radius)", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", background: "transparent" }} />\n`;
       c += `        <button style={{ padding: "var(--space-1)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, border: "none", cursor: "pointer" }}>Subscribe</button>\n`;
       c += `      </div>\n`;
     }
-    c += `      <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: 10, fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
+    c += `      <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "var(--space-1)", fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
   }
 
   c += `    </footer>\n`;
@@ -961,11 +961,11 @@ function generateCTACode(s: DesignState): string {
   c += `      alignItems: "center",\n`;
   if (isLR) c += `      justifyContent: "space-between",\n`;
   else c += `      justifyContent: "center", textAlign: "center" as const,\n`;
-  c += `      gap: 12,\n`;
+  c += `      gap: "calc(var(--space-1) * 1.5)",\n`;
   c += `      ...style,\n`;
   c += `    }}>\n`;
   c += `      <div>\n`;
-  c += `        <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, fontWeight: 700, color: ${isBg ? '"#fff"' : '"var(--color-text-primary)"'}, marginBottom: 4 }}>{title}</div>\n`;
+  c += `        <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, fontWeight: 700, color: ${isBg ? '"#fff"' : '"var(--color-text-primary)"'}, marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>\n`;
   c += `        {subtitle && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: ${isBg ? '"rgba(255,255,255,0.8)"' : '"var(--color-text-secondary)"'} }}>{subtitle}</div>}\n`;
   c += `      </div>\n`;
   c += `      <a href={action.href} style={{ padding: "var(--space-1) var(--space-2)", background: ${isBg ? '"#fff"' : '"var(--color-accent)"'}, color: ${isBg ? '"var(--color-accent)"' : '"#fff"'}, borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>{action.label}</a>\n`;
