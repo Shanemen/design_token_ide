@@ -546,7 +546,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         </div>
 
         {/* Input */}
-        <div>
+        <div style={{ marginBottom: 20 }}>
           <div style={subLabel}>Input</div>
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{
@@ -570,6 +570,270 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               fontSize: 13,
               color: t.text,
             }}>Focused input</div>
+          </div>
+        </div>
+
+        {/* Icon — library, style, weight */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Icon · {comp.Icon?.library || "Lucide"} · {comp.Icon?.style || "outline"}</div>
+          <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+            {/* Render placeholder icons using SVG */}
+            {[
+              /* home */ "M3 12l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z",
+              /* search */ "M11 3a8 8 0 100 16 8 8 0 000-16zM21 21l-4.35-4.35",
+              /* heart */ "M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",
+              /* star */ "M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01z",
+              /* settings */ "M12 15a3 3 0 100-6 3 3 0 000 6z",
+            ].map((d, i) => (
+              <svg key={i} width="24" height="24" viewBox="0 0 24 24"
+                fill={(comp.Icon?.style) === "filled" ? accent : "none"}
+                stroke={(comp.Icon?.style) === "filled" ? "none" : t.text}
+                strokeWidth={parseFloat(comp.Icon?.weight) || 1.5}
+                strokeLinecap="round" strokeLinejoin="round"
+              >
+                <path d={d} />
+              </svg>
+            ))}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.4 }}>
+              stroke: {comp.Icon?.weight || "1.5"}
+            </span>
+          </div>
+        </div>
+
+        {/* Navbar */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Navbar · {comp.Navbar?.layout || "logo-left"}</div>
+          <div style={{
+            display: "flex",
+            alignItems: (comp.Navbar?.layout) === "centered" ? "center" : "center",
+            flexDirection: (comp.Navbar?.layout) === "centered" ? "column" : "row",
+            justifyContent: (comp.Navbar?.layout) === "centered" ? "center" : "space-between",
+            gap: (comp.Navbar?.layout) === "centered" ? 8 : 0,
+            padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+            background: comp.Navbar?.transparent ? "transparent" : surface,
+            borderRadius: radius,
+            border: `${bw}px solid ${bc}`,
+          }}>
+            {(comp.Navbar?.layout) === "hamburger-only" ? (<>
+              <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 14, fontWeight: 600, color: textPrimary }}>Logo</div>
+              <div style={{ fontSize: 18, color: textPrimary, cursor: "pointer" }}>☰</div>
+            </>) : (<>
+              <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 14, fontWeight: 600, color: textPrimary }}>Logo</div>
+              <div style={{ display: "flex", gap: Math.round(pad2 * densityMul), alignItems: "center" }}>
+                {["Home", "About", "Work", "Contact"].map(item => (
+                  <span key={item} style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 12, color: textSecondary, cursor: "pointer" }}>{item}</span>
+                ))}
+                <span style={{
+                  padding: `${Math.round(pad * 0.5 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                  background: accent, color: "#fff", borderRadius: radius, fontSize: 11,
+                  fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
+                }}>CTA</span>
+              </div>
+            </>)}
+          </div>
+        </div>
+
+        {/* Hero */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Hero · {comp.Hero?.visualType || "illustration"}</div>
+          <div style={{
+            background: bg,
+            borderRadius: radius,
+            border: `${bw}px solid ${bc}`,
+            padding: Math.round(pad2 * 1.5 * densityMul),
+            display: "flex",
+            gap: Math.round(pad2 * densityMul),
+            alignItems: "center",
+          }}>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: `'${hFont}', sans-serif`,
+                fontSize: 22,
+                fontWeight: 700,
+                color: textPrimary,
+                lineHeight: 1.2,
+                marginBottom: 8,
+              }}>Build something amazing</div>
+              <div style={{
+                fontFamily: `'${bFont}', sans-serif`,
+                fontSize: 13,
+                color: textSecondary,
+                lineHeight: 1.6,
+                marginBottom: 12,
+              }}>A short tagline that describes what this product does and why it matters.</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <span style={{
+                  padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+                  background: accent, color: "#fff", borderRadius: radius, fontSize: 12,
+                  fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
+                }}>Get Started</span>
+                <span style={{
+                  padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+                  border: `${bw}px solid ${textSecondary}40`, color: textSecondary, borderRadius: radius, fontSize: 12,
+                  fontFamily: `'${bFont}', sans-serif`,
+                }}>Learn More</span>
+              </div>
+            </div>
+            <div style={{
+              width: 120, height: 90,
+              borderRadius: radius,
+              background: `${accent}15`,
+              border: `1px dashed ${accent}40`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: accent, opacity: 0.6 }}>
+                {(comp.Hero?.visualType || "illustration").replace("-", " ")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Section */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Section · {comp.Section?.variant || "centered"}</div>
+          <div style={{
+            background: surface,
+            borderRadius: radius,
+            border: `${bw}px solid ${bc}`,
+            padding: Math.round(pad2 * densityMul),
+            display: "flex",
+            flexDirection: (comp.Section?.variant === "left-image" || comp.Section?.variant === "right-image") ? "row" : "column",
+            alignItems: (comp.Section?.variant === "centered" || comp.Section?.variant === "full-width") ? "center" : "flex-start",
+            gap: Math.round(pad2 * densityMul),
+            textAlign: (comp.Section?.variant === "centered") ? "center" : "left",
+          }}>
+            {(comp.Section?.variant === "left-image") && (
+              <div style={{
+                width: 80, height: 60, borderRadius: radius,
+                background: `${accent}15`, flexShrink: 0,
+              }} />
+            )}
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: `'${hFont}', sans-serif`, fontSize: 16, fontWeight: 600,
+                color: textPrimary, marginBottom: 6,
+              }}>Section Title</div>
+              <div style={{
+                fontFamily: `'${bFont}', sans-serif`, fontSize: 12, color: textSecondary,
+                lineHeight: 1.6, maxWidth: (comp.Section?.variant === "centered") ? 300 : "none",
+                margin: (comp.Section?.variant === "centered") ? "0 auto" : 0,
+              }}>A brief description of this section's content. It provides context and guides the reader.</div>
+            </div>
+            {(comp.Section?.variant === "right-image") && (
+              <div style={{
+                width: 80, height: 60, borderRadius: radius,
+                background: `${accent}15`, flexShrink: 0,
+              }} />
+            )}
+          </div>
+        </div>
+
+        {/* Gallery */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Gallery · {comp.Gallery?.style || "grid"} · {comp.Gallery?.columns || 3} cols</div>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${comp.Gallery?.columns || 3}, 1fr)`,
+            gap: Math.round(pad * densityMul),
+          }}>
+            {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
+              <div key={i} style={{
+                aspectRatio: "4/3",
+                borderRadius: radius,
+                background: `${accent}${10 + (i % 3) * 5}`,
+                border: `${bw}px solid ${bc}`,
+              }} />
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Footer · {comp.Footer?.structure || "multi-column"}</div>
+          <div style={{
+            background: bg,
+            borderRadius: radius,
+            border: `${bw}px solid ${bc}`,
+            padding: Math.round(pad2 * densityMul),
+          }}>
+            {(comp.Footer?.structure === "simple") ? (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 13, fontWeight: 600, color: textPrimary }}>Logo</span>
+                <span style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>© 2026 Company. All rights reserved.</span>
+              </div>
+            ) : (<>
+              <div style={{ display: "flex", gap: Math.round(pad2 * 2 * densityMul), marginBottom: 16 }}>
+                {["Product", "Company", "Resources"].map(col => (
+                  <div key={col} style={{ flex: 1 }}>
+                    <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, fontWeight: 600, color: textPrimary, marginBottom: 8 }}>{col}</div>
+                    {["Link 1", "Link 2", "Link 3"].map(link => (
+                      <div key={link} style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary, marginBottom: 4, cursor: "pointer" }}>{link}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              {comp.Footer?.hasNewsletter && (
+                <div style={{
+                  display: "flex", gap: 8, marginBottom: 12,
+                  padding: `${Math.round(pad * 0.5 * densityMul)}px 0`,
+                  borderTop: `1px solid ${textSecondary}20`,
+                  paddingTop: 12,
+                }}>
+                  <div style={{
+                    flex: 1, padding: `${Math.round(pad * 0.6 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                    border: `${bw}px solid ${textSecondary}30`, borderRadius: radius,
+                    fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary,
+                  }}>Enter your email</div>
+                  <span style={{
+                    padding: `${Math.round(pad * 0.6 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                    background: accent, color: "#fff", borderRadius: radius, fontSize: 11,
+                    fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
+                  }}>Subscribe</span>
+                </div>
+              )}
+              <div style={{
+                borderTop: `1px solid ${textSecondary}20`, paddingTop: 10,
+                fontFamily: `'${bFont}', sans-serif`, fontSize: 10, color: textSecondary, opacity: 0.6,
+              }}>© 2026 Company. All rights reserved.</div>
+            </>)}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>CTA · {comp.CTA?.structure || "centered"}</div>
+          <div style={{
+            background: (comp.CTA?.structure === "with-background") ? accent : surface,
+            borderRadius: radius,
+            border: `${bw}px solid ${(comp.CTA?.structure === "with-background") ? accent : bc}`,
+            padding: Math.round(pad2 * 1.5 * densityMul),
+            display: "flex",
+            flexDirection: (comp.CTA?.structure === "left-text-right-button") ? "row" : "column",
+            alignItems: "center",
+            justifyContent: (comp.CTA?.structure === "left-text-right-button") ? "space-between" : "center",
+            textAlign: (comp.CTA?.structure === "left-text-right-button") ? "left" : "center",
+            gap: 12,
+          }}>
+            <div>
+              <div style={{
+                fontFamily: `'${hFont}', sans-serif`, fontSize: 17, fontWeight: 700,
+                color: (comp.CTA?.structure === "with-background") ? "#fff" : textPrimary,
+                marginBottom: 4,
+              }}>Ready to get started?</div>
+              <div style={{
+                fontFamily: `'${bFont}', sans-serif`, fontSize: 12,
+                color: (comp.CTA?.structure === "with-background") ? "#ffffffcc" : textSecondary,
+              }}>Join thousands of happy customers today.</div>
+            </div>
+            <span style={{
+              padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+              background: (comp.CTA?.structure === "with-background") ? "#fff" : accent,
+              color: (comp.CTA?.structure === "with-background") ? accent : "#fff",
+              borderRadius: radius, fontSize: 12,
+              fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
+              flexShrink: 0,
+            }}>Sign Up Free</span>
           </div>
         </div>
       </div>
