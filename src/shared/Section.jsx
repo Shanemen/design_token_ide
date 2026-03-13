@@ -5,7 +5,7 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
   const t = useContext(ThemeContext);
   return (
     <div style={{
-      marginBottom: 8,
+      marginBottom: 12,
       background: isOpen ? t.surface : "transparent",
       borderRadius: 12,
       border: isOpen ? `1px solid ${t.border}` : "1px solid transparent",

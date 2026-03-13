@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { ThemeContext } from "../theme";
-import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS } from "./componentDefs";
+import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS, FIXED_COMPONENTS } from "./componentDefs";
 import Pill from "../shared/Pill";
 import Input from "../shared/Input";
 import TextArea from "../shared/TextArea";
 
 export default function Step2ComponentConfig({ componentId, config, onChange, onBack }) {
   const t = useContext(ThemeContext);
-  const allComponents = [...ATOMIC_COMPONENTS, ...BLOCK_COMPONENTS];
+  const allComponents = [...ATOMIC_COMPONENTS, ...BLOCK_COMPONENTS, ...FIXED_COMPONENTS];
   const compDef = allComponents.find(c => c.id === componentId);
   if (!compDef) return null;
 

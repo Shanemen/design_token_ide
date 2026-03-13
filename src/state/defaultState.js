@@ -18,27 +18,22 @@ export const defaultState = {
     { name: "Body", size: "16", weight: "400", lineHeight: "1.6", font: "body" },
     { name: "Caption", size: "13", weight: "400", lineHeight: "1.5", font: "body" },
   ],
-  // 3. Color
-  colorMode: "dual",
-  darkColors: [
+  // 3. Color (single palette)
+  colors: [
     { name: "Background", value: "#0A0A0F", usage: "主背景" },
     { name: "Surface", value: "#141419", usage: "卡片/容器背景" },
     { name: "Text Primary", value: "#E8E8ED", usage: "标题和主要文字" },
     { name: "Text Secondary", value: "#8A8A9A", usage: "正文和次要文字" },
     { name: "Accent", value: "#E8734A", usage: "CTA按钮、链接、强调" },
   ],
-  lightColors: [
-    { name: "Background", value: "#FAFAFA", usage: "主背景" },
-    { name: "Surface", value: "#FFFFFF", usage: "卡片/容器背景" },
-    { name: "Text Primary", value: "#1A1A2E", usage: "标题和主要文字" },
-    { name: "Text Secondary", value: "#6B7094", usage: "正文和次要文字" },
-    { name: "Accent", value: "#E8734A", usage: "CTA按钮、链接、强调" },
-  ],
-  // 4. Micro-Detail
+  // 4. Borders (defaults defined in Step 1, per-component in Step 2)
   borderRadius: "8",
   borderWidth: "1",
   borderColor: "#222233",
-  shadowLevels: "none / sm / md",
+  // Per-component radius overrides (empty string = use default)
+  radiusOverrides: {},
+  // Per-component border toggle (true = has border)
+  borderComponents: { Card: true, Divider: true, Button: true, Avatar: false },
   // 5. Visual Assets & Texture
   heroVisual: "illustration",
   heroStyle: "",
@@ -102,7 +97,6 @@ export const defaultState = {
     Icon: { source: "library", library: "Lucide", style: "outline", weight: "1.5" },
     Navbar: { layout: "", sticky: true, transparent: false },
     Hero: { layout: "", visualType: "illustration", visualNotes: "" },
-    Section: { layout: "", variant: "centered" },
     Card: { orientation: "vertical", thumbnailRatio: "16:9", hoverEffect: true },
     Gallery: { columns: 3, style: "grid" },
     Footer: { structure: "multi-column", hasNewsletter: false },

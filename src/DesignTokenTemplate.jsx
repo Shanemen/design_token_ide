@@ -12,7 +12,6 @@ import Section from "./shared/Section";
 import Step0VisualDirection from "./steps/Step0VisualDirection";
 import Step1DesignTokens from "./steps/Step1DesignTokens";
 import Step2Components from "./steps/Step2Components";
-import Step3Motion from "./steps/Step3Motion";
 import Step4Responsive from "./steps/Step4Responsive";
 import Step5Constraints from "./steps/Step5Constraints";
 
@@ -44,6 +43,14 @@ export default function DesignTokenTemplate() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
+
+  // Scroll preview when a component is selected
+  useEffect(() => {
+    if (state.activeComponent) {
+      scrollCounterRef.current += 1;
+      setScrollTarget({ key: `comp-${state.activeComponent}`, counter: scrollCounterRef.current });
+    }
+  }, [state.activeComponent]);
 
   const toggle = (key) => {
     setOpenSections(s => {
@@ -115,11 +122,6 @@ export default function DesignTokenTemplate() {
           {activeTab === "feedback" && <FeedbackTab />}
 
           {activeTab === "editor" && (<>
-            {/* Step 0: Visual Direction */}
-            <Section number={0} title="Visual Direction" subtitle="视觉方向 (optional)" isOpen={openSections["step-0"]} onToggle={() => toggle("step-0")}>
-              <Step0VisualDirection state={state} dispatch={dispatch} />
-            </Section>
-
             {/* Step 1: Design Tokens */}
             <Section number={1} title="Design Tokens" subtitle="原子级设计决策" isOpen={openSections["step-1"]} onToggle={() => toggle("step-1")}>
               <Step1DesignTokens state={state} dispatch={dispatch} openSub={openSub} toggleSub={toggleSub} />
@@ -127,21 +129,16 @@ export default function DesignTokenTemplate() {
 
             {/* Step 2: Components */}
             <Section number={2} title="Components" subtitle="零件" isOpen={openSections["step-2"]} onToggle={() => toggle("step-2")}>
-              <Step2Components activeComponent={state.activeComponent} components={state.components} dispatch={dispatch} />
+              <Step2Components activeComponent={state.activeComponent} components={state.components} dispatch={dispatch} state={state} />
             </Section>
 
-            {/* Step 3: Motion */}
-            <Section number={3} title="Motion" subtitle="动效" isOpen={openSections["step-3"]} onToggle={() => toggle("step-3")}>
-              <Step3Motion state={state} dispatch={dispatch} />
-            </Section>
-
-            {/* Step 4: Responsive */}
-            <Section number={4} title="Responsive" subtitle="响应式 + 状态" isOpen={openSections["step-4"]} onToggle={() => toggle("step-4")}>
+            {/* Step 3: Responsive */}
+            <Section number={3} title="Responsive" subtitle="响应式 + 状态" isOpen={openSections["step-3"]} onToggle={() => toggle("step-3")}>
               <Step4Responsive state={state} dispatch={dispatch} />
             </Section>
 
-            {/* Step 5: Constraints */}
-            <Section number={5} title="Constraints" subtitle="不做什么" isOpen={openSections["step-5"]} onToggle={() => toggle("step-5")}>
+            {/* Step 4: Constraints */}
+            <Section number={4} title="Constraints" subtitle="不做什么" isOpen={openSections["step-4"]} onToggle={() => toggle("step-4")}>
               <Step5Constraints state={state} dispatch={dispatch} />
             </Section>
 

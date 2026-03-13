@@ -30,7 +30,7 @@ export const ATOMIC_COMPONENTS = [
   { id: "Icon", label: "Icon", icon: "✦", desc: "Icon system",
     fields: [
       { key: "source", type: "pill", options: ["library", "custom-ai ⚑", "custom-hand ⚑"], label: "Source" },
-      { key: "library", type: "pill", options: ["Lucide", "Heroicons", "Phosphor", "Feather", "Tabler"], label: "Library", showIf: (config) => config.source === "library" },
+      { key: "library", type: "pill", options: ["Lucide", "Heroicons", "Phosphor", "Feather"], label: "Library", showIf: (config) => config.source === "library" },
       { key: "style", type: "pill", options: ["outline", "filled", "duotone"], label: "Style" },
       { key: "weight", type: "input", label: "Stroke Weight", placeholder: "1.5", mono: true, small: true },
     ]
@@ -38,6 +38,27 @@ export const ATOMIC_COMPONENTS = [
 ];
 
 export const BLOCK_COMPONENTS = [
+  { id: "Card", label: "Card", icon: "▢", desc: "Content card",
+    fields: [
+      { key: "orientation", type: "pill", options: ["vertical", "horizontal"], label: "Orientation" },
+      { key: "thumbnailRatio", type: "pill", options: ["16:9", "4:3", "3:2", "1:1"], label: "Thumbnail Ratio" },
+      { key: "hoverEffect", type: "bool", label: "Hover effect?" },
+    ]
+  },
+  { id: "Gallery", label: "Gallery / Grid", icon: "▦", desc: "Grid layout",
+    fields: [
+      { key: "columns", type: "pill", options: ["2", "3", "4"], label: "Columns" },
+      { key: "style", type: "pill", options: ["grid", "masonry", "horizontal-scroll"], label: "Style" },
+    ]
+  },
+  { id: "Quote", label: "Quote", icon: "❝", desc: "Testimonial or pull quote",
+    fields: [
+      { key: "style", type: "pill", options: ["simple", "card", "large-text"], label: "Style" },
+    ]
+  },
+];
+
+export const FIXED_COMPONENTS = [
   { id: "Navbar", label: "Navbar", icon: "▔", desc: "Navigation bar",
     fields: [
       { key: "layout", type: "pill", options: ["logo-left", "centered", "hamburger-only"], label: "Layout" },
@@ -58,24 +79,6 @@ export const BLOCK_COMPONENTS = [
       { key: "visualNotes", type: "textarea", label: "Visual Notes", placeholder: "Describe the hero visual style..." },
     ]
   },
-  { id: "Section", label: "Section", icon: "▭", desc: "Content section", hasVisualAsset: true,
-    fields: [
-      { key: "variant", type: "pill", options: ["centered", "left-image", "right-image", "full-width"], label: "Default Variant" },
-    ]
-  },
-  { id: "Card", label: "Card", icon: "▢", desc: "Content card",
-    fields: [
-      { key: "orientation", type: "pill", options: ["vertical", "horizontal"], label: "Orientation" },
-      { key: "thumbnailRatio", type: "pill", options: ["16:9", "4:3", "3:2", "1:1"], label: "Thumbnail Ratio" },
-      { key: "hoverEffect", type: "bool", label: "Hover effect?" },
-    ]
-  },
-  { id: "Gallery", label: "Gallery / Grid", icon: "▦", desc: "Grid layout",
-    fields: [
-      { key: "columns", type: "pill", options: ["2", "3", "4"], label: "Columns" },
-      { key: "style", type: "pill", options: ["grid", "masonry", "horizontal-scroll"], label: "Style" },
-    ]
-  },
   { id: "Footer", label: "Footer", icon: "▁", desc: "Page footer",
     fields: [
       { key: "structure", type: "pill", options: ["simple", "multi-column", "multi-column-newsletter"], label: "Structure" },
@@ -89,7 +92,7 @@ export const BLOCK_COMPONENTS = [
   },
 ];
 
-// Layout inspiration data — preserved for future standalone Layout step (after Components)
+// Layout inspiration data — preserved for future standalone Sections step
 export const LAYOUT_IDEAS = [
   {
     category: "经典结构",

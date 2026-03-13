@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { ThemeContext } from "../theme";
-import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS } from "./componentDefs";
+import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS, FIXED_COMPONENTS } from "./componentDefs";
 
-export default function Step2ComponentList({ onSelect }) {
+export default function Step2ComponentList({ onSelect, state, dispatch }) {
   const t = useContext(ThemeContext);
 
   const GroupLabel = ({ label }) => (
@@ -68,9 +68,20 @@ export default function Step2ComponentList({ onSelect }) {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {ATOMIC_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
       </div>
+
+      {/* Border Radius + Border — two separate cards */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+        <ComponentCard comp={{ id: "BorderRadius", label: "Border Radius", icon: "◰", desc: "Per-component radius" }} />
+        <ComponentCard comp={{ id: "Border", label: "Border", icon: "▭", desc: "Per-component border toggle" }} />
+      </div>
+
       <GroupLabel label="Block Components" />
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {BLOCK_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
+      </div>
+      <GroupLabel label="Fixed (every page)" />
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+        {FIXED_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
       </div>
     </div>
   );

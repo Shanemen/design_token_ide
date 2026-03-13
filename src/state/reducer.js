@@ -5,18 +5,15 @@ export function reducer(state, action) {
     case "SET_STATE":
       return { ...state, ...action.payload };
     case "UPDATE_COLOR": {
-      const key = action.palette === "dark" ? "darkColors" : "lightColors";
-      const next = [...state[key]];
+      const next = [...state.colors];
       next[action.index] = action.color;
-      return { ...state, [key]: next };
+      return { ...state, colors: next };
     }
     case "ADD_COLOR": {
-      const key = action.palette === "dark" ? "darkColors" : "lightColors";
-      return { ...state, [key]: [...state[key], { name: "", value: "#333344", usage: "" }] };
+      return { ...state, colors: [...state.colors, { name: "", value: "#333344", usage: "" }] };
     }
     case "REMOVE_COLOR": {
-      const key = action.palette === "dark" ? "darkColors" : "lightColors";
-      return { ...state, [key]: state[key].filter((_, j) => j !== action.index) };
+      return { ...state, colors: state.colors.filter((_, j) => j !== action.index) };
     }
     case "UPDATE_TYPE_LEVEL": {
       const next = [...state.typeLevels];
@@ -52,10 +49,27 @@ export function migrateState(saved, defaults) {
     }
   }
   // Ensure arrays are preserved from saved if they exist
-  if (saved.darkColors) merged.darkColors = saved.darkColors;
-  if (saved.lightColors) merged.lightColors = saved.lightColors;
+  // Migrate old dual-mode colors to single palette
+  if (saved.darkColors && !saved.colors) {
+    merged.colors = saved.darkColors;
+  } else if (saved.colors) {
+    merged.colors = saved.colors;
+  }
   if (saved.typeLevels) merged.typeLevels = saved.typeLevels;
   if (saved.moodboardLinks) merged.moodboardLinks = saved.moodboardLinks;
+  // Migrate old borderAppliesTo to new borderComponents + radiusOverrides
+  if (saved.borderAppliesTo && !saved.borderComponents) {
+    const bc = {};
+    for (const id of saved.borderAppliesTo) {
+      bc[id] = true;
+    }
+    merged.borderComponents = bc;
+  }
+  if (saved.borderComponents) merged.borderComponents = saved.borderComponents;
+  if (saved.radiusOverrides) merged.radiusOverrides = saved.radiusOverrides;
+  // Clean up removed fields
+  delete merged.shadowLevels;
+  delete merged.borderAppliesTo;
   // Reset visitedSections for users migrating from before progressive preview
   if (!saved.visitedSections) merged.visitedSections = {};
   return merged;
