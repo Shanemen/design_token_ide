@@ -236,7 +236,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 width: Math.min(Math.round(sp * densityMul), 64),
                 height: Math.min(Math.round(sp * densityMul), 64),
                 borderRadius: 4,
-                background: t.accent,
+                background: accent,
                 opacity: 0.25 + (i * 0.18),
               }} />
               <span style={{
@@ -326,7 +326,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                     cursor: "pointer",
                     transition: `all ${dur}ms ${easing}`,
                     ...(v === "primary" ? { background: accent, color: "#fff", border: "none", fontWeight: 500 }
-                      : v === "secondary" ? { background: "transparent", color: t.text, border: hasBorder("Button") ? `${bw}px solid ${t.border}` : "none" }
+                      : v === "secondary" ? { background: "transparent", color: textPrimary, border: hasBorder("Button") ? `${bw}px solid ${bc}` : "none" }
                       : { background: "transparent", color: accent, border: "none" }),
                   }}>{v.charAt(0).toUpperCase() + v.slice(1)}</button>
                 ))}
@@ -434,7 +434,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             {["New", "Beta", "Pro"].map(label => (
               <span key={label} style={{
                 padding: `2px ${Math.round(pad * 0.8)}px`,
-                borderRadius: hasBorder("Badge") ? Math.min(radius, 12) : 0,
+                borderRadius: Math.min(r("Badge"), 12),
                 fontFamily: `'${bFont}', monospace`,
                 fontSize: 11,
                 fontWeight: 500,
@@ -460,7 +460,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 borderRadius: (comp.Avatar?.shape || "circle") === "circle" ? "50%"
                   : (comp.Avatar?.shape) === "rounded-square" ? Math.max(hasBorder("Avatar") ? radius : 4, 6) : 0,
                 background: `${accent}25`,
-                border: hasBorder("Avatar") ? `${bw}px solid ${t.border}` : "none",
+                border: hasBorder("Avatar") ? `${bw}px solid ${bc}` : "none",
                 filter: (comp.Avatar?.filter) === "grayscale" ? "grayscale(1)"
                   : (comp.Avatar?.filter) === "b&w" ? "grayscale(1) contrast(1.2)" : "none",
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -595,13 +595,14 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   {paths.map((d, i) => (
                     <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                       <svg width="24" height="24" viewBox="0 0 24 24"
-                        fill={isFilled ? t.text : isDuotone ? `${t.text}20` : "none"}
-                        stroke={isFilled ? "none" : t.text}
-                        strokeWidth={sw}
+                        fill={isFilled ? textPrimary : isDuotone ? `${textPrimary}20` : "none"}
+                        stroke={isFilled ? "none" : textPrimary}
+                        strokeWidth={isFilled ? 0 : sw}
                         strokeLinecap="round" strokeLinejoin="round"
+                        fillRule="evenodd"
                       >
                         <path d={d} />
-                        {isDuotone && <path d={d} fill="none" stroke={t.text} strokeWidth={sw} />}
+                        {isDuotone && <path d={d} fill="none" stroke={textPrimary} strokeWidth={sw} />}
                       </svg>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: t.dim, opacity: 0.4 }}>{names[i]}</span>
                     </div>
@@ -694,19 +695,41 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 }}>Learn More</span>
               </div>
             </div>
-            <div style={{
-              width: 120, height: 90,
-              borderRadius: radius,
-              background: `${accent}15`,
-              border: `1px dashed ${accent}40`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: accent, opacity: 0.6 }}>
-                {(comp.Hero?.visualType || "illustration").replace("-", " ")}
-              </span>
-            </div>
+            {(() => {
+              const vt = comp.Hero?.visualType || "illustration";
+              if (vt === "none") return null;
+              // Different placeholder SVGs per visual type
+              const visualSvg = {
+                "illustration": <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.5"><path d="M8 36c4-8 8-20 16-20s8 12 16 20" /><circle cx="36" cy="12" r="4" /></svg>,
+                "3d-render": <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.5"><path d="M24 6l16 9v18l-16 9-16-9V15z" /><path d="M24 6v18m0 18V24m16-9L24 24M8 15l16 9" /></svg>,
+                "photography": <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.5"><rect x="4" y="8" width="40" height="32" rx="2" /><path d="M4 32l10-10 8 8 8-12 14 14" /><circle cx="14" cy="18" r="3" /></svg>,
+                "abstract-graphic": <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.5"><circle cx="20" cy="20" r="12" /><circle cx="32" cy="28" r="10" /><rect x="8" y="30" width="14" height="14" rx="2" /></svg>,
+                "animation": <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.5"><circle cx="24" cy="24" r="18" /><polygon points="20,14 36,24 20,34" fill={`${accent}30`} /></svg>,
+              };
+              return (
+                <div style={{
+                  width: 120, height: 90,
+                  borderRadius: radius,
+                  background: `${accent}15`,
+                  border: `1px dashed ${accent}40`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  {visualSvg[vt] || <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: accent, opacity: 0.6 }}>{vt}</span>}
+                </div>
+              );
+            })()}
           </div>
+          {comp.Hero?.visualNotes && (
+            <div style={{
+              fontFamily: `'${bFont}', sans-serif`,
+              fontSize: 10,
+              fontStyle: "italic",
+              color: textSecondary,
+              opacity: 0.7,
+              marginTop: 6,
+            }}>{comp.Hero.visualNotes}</div>
+          )}
         </div>
       </div>
       )}
@@ -774,27 +797,78 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         {/* Quote */}
         <div style={{ marginBottom: previewGap }}>
           {compLabel("Quote", comp.Quote?.style || "simple")}
-          <div style={{
-            background: surface,
-            borderRadius: r("Quote"),
-            border: b("Quote"),
-            padding: Math.round(pad2 * 1.2 * densityMul),
-            borderLeft: `3px solid ${accent}`,
-          }}>
-            <div style={{
-              fontFamily: `'${hFont}', serif`,
-              fontSize: 15,
-              fontStyle: "italic",
-              color: textPrimary,
-              lineHeight: 1.6,
-              marginBottom: 8,
-            }}>"Design is not just what it looks like — design is how it works."</div>
-            <div style={{
-              fontFamily: `'${bFont}', sans-serif`,
-              fontSize: 11,
-              color: textSecondary,
-            }}>— Steve Jobs</div>
-          </div>
+          {(() => {
+            const qs = comp.Quote?.style || "simple";
+            const quoteText = "\u201CDesign is not just what it looks like \u2014 design is how it works.\u201D";
+            const attribution = "\u2014 Steve Jobs";
+            if (qs === "large-text") return (
+              <div style={{
+                padding: Math.round(pad2 * 1.5 * densityMul),
+                textAlign: "center",
+              }}>
+                <div style={{
+                  fontFamily: `'${hFont}', serif`,
+                  fontSize: 22,
+                  fontWeight: 300,
+                  fontStyle: "italic",
+                  color: textPrimary,
+                  lineHeight: 1.5,
+                  marginBottom: 12,
+                }}>{quoteText}</div>
+                <div style={{
+                  fontFamily: `'${bFont}', sans-serif`,
+                  fontSize: 11,
+                  color: textSecondary,
+                }}>{attribution}</div>
+              </div>
+            );
+            if (qs === "card") return (
+              <div style={{
+                background: surface,
+                borderRadius: r("Quote"),
+                border: b("Quote"),
+                padding: Math.round(pad2 * 1.2 * densityMul),
+              }}>
+                <div style={{
+                  fontFamily: `'${hFont}', serif`,
+                  fontSize: 15,
+                  fontStyle: "italic",
+                  color: textPrimary,
+                  lineHeight: 1.6,
+                  marginBottom: 8,
+                }}>{quoteText}</div>
+                <div style={{
+                  fontFamily: `'${bFont}', sans-serif`,
+                  fontSize: 11,
+                  color: textSecondary,
+                }}>{attribution}</div>
+              </div>
+            );
+            // simple (default) — left accent border
+            return (
+              <div style={{
+                background: surface,
+                borderRadius: r("Quote"),
+                border: b("Quote"),
+                padding: Math.round(pad2 * 1.2 * densityMul),
+                borderLeft: `3px solid ${accent}`,
+              }}>
+                <div style={{
+                  fontFamily: `'${hFont}', serif`,
+                  fontSize: 15,
+                  fontStyle: "italic",
+                  color: textPrimary,
+                  lineHeight: 1.6,
+                  marginBottom: 8,
+                }}>{quoteText}</div>
+                <div style={{
+                  fontFamily: `'${bFont}', sans-serif`,
+                  fontSize: 11,
+                  color: textSecondary,
+                }}>{attribution}</div>
+              </div>
+            );
+          })()}
         </div>
       </div>
       )}

@@ -62,7 +62,6 @@ export const FIXED_COMPONENTS = [
   { id: "Navbar", label: "Navbar", icon: "▔", desc: "Navigation bar",
     fields: [
       { key: "layout", type: "pill", options: ["logo-left", "centered", "hamburger-only"], label: "Layout" },
-      { key: "sticky", type: "bool", label: "Sticky?" },
       { key: "transparent", type: "bool", label: "Transparent background?" },
     ]
   },
