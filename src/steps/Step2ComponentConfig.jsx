@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ThemeContext } from "../theme";
-import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS, LAYOUT_IDEAS } from "./componentDefs";
+import { ATOMIC_COMPONENTS, BLOCK_COMPONENTS } from "./componentDefs";
 import Pill from "../shared/Pill";
 import Input from "../shared/Input";
 import TextArea from "../shared/TextArea";
@@ -127,94 +127,6 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
     }
   };
 
-  // Layout inspiration for block components
-  const renderLayoutInspiration = () => {
-    if (!compDef.hasLayout) return null;
-    const filtered = compDef.layouts
-      ? LAYOUT_IDEAS.filter(cat => compDef.layouts.includes(cat.category))
-      : LAYOUT_IDEAS;
-
-    return (
-      <div style={{ marginTop: 20 }}>
-        <label style={{
-          display: "block",
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
-          color: t.label,
-          marginBottom: 10,
-          textTransform: "uppercase",
-          letterSpacing: 1.5,
-        }}>Layout Inspiration</label>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {filtered.map((cat, ci) => (
-            <div key={ci}>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                color: t.accent,
-                opacity: 0.5,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}>{cat.category}</div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {cat.items.map((item, ii) => {
-                  const isSelected = config.layout === item.name;
-                  return (
-                    <button
-                      key={ii}
-                      onClick={() => updateField("layout", isSelected ? "" : item.name)}
-                      style={{
-                        flex: "1 1 calc(50% - 3px)",
-                        minWidth: 180,
-                        padding: "10px 12px",
-                        borderRadius: 8,
-                        border: `1px solid ${isSelected ? t.accent + "50" : t.border}`,
-                        background: isSelected ? `${t.accent}08` : t.inputBg,
-                        cursor: "pointer",
-                        textAlign: "left",
-                        transition: "all 0.15s",
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{
-                            fontFamily: "'Space Grotesk', sans-serif",
-                            fontSize: 12,
-                            fontWeight: 500,
-                            color: t.text,
-                            marginBottom: 3,
-                          }}>
-                            {item.name}
-                            {isSelected && <span style={{ color: t.accent, marginLeft: 6, fontSize: 10 }}>✓</span>}
-                          </div>
-                          <div style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: 10,
-                            color: t.muted,
-                            lineHeight: 1.4,
-                          }}>{item.desc}</div>
-                        </div>
-                        <pre style={{
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 7,
-                          color: t.dim,
-                          lineHeight: 1.3,
-                          margin: 0,
-                          flexShrink: 0,
-                          opacity: 0.6,
-                        }}>{item.sketch}</pre>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div>
@@ -257,7 +169,6 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
       {compDef.fields.map(renderField)}
 
       {/* Layout inspiration for blocks */}
-      {renderLayoutInspiration()}
 
     </div>
   );

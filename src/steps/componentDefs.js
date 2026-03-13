@@ -38,16 +38,14 @@ export const ATOMIC_COMPONENTS = [
 ];
 
 export const BLOCK_COMPONENTS = [
-  { id: "Navbar", label: "Navbar", icon: "▔", desc: "Navigation bar", hasLayout: true,
-    layouts: ["经典结构", "Minimal 极简"],
+  { id: "Navbar", label: "Navbar", icon: "▔", desc: "Navigation bar",
     fields: [
       { key: "layout", type: "pill", options: ["logo-left", "centered", "hamburger-only"], label: "Layout" },
       { key: "sticky", type: "bool", label: "Sticky?" },
       { key: "transparent", type: "bool", label: "Transparent background?" },
     ]
   },
-  { id: "Hero", label: "Hero", icon: "◆", desc: "Hero section", hasLayout: true, hasVisualAsset: true,
-    layouts: ["经典结构", "Editorial 编辑式", "Artistic 艺术感", "Immersive 沉浸式", "Minimal 极简"],
+  { id: "Hero", label: "Hero", icon: "◆", desc: "Hero section", hasVisualAsset: true,
     fields: [
       { key: "visualType", type: "pill-flagged", options: [
         { id: "illustration", canAI: false },
@@ -60,43 +58,38 @@ export const BLOCK_COMPONENTS = [
       { key: "visualNotes", type: "textarea", label: "Visual Notes", placeholder: "Describe the hero visual style..." },
     ]
   },
-  { id: "Section", label: "Section", icon: "▭", desc: "Content section", hasLayout: true, hasVisualAsset: true,
-    layouts: null, // all layouts available
+  { id: "Section", label: "Section", icon: "▭", desc: "Content section", hasVisualAsset: true,
     fields: [
       { key: "variant", type: "pill", options: ["centered", "left-image", "right-image", "full-width"], label: "Default Variant" },
     ]
   },
-  { id: "Card", label: "Card", icon: "▢", desc: "Content card", hasLayout: true,
-    layouts: ["经典结构", "Minimal 极简"],
+  { id: "Card", label: "Card", icon: "▢", desc: "Content card",
     fields: [
       { key: "orientation", type: "pill", options: ["vertical", "horizontal"], label: "Orientation" },
       { key: "thumbnailRatio", type: "pill", options: ["16:9", "4:3", "3:2", "1:1"], label: "Thumbnail Ratio" },
       { key: "hoverEffect", type: "bool", label: "Hover effect?" },
     ]
   },
-  { id: "Gallery", label: "Gallery / Grid", icon: "▦", desc: "Grid layout", hasLayout: true,
-    layouts: ["经典结构", "Artistic 艺术感", "Minimal 极简"],
+  { id: "Gallery", label: "Gallery / Grid", icon: "▦", desc: "Grid layout",
     fields: [
       { key: "columns", type: "pill", options: ["2", "3", "4"], label: "Columns" },
       { key: "style", type: "pill", options: ["grid", "masonry", "horizontal-scroll"], label: "Style" },
     ]
   },
-  { id: "Footer", label: "Footer", icon: "▁", desc: "Page footer", hasLayout: true,
-    layouts: ["经典结构", "Minimal 极简"],
+  { id: "Footer", label: "Footer", icon: "▁", desc: "Page footer",
     fields: [
       { key: "structure", type: "pill", options: ["simple", "multi-column", "multi-column-newsletter"], label: "Structure" },
       { key: "hasNewsletter", type: "bool", label: "Newsletter signup?" },
     ]
   },
-  { id: "CTA", label: "CTA Section", icon: "◈", desc: "Call to action", hasLayout: true,
-    layouts: ["经典结构", "Minimal 极简", "Artistic 艺术感"],
+  { id: "CTA", label: "CTA Section", icon: "◈", desc: "Call to action",
     fields: [
       { key: "structure", type: "pill", options: ["centered", "left-text-right-button", "with-background"], label: "Structure" },
     ]
   },
 ];
 
-// Layout inspiration data (extracted from existing code)
+// Layout inspiration data — preserved for future standalone Layout step (after Components)
 export const LAYOUT_IDEAS = [
   {
     category: "经典结构",
