@@ -5,8 +5,11 @@ export const ATOMIC_COMPONENTS = [
       { key: "sizes", type: "multi-pill", options: ["sm", "md", "lg"], label: "Sizes" },
     ]
   },
-  { id: "Text", label: "Text", icon: "T", desc: "Typography component (configured in Step 1)",
-    fields: []
+  { id: "Text", label: "Text Block", icon: "T", desc: "Paragraph and quote styles",
+    fields: [
+      { key: "variants", type: "multi-pill", options: ["paragraph", "paragraph-sm", "blockquote"], label: "Variants" },
+      { key: "quoteStyle", type: "pill", options: ["border-left", "large-italic", "centered"], label: "Quote Style", showIf: (config) => (config.variants || []).includes("blockquote") },
+    ]
   },
   { id: "Divider", label: "Divider", icon: "—", desc: "Visual separator",
     fields: [

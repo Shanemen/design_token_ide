@@ -237,20 +237,20 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
         <button
           onClick={onBack}
           style={{
-            background: "none",
-            border: "none",
+            background: "transparent",
+            border: `1px solid ${t.border}`,
             color: t.dim,
-            fontSize: 18,
+            fontSize: 11,
+            fontFamily: "'JetBrains Mono', monospace",
             cursor: "pointer",
-            padding: "4px 8px",
-            lineHeight: 1,
-            borderRadius: 4,
-            transition: "color 0.15s",
+            padding: "5px 12px",
+            borderRadius: 8,
+            transition: "all 0.15s",
+            whiteSpace: "nowrap",
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = t.accent; }}
-          onMouseLeave={e => { e.currentTarget.style.color = t.dim; }}
-          title="Back to components"
-        >×</button>
+          onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent; e.currentTarget.style.color = t.accent; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.color = t.dim; }}
+        >← Back</button>
       </div>
 
       {/* Config fields */}

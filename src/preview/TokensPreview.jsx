@@ -300,10 +300,10 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               width: 48, height: 48,
               borderRadius: radius,
               background: t.surface,
-              border: `${bw}px solid ${t.border}`,
+              border: `${bw}px solid ${bc}`,
             }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim }}>
-              r:{tokens.borderRadius}
+              r:{tokens.borderRadius} · {bc}
             </span>
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
@@ -311,7 +311,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               width: 48, height: 48,
               borderRadius: radius,
               background: t.surface,
-              border: `${bw}px solid ${t.border}`,
+              border: `${bw}px solid ${bc}`,
               boxShadow: tokens.shadowLevels.includes("md")
                 ? "0 4px 12px rgba(0,0,0,0.12)" : tokens.shadowLevels.includes("sm")
                 ? "0 2px 6px rgba(0,0,0,0.08)" : "none",
@@ -335,7 +335,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               width: 48, height: 48,
               borderRadius: 0,
               background: t.surface,
-              border: `${bw}px solid ${t.border}`,
+              border: `${bw}px solid ${bc}`,
             }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim }}>
               r:0 ref
@@ -376,16 +376,84 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           })}
         </div>
 
+        {/* Text Block — paragraph & quote */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={subLabel}>Text Block</div>
+          {(comp.Text?.variants || ["paragraph"]).includes("paragraph") && (
+            <div style={{
+              fontFamily: `'${bFont}', sans-serif`,
+              fontSize: 14,
+              lineHeight: 1.7,
+              color: t.text,
+              marginBottom: 12,
+            }}>
+              A paragraph of body text that demonstrates your typography choices. Good design systems define consistent text blocks for content-heavy pages.
+            </div>
+          )}
+          {(comp.Text?.variants || []).includes("paragraph-sm") && (
+            <div style={{
+              fontFamily: `'${bFont}', sans-serif`,
+              fontSize: 12,
+              lineHeight: 1.6,
+              color: t.dim,
+              marginBottom: 12,
+            }}>
+              A smaller paragraph for captions, footnotes, or supplementary information.
+            </div>
+          )}
+          {(comp.Text?.variants || []).includes("blockquote") && (
+            <div style={{
+              ...(comp.Text?.quoteStyle === "large-italic" ? {
+                fontFamily: `'${hFont}', sans-serif`,
+                fontSize: 20,
+                fontStyle: "italic",
+                fontWeight: 500,
+                color: t.text,
+                padding: "12px 0",
+              } : comp.Text?.quoteStyle === "centered" ? {
+                fontFamily: `'${hFont}', sans-serif`,
+                fontSize: 16,
+                fontStyle: "italic",
+                color: t.text,
+                textAlign: "center",
+                padding: "16px 24px",
+              } : {
+                fontFamily: `'${bFont}', sans-serif`,
+                fontSize: 14,
+                lineHeight: 1.7,
+                color: t.text,
+                borderLeft: `3px solid ${accent}`,
+                paddingLeft: 16,
+              }),
+            }}>
+              "Design is not just what it looks like — design is how it works."
+            </div>
+          )}
+        </div>
+
         {/* Divider — reads style from config */}
         <div style={{ marginBottom: 20 }}>
           <div style={subLabel}>Divider · {comp.Divider?.style || "line"}</div>
-          <div style={{
-            borderTop: (comp.Divider?.style || "line") === "dashed" ? `${bw}px dashed ${t.border}`
-              : (comp.Divider?.style) === "dot" ? `${bw}px dotted ${t.border}`
-              : (comp.Divider?.style) === "space" ? "none"
-              : `${bw}px solid ${t.border}`,
-            height: (comp.Divider?.style) === "space" ? 16 : 0,
-          }} />
+          {(comp.Divider?.style) === "space" ? (
+            <div style={{
+              height: 24,
+              border: `1px dashed ${t.dim}30`,
+              borderRadius: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.4 }}>
+                24px whitespace
+              </span>
+            </div>
+          ) : (
+            <div style={{
+              borderTop: (comp.Divider?.style || "line") === "dashed" ? `${bw}px dashed ${bc}`
+                : (comp.Divider?.style) === "dot" ? `${bw}px dotted ${bc}`
+                : `${bw}px solid ${bc}`,
+            }} />
+          )}
         </div>
 
         {/* Badge — reads variant from config */}

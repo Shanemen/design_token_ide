@@ -95,7 +95,7 @@ export const defaultState = {
   activeComponent: null,
   components: {
     Button: { variants: ["primary", "secondary", "ghost"], sizes: ["sm", "md", "lg"] },
-    Text: { notes: "" },
+    Text: { variants: ["paragraph", "blockquote"], quoteStyle: "border-left" },
     Divider: { style: "line" },
     Badge: { variant: "filled" },
     Avatar: { shape: "circle", filter: "color" },
