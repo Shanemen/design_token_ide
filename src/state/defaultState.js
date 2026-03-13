@@ -18,14 +18,16 @@ export const defaultState = {
     { name: "Body", size: "16", weight: "400", lineHeight: "1.6", font: "body" },
     { name: "Caption", size: "13", weight: "400", lineHeight: "1.5", font: "body" },
   ],
-  // 3. Color (single palette)
-  colors: [
-    { name: "Background", value: "#0A0A0F", usage: "主背景" },
-    { name: "Surface", value: "#141419", usage: "卡片/容器背景" },
-    { name: "Text Primary", value: "#E8E8ED", usage: "标题和主要文字" },
-    { name: "Text Secondary", value: "#8A8A9A", usage: "正文和次要文字" },
-    { name: "Accent", value: "#E8734A", usage: "CTA按钮、链接、强调" },
-  ],
+  // 3. Color — fixed semantic roles
+  colors: {
+    bg: "#0A0A0F",
+    surface: "#141419",
+    textPrimary: "#E8E8ED",
+    textSecondary: "#8A8A9A",
+    accent: "#E8734A",
+    warning: "#F59E0B",
+    success: "#10B981",
+  },
   // 4. Borders (defaults defined in Step 1, per-component in Step 2)
   borderRadius: "8",
   borderWidth: "1",

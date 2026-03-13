@@ -7,36 +7,37 @@ import TypeRow from "../shared/TypeRow";
 import Pill from "../shared/Pill";
 import AddButton from "../shared/AddButton";
 
+const COLOR_ROLES = [
+  { key: "bg", label: "Page background", desc: "页面底色、section 背景" },
+  { key: "surface", label: "Surface", desc: "Card / Navbar / Footer / 输入框背景" },
+  { key: "textPrimary", label: "Text primary", desc: "标题、导航链接、按钮文字" },
+  { key: "textSecondary", label: "Text secondary", desc: "正文、副标题、placeholder" },
+  { key: "accent", label: "Accent", desc: "CTA 按钮、链接、Badge、选中状态" },
+  { key: "warning", label: "Warning", desc: "警告提示背景和文字" },
+  { key: "success", label: "Success", desc: "成功提示背景和文字" },
+];
+
 export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub }) {
   const t = useContext(ThemeContext);
   const update = (key, value) => dispatch({ type: "SET_FIELD", key, value });
 
-  const updateColor = (idx, color) => {
-    dispatch({ type: "UPDATE_COLOR", index: idx, color });
-  };
-  const addColor = () => {
-    dispatch({ type: "ADD_COLOR" });
-  };
-  const removeColor = (idx) => {
-    dispatch({ type: "REMOVE_COLOR", index: idx });
-  };
   const updateType = (idx, level) => {
     dispatch({ type: "UPDATE_TYPE_LEVEL", index: idx, level });
   };
 
   return (
     <>
-      {/* Colors — single palette */}
+      {/* Colors — fixed semantic roles */}
       <Section number="1a" title="Colors" subtitle="调色板" isOpen={openSub.colors} onToggle={() => toggleSub("colors")} nested>
-        {(state.colors || []).map((c, i) => (
+        {COLOR_ROLES.map(role => (
           <ColorRow
-            key={i}
-            color={c}
-            onChange={v => updateColor(i, v)}
-            onRemove={() => removeColor(i)}
+            key={role.key}
+            label={role.label}
+            description={role.desc}
+            value={(state.colors || {})[role.key] || ""}
+            onChange={v => dispatch({ type: "UPDATE_COLOR", key: role.key, value: v })}
           />
         ))}
-        <AddButton label="Add Color" onClick={addColor} />
       </Section>
 
       {/* Typography */}

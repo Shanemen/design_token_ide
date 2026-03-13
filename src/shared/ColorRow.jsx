@@ -1,90 +1,71 @@
 import { useContext } from "react";
 import { ThemeContext } from "../theme";
 
-export default function ColorRow({ color, onChange, onRemove }) {
+export default function ColorRow({ label, description, value, onChange }) {
   const t = useContext(ThemeContext);
   return (
     <div style={{
       display: "flex",
       alignItems: "center",
-      gap: 10,
-      marginBottom: 10,
-      flexWrap: "wrap",
+      gap: 12,
+      marginBottom: 8,
+      padding: "8px 0",
     }}>
-      <div style={{ position: "relative", width: 36, height: 36, flexShrink: 0 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          width: 36, height: 36,
-          borderRadius: 8,
-          background: color.value,
-          border: `1px solid ${t.swatchBorder}`,
-        }} />
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: 13,
+          fontWeight: 500,
+          color: t.text,
+        }}>{label}</div>
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 10,
+          color: t.dim,
+          marginTop: 2,
+          lineHeight: 1.3,
+        }}>{description}</div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <div style={{ position: "relative", width: 32, height: 32 }}>
+          <div style={{
+            width: 32, height: 32,
+            borderRadius: 8,
+            background: value,
+            border: `1px solid ${t.swatchBorder}`,
+          }} />
+          <input
+            type="color"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            style={{
+              position: "absolute",
+              top: 0, left: 0,
+              width: 32, height: 32,
+              opacity: 0,
+              cursor: "pointer",
+            }}
+          />
+        </div>
         <input
-          type="color"
-          value={color.value}
-          onChange={e => onChange({ ...color, value: e.target.value })}
+          value={value}
+          onChange={e => onChange(e.target.value)}
           style={{
-            position: "absolute",
-            top: 0, left: 0,
-            width: 36, height: 36,
-            opacity: 0,
-            cursor: "pointer",
+            width: 80,
+            padding: "6px 8px",
+            background: t.inputBg,
+            border: `1px solid ${t.border}`,
+            borderRadius: 6,
+            color: t.text,
+            fontSize: 12,
+            fontFamily: "'JetBrains Mono', monospace",
+            outline: "none",
+            boxSizing: "border-box",
           }}
+          onFocus={e => e.target.style.borderColor = t.focusBorder}
+          onBlur={e => e.target.style.borderColor = t.blurBorder}
         />
       </div>
-      <input
-        value={color.name}
-        onChange={e => onChange({ ...color, name: e.target.value })}
-        placeholder="名称"
-        style={{
-          width: 120,
-          padding: "8px 10px",
-          background: t.inputBg,
-          border: `1px solid ${t.border}`,
-          borderRadius: 6,
-          color: t.text,
-          fontSize: 13,
-          fontFamily: "'Space Grotesk', sans-serif",
-          outline: "none",
-        }}
-      />
-      <span style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 12,
-        color: t.label,
-        minWidth: 70,
-      }}>
-        {color.value}
-      </span>
-      <input
-        value={color.usage}
-        onChange={e => onChange({ ...color, usage: e.target.value })}
-        placeholder="用途"
-        style={{
-          flex: 1,
-          minWidth: 100,
-          padding: "8px 10px",
-          background: t.inputBg,
-          border: `1px solid ${t.border}`,
-          borderRadius: 6,
-          color: t.muted,
-          fontSize: 12,
-          fontFamily: "'JetBrains Mono', monospace",
-          outline: "none",
-        }}
-      />
-      <button
-        onClick={onRemove}
-        style={{
-          background: "none",
-          border: "none",
-          color: t.removeBtnColor,
-          fontSize: 18,
-          cursor: "pointer",
-          padding: "0 4px",
-        }}
-      >
-        ×
-      </button>
     </div>
   );
 }

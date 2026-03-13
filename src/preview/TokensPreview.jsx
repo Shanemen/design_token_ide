@@ -42,13 +42,14 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const hFont = tokens.headingFont || "Space Grotesk";
   const bFont = tokens.bodyFont || "JetBrains Mono";
 
-  const colors = tokens.colors || [];
-
-  const bg = colors.find(c => c.name.toLowerCase().includes("background"))?.value || "#0A0A0F";
-  const surface = colors.find(c => c.name.toLowerCase().includes("surface"))?.value || "#141419";
-  const textPrimary = colors.find(c => c.name.toLowerCase().includes("primary"))?.value || "#E8E8ED";
-  const textSecondary = colors.find(c => c.name.toLowerCase().includes("secondary"))?.value || "#8A8A9A";
-  const accent = colors.find(c => c.name.toLowerCase().includes("accent"))?.value || "#E8734A";
+  const colors = tokens.colors || {};
+  const bg = colors.bg || "#0A0A0F";
+  const surface = colors.surface || "#141419";
+  const textPrimary = colors.textPrimary || "#E8E8ED";
+  const textSecondary = colors.textSecondary || "#8A8A9A";
+  const accent = colors.accent || "#E8734A";
+  const warning = colors.warning || "#F59E0B";
+  const success = colors.success || "#10B981";
 
   const densityMul = tokens.density === "airy" ? 1.5 : tokens.density === "compact" ? 0.7 : 1;
 
@@ -147,8 +148,16 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           border: `1px solid ${t.border}`,
         }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {colors.map((c, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            {[
+              { key: "bg", label: "bg", value: bg },
+              { key: "surface", label: "surface", value: surface },
+              { key: "textPrimary", label: "text 1°", value: textPrimary },
+              { key: "textSecondary", label: "text 2°", value: textSecondary },
+              { key: "accent", label: "accent", value: accent },
+              { key: "warning", label: "warning", value: warning },
+              { key: "success", label: "success", value: success },
+            ].map(c => (
+              <div key={c.key} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                 <div style={{
                   width: 40, height: 40,
                   borderRadius: 6,
@@ -163,7 +172,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   textAlign: "center",
                   maxWidth: 48,
                   lineHeight: 1.3,
-                }}>{c.name || "\u2014"}</span>
+                }}>{c.label}</span>
               </div>
             ))}
           </div>
@@ -259,7 +268,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             <div style={{
               width: 48, height: 48,
               borderRadius: radius,
-              background: t.surface,
+              background: surface,
               border: `${bw}px solid ${bc}`,
             }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim }}>
@@ -270,11 +279,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             <div style={{
               width: 48, height: 48,
               borderRadius: radius,
-              background: t.surface,
+              background: surface,
               border: `${bw}px solid ${bc}`,
-              boxShadow: tokens.shadowLevels.includes("md")
-                ? "0 4px 12px rgba(0,0,0,0.12)" : tokens.shadowLevels.includes("sm")
-                ? "0 2px 6px rgba(0,0,0,0.08)" : "none",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
             }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim }}>
               shadow
@@ -294,7 +301,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             <div style={{
               width: 48, height: 48,
               borderRadius: 0,
-              background: t.surface,
+              background: surface,
               border: `${bw}px solid ${bc}`,
             }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim }}>

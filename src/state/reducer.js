@@ -5,15 +5,7 @@ export function reducer(state, action) {
     case "SET_STATE":
       return { ...state, ...action.payload };
     case "UPDATE_COLOR": {
-      const next = [...state.colors];
-      next[action.index] = action.color;
-      return { ...state, colors: next };
-    }
-    case "ADD_COLOR": {
-      return { ...state, colors: [...state.colors, { name: "", value: "#333344", usage: "" }] };
-    }
-    case "REMOVE_COLOR": {
-      return { ...state, colors: state.colors.filter((_, j) => j !== action.index) };
+      return { ...state, colors: { ...state.colors, [action.key]: action.value } };
     }
     case "UPDATE_TYPE_LEVEL": {
       const next = [...state.typeLevels];
@@ -48,12 +40,32 @@ export function migrateState(saved, defaults) {
       merged.components[key] = { ...defaults.components[key], ...(merged.components[key] || {}) };
     }
   }
-  // Ensure arrays are preserved from saved if they exist
-  // Migrate old dual-mode colors to single palette
-  if (saved.darkColors && !saved.colors) {
-    merged.colors = saved.darkColors;
-  } else if (saved.colors) {
-    merged.colors = saved.colors;
+  // Migrate colors to fixed role object
+  if (Array.isArray(saved.colors)) {
+    // Old format: array of { name, value, usage }
+    const find = (kw) => saved.colors.find(c => c.name.toLowerCase().includes(kw))?.value;
+    merged.colors = {
+      bg: find("background") || defaults.colors.bg,
+      surface: find("surface") || defaults.colors.surface,
+      textPrimary: find("primary") || defaults.colors.textPrimary,
+      textSecondary: find("secondary") || defaults.colors.textSecondary,
+      accent: find("accent") || defaults.colors.accent,
+      warning: defaults.colors.warning,
+      success: defaults.colors.success,
+    };
+  } else if (Array.isArray(saved.darkColors) && !saved.colors) {
+    const find = (kw) => saved.darkColors.find(c => c.name.toLowerCase().includes(kw))?.value;
+    merged.colors = {
+      bg: find("background") || defaults.colors.bg,
+      surface: find("surface") || defaults.colors.surface,
+      textPrimary: find("primary") || defaults.colors.textPrimary,
+      textSecondary: find("secondary") || defaults.colors.textSecondary,
+      accent: find("accent") || defaults.colors.accent,
+      warning: defaults.colors.warning,
+      success: defaults.colors.success,
+    };
+  } else if (saved.colors && typeof saved.colors === "object") {
+    merged.colors = { ...defaults.colors, ...saved.colors };
   }
   if (saved.typeLevels) merged.typeLevels = saved.typeLevels;
   if (saved.moodboardLinks) merged.moodboardLinks = saved.moodboardLinks;
