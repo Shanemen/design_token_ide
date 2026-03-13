@@ -596,10 +596,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                     <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                       <svg width="24" height="24" viewBox="0 0 24 24"
                         fill={isFilled ? textPrimary : isDuotone ? `${textPrimary}20` : "none"}
-                        stroke={isFilled ? "none" : textPrimary}
-                        strokeWidth={isFilled ? 0 : sw}
+                        stroke={isFilled ? textPrimary : isDuotone ? "none" : textPrimary}
+                        strokeWidth={isFilled ? sw * 0.75 : sw}
                         strokeLinecap="round" strokeLinejoin="round"
-                        fillRule="evenodd"
                       >
                         <path d={d} />
                         {isDuotone && <path d={d} fill="none" stroke={textPrimary} strokeWidth={sw} />}
