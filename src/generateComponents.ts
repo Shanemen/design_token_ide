@@ -81,13 +81,26 @@ function comp(s: DesignState, id: string): any {
   return (s.components || {})[id] || {};
 }
 
-function radius(s: DesignState, compId?: string): number {
+function radiusNum(s: DesignState, compId?: string): number {
   if (compId && s.radiusOverrides?.[compId]) return parseInt(s.radiusOverrides[compId]);
   return parseInt(s.borderRadius) || 8;
 }
 
+function radiusVar(s: DesignState, compId?: string): string {
+  if (compId && s.radiusOverrides?.[compId]) return `"var(--radius-${toKebab(compId)})"`;
+  return `"var(--radius)"`;
+}
+
 function hasBorder(s: DesignState, compId: string): boolean {
   return !!(s.borderComponents || {})[compId];
+}
+
+const GENERIC_FONTS = ["serif", "sans-serif", "monospace", "cursive", "fantasy", "system-ui"];
+
+function fontCSSValue(font: string): string {
+  const f = font || "sans-serif";
+  if (GENERIC_FONTS.includes(f.toLowerCase())) return f;
+  return `'${f}', sans-serif`;
 }
 
 // ── CLAUDE.md ────────────────────────────────────────────────────
@@ -143,10 +156,12 @@ function generateClaudeMD(s: DesignState): string {
   md += `\n`;
 
   // Spacing
-  md += `## Spacing\n\n`;
-  md += `- Base unit: ${s.spacingUnit}px\n`;
+  md += `## Spacing & Layout\n\n`;
+  md += `- Base unit: \`--space-unit\` = ${Math.round(parseInt(s.spacingUnit) * dm)}px\n`;
   md += `- Density: ${s.density || "balanced"} (multiplier: ${dm})\n`;
-  md += `- Scale: ${spacings.map((sp, i) => `\`--space-${i + 1}\` = ${Math.round(parseInt(sp) * dm)}px`).join(", ")}\n\n`;
+  md += `- Scale: ${spacings.map((sp, i) => `\`--space-${i + 1}\` = ${Math.round(parseInt(sp) * dm)}px`).join(", ")}\n`;
+  md += `- Max content width: \`--max-content-width\` = ${s.maxContentWidth}px\n`;
+  md += `- Grid columns: \`--grid-columns\` = ${s.gridColumns}\n\n`;
 
   // Border
   md += `## Borders & Radius\n\n`;
@@ -277,8 +292,17 @@ function generateClaudeMD(s: DesignState): string {
   // Don'ts
   if (s.dontList && s.dontList.trim()) {
     md += `## Constraints (Do NOT)\n\n`;
+    const cnToEn: Record<string, string> = {
+      "不用渐变": "No gradients",
+      "不用投影超过2层": "No more than 2 shadow layers",
+      "不用超过2种字体": "No more than 2 font families",
+      "不用纯黑 #000": "No pure black (#000)",
+      "不用纯黑": "No pure black (#000)",
+    };
     s.dontList.split("\n").filter(Boolean).forEach(line => {
-      md += `- ✗ ${line.trim()}\n`;
+      const trimmed = line.trim();
+      const en = cnToEn[trimmed];
+      md += en ? `- ✗ ${en} (${trimmed})\n` : `- ✗ ${trimmed}\n`;
     });
     md += `\n`;
   }
@@ -312,8 +336,8 @@ function generateTokensCSS(s: DesignState): string {
 
   // Fonts
   css += `  /* ── Fonts ── */\n`;
-  css += `  --font-heading: '${hFont}', sans-serif;\n`;
-  css += `  --font-body: '${bFont}', sans-serif;\n\n`;
+  css += `  --font-heading: ${fontCSSValue(hFont)};\n`;
+  css += `  --font-body: ${fontCSSValue(bFont)};\n\n`;
 
   // Typography levels
   css += `  /* ── Typography ── */\n`;
@@ -461,7 +485,7 @@ function generateButtonCode(s: DesignState): string {
   const variants = btn.variants || ["primary", "secondary", "ghost"];
   const sizes = btn.sizes || ["sm", "md", "lg"];
   const hasBdr = hasBorder(s, "Button");
-  const r = radius(s, "Button");
+  const r = radiusVar(s, "Button");
   const bw = parseInt(s.borderWidth) || 1;
 
   let c = `// ── Button ──\n\n`;
@@ -483,7 +507,7 @@ function generateButtonCode(s: DesignState): string {
   c += `};\n\n`;
 
   c += `const buttonSizes: Record<string, React.CSSProperties> = {\n`;
-  if (sizes.includes("sm")) c += `  sm: { padding: "var(--space-1) var(--space-1)", fontSize: 13 },\n`;
+  if (sizes.includes("sm")) c += `  sm: { padding: "calc(var(--space-1) * 0.5) var(--space-1)", fontSize: 13 },\n`;
   if (sizes.includes("md")) c += `  md: { padding: "var(--space-1) var(--space-2)", fontSize: 14 },\n`;
   if (sizes.includes("lg")) c += `  lg: { padding: "var(--space-2) var(--space-3)", fontSize: 16 },\n`;
   c += `};\n\n`;
@@ -569,7 +593,7 @@ function generateDividerCode(s: DesignState): string {
 
 function generateBadgeCode(s: DesignState): string {
   const variant = comp(s, "Badge").variant || "filled";
-  const r = Math.min(radius(s, "Badge"), 12);
+  const r = Math.min(radiusNum(s, "Badge"), 12);
   const hasBdr = hasBorder(s, "Badge");
 
   let c = `// ── Badge ──\n\n`;
@@ -583,7 +607,7 @@ function generateBadgeCode(s: DesignState): string {
     c += `  );\n`;
   } else {
     c += `  return (\n`;
-    c += `    <span style={{ padding: "2px var(--space-1)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "color-mix(in srgb, var(--color-accent) 12%, transparent)", color: "var(--color-accent)", ...style }}>\n`;
+    c += `    <span style={{ padding: "2px var(--space-1)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "var(--color-surface)", color: "var(--color-accent)", ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </span>\n`;
     c += `  );\n`;
@@ -599,9 +623,9 @@ function generateAvatarCode(s: DesignState): string {
   const filter = av.filter || "color";
   const hasBdr = hasBorder(s, "Avatar");
   const bw = parseInt(s.borderWidth) || 1;
-  const r = radius(s, "Avatar");
+  const r = radiusVar(s, "Avatar");
 
-  const borderRadius = shape === "circle" ? `"50%"` : shape === "rounded-square" ? `${Math.max(r, 6)}` : `0`;
+  const borderRadius = shape === "circle" ? `"50%"` : shape === "rounded-square" ? r : `0`;
   const filterCSS = filter === "grayscale" ? `"grayscale(1)"` : filter === "b&w" ? `"grayscale(1) contrast(1.2)"` : `"none"`;
 
   let c = `// ── Avatar ──\n\n`;
@@ -620,7 +644,7 @@ function generateAvatarCode(s: DesignState): string {
   c += `      overflow: "hidden",\n`;
   if (hasBdr) c += `      border: "${bw}px solid var(--border-color)",\n`;
   if (filter !== "color") c += `      filter: ${filterCSS},\n`;
-  c += `      background: "color-mix(in srgb, var(--color-accent) 15%, transparent)",\n`;
+  c += `      background: "var(--color-surface)",\n`;
   c += `      display: "flex", alignItems: "center", justifyContent: "center",\n`;
   c += `      ...style,\n`;
   c += `    }}>\n`;
@@ -656,7 +680,7 @@ function generateCardCode(s: DesignState): string {
   const orientation = card.orientation || "vertical";
   const ratio = card.thumbnailRatio || "16:9";
   const hover = card.hoverEffect !== false;
-  const r = radius(s, "Card");
+  const r = radiusVar(s, "Card");
   const hasBdr = hasBorder(s, "Card");
   const bw = parseInt(s.borderWidth) || 1;
   const [rw, rh] = ratio.split(":").map(Number);
@@ -685,7 +709,7 @@ function generateCardCode(s: DesignState): string {
     c += `      cursor: onClick ? "pointer" : "default",\n`;
     c += `      ...style,\n`;
     c += `    }}>\n`;
-    c += `      {thumbnail && <div style={{ width: 100, height: ${Math.round(100 * rh / rw)}, borderRadius: ${Math.max(r - 4, 2)}, background: \`url(\${thumbnail}) center/cover\`, flexShrink: 0 }} />}\n`;
+    c += `      {thumbnail && <div style={{ width: 100, height: ${Math.round(100 * rh / rw)}, borderRadius: "calc(var(--radius) - 4px)", background: \`url(\${thumbnail}) center/cover\`, flexShrink: 0 }} />}\n`;
     c += `      <div>\n`;
     c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: 4 }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
@@ -775,7 +799,7 @@ function generateNavbarCode(s: DesignState): string {
   const nav = comp(s, "Navbar");
   const layout = nav.layout || "logo-left";
   const transparent = nav.transparent;
-  const r = radius(s, "Navbar");
+  const r = radiusVar(s, "Navbar");
 
   let c = `// ── Navbar ──\n\n`;
   c += `interface NavbarProps {\n`;
@@ -824,7 +848,7 @@ function generateNavbarCode(s: DesignState): string {
 function generateHeroCode(s: DesignState): string {
   const hero = comp(s, "Hero");
   const vt = hero.visualType || "illustration";
-  const r = radius(s, "Hero");
+  const r = radiusVar(s, "Hero");
 
   let c = `// ── Hero ──\n`;
   if (hero.visualNotes) c += `// Visual notes: ${hero.visualNotes}\n`;
@@ -843,11 +867,11 @@ function generateHeroCode(s: DesignState): string {
   c += `  return (\n`;
   c += `    <div style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Hero") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-3)", display: "flex", gap: "var(--space-2)", alignItems: "center", ...style }}>\n`;
   c += `      <div style={{ flex: 1 }}>\n`;
-  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, marginBottom: 8, margin: 0 }}>{title}</h1>\n`;
-  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, marginBottom: 12, margin: "8px 0 12px" }}>{subtitle}</p>}\n`;
+  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, margin: "0 0 8px" }}>{title}</h1>\n`;
+  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 12px" }}>{subtitle}</p>}\n`;
   c += `        <div style={{ display: "flex", gap: 8 }}>\n`;
   c += `          {primaryAction && <a href={primaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{primaryAction.label}</a>}\n`;
-  c += `          {secondaryAction && <a href={secondaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", border: "1px solid color-mix(in srgb, var(--color-text-secondary) 25%, transparent)", color: "var(--color-text-secondary)", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", textDecoration: "none" }}>{secondaryAction.label}</a>}\n`;
+  c += `          {secondaryAction && <a href={secondaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", border: "1px solid var(--border-color)", color: "var(--color-text-secondary)", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", textDecoration: "none" }}>{secondaryAction.label}</a>}\n`;
   c += `        </div>\n`;
   c += `      </div>\n`;
   if (vt !== "none") {
@@ -864,7 +888,7 @@ function generateFooterCode(s: DesignState): string {
   const ft = comp(s, "Footer");
   const structure = ft.structure || "multi-column";
   const newsletter = ft.hasNewsletter;
-  const r = radius(s, "Footer");
+  const r = radiusVar(s, "Footer");
 
   let c = `// ── Footer ──\n\n`;
   c += `interface FooterProps {\n`;
@@ -894,11 +918,11 @@ function generateFooterCode(s: DesignState): string {
     c += `      </div>\n`;
     if (newsletter) {
       c += `      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>\n`;
-      c += `        <input placeholder="Enter your email" style={{ flex: 1, padding: "var(--space-1)", border: "1px solid color-mix(in srgb, var(--color-text-secondary) 20%, transparent)", borderRadius: "var(--radius)", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", background: "transparent" }} />\n`;
+      c += `        <input placeholder="Enter your email" style={{ flex: 1, padding: "var(--space-1)", border: "1px solid var(--border-color)", borderRadius: "var(--radius)", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", background: "transparent" }} />\n`;
       c += `        <button style={{ padding: "var(--space-1)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, border: "none", cursor: "pointer" }}>Subscribe</button>\n`;
       c += `      </div>\n`;
     }
-    c += `      <div style={{ borderTop: "1px solid color-mix(in srgb, var(--color-text-secondary) 12%, transparent)", paddingTop: 10, fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
+    c += `      <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: 10, fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
   }
 
   c += `    </footer>\n`;
@@ -911,7 +935,7 @@ function generateFooterCode(s: DesignState): string {
 function generateCTACode(s: DesignState): string {
   const cta = comp(s, "CTA");
   const structure = cta.structure || "centered";
-  const r = radius(s, "CTA");
+  const r = radiusVar(s, "CTA");
 
   let c = `// ── CTA ──\n\n`;
   c += `interface CTAProps {\n`;

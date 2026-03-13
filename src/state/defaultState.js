@@ -20,10 +20,10 @@ export const defaultState = {
   ],
   // 3. Color — fixed semantic roles
   colors: {
-    bg: "#0A0A0F",
-    surface: "#141419",
-    textPrimary: "#E8E8ED",
-    textSecondary: "#8A8A9A",
+    bg: "#FAFAFA",
+    surface: "#FFFFFF",
+    textPrimary: "#1A1A2E",
+    textSecondary: "#6B7280",
     accent: "#E8734A",
     warning: "#F59E0B",
     success: "#10B981",

@@ -43,10 +43,10 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const bFont = tokens.bodyFont || "JetBrains Mono";
 
   const colors = tokens.colors || {};
-  const bg = colors.bg || "#0A0A0F";
-  const surface = colors.surface || "#141419";
-  const textPrimary = colors.textPrimary || "#E8E8ED";
-  const textSecondary = colors.textSecondary || "#8A8A9A";
+  const bg = colors.bg || "#FAFAFA";
+  const surface = colors.surface || "#FFFFFF";
+  const textPrimary = colors.textPrimary || "#1A1A2E";
+  const textSecondary = colors.textSecondary || "#6B7280";
   const accent = colors.accent || "#E8734A";
   const warning = colors.warning || "#F59E0B";
   const success = colors.success || "#10B981";
