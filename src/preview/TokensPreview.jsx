@@ -97,7 +97,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
 
   const subLabel = {
     fontFamily: "'JetBrains Mono', monospace",
-    fontSize: 9, color: t.dim, opacity: 0.5,
+    fontSize: 9, color: textSecondary, opacity: 0.5,
     marginBottom: 10, letterSpacing: 1, textTransform: "uppercase",
   };
 
@@ -349,6 +349,12 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
       {visited["step-2"] && (
       <div data-section="step-2" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
         {sectionLabel("Components")}
+        <div style={{
+          background: bg,
+          borderRadius: radius,
+          padding: Math.round(pad2 * densityMul),
+          border: `${bw}px solid ${bc}`,
+        }}>
 
         {/* Button — reads variants & sizes from config */}
         <div style={{ marginBottom: 20 }}>
@@ -357,7 +363,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             const scale = size === "sm" ? 0.8 : size === "lg" ? 1.2 : 1;
             return (
               <div key={size} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, minWidth: 20, opacity: 0.4 }}>{size}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textSecondary, minWidth: 20, opacity: 0.4 }}>{size}</span>
                 {(comp.Button?.variants || ["primary", "secondary", "ghost"]).map(v => (
                   <button key={v} style={{
                     padding: `${Math.round(pad * densityMul * scale)}px ${Math.round(pad2 * densityMul * scale)}px`,
@@ -367,7 +373,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                     cursor: "pointer",
                     transition: `all ${dur}ms ${easing}`,
                     ...(v === "primary" ? { background: accent, color: "#fff", border: "none", fontWeight: 500 }
-                      : v === "secondary" ? { background: "transparent", color: t.text, border: `${bw}px solid ${t.border}` }
+                      : v === "secondary" ? { background: "transparent", color: textPrimary, border: `${bw}px solid ${bc}` }
                       : { background: "transparent", color: accent, border: "none" }),
                   }}>{v.charAt(0).toUpperCase() + v.slice(1)}</button>
                 ))}
@@ -384,7 +390,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               fontFamily: `'${bFont}', sans-serif`,
               fontSize: 14,
               lineHeight: 1.7,
-              color: t.text,
+              color: textPrimary,
               marginBottom: 12,
             }}>
               A paragraph of body text that demonstrates your typography choices. Good design systems define consistent text blocks for content-heavy pages.
@@ -395,7 +401,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               fontFamily: `'${bFont}', sans-serif`,
               fontSize: 12,
               lineHeight: 1.6,
-              color: t.dim,
+              color: textSecondary,
               marginBottom: 12,
             }}>
               A smaller paragraph for captions, footnotes, or supplementary information.
@@ -408,20 +414,20 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 fontSize: 20,
                 fontStyle: "italic",
                 fontWeight: 500,
-                color: t.text,
+                color: textPrimary,
                 padding: "12px 0",
               } : comp.Text?.quoteStyle === "centered" ? {
                 fontFamily: `'${hFont}', sans-serif`,
                 fontSize: 16,
                 fontStyle: "italic",
-                color: t.text,
+                color: textPrimary,
                 textAlign: "center",
                 padding: "16px 24px",
               } : {
                 fontFamily: `'${bFont}', sans-serif`,
                 fontSize: 14,
                 lineHeight: 1.7,
-                color: t.text,
+                color: textPrimary,
                 borderLeft: `3px solid ${accent}`,
                 paddingLeft: 16,
               }),
@@ -437,13 +443,13 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           {(comp.Divider?.style) === "space" ? (
             <div style={{
               height: 24,
-              border: `1px dashed ${t.dim}30`,
+              border: `1px dashed ${textSecondary}30`,
               borderRadius: 4,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.4 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textSecondary, opacity: 0.4 }}>
                 24px whitespace
               </span>
             </div>
@@ -485,7 +491,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 borderRadius: (comp.Avatar?.shape || "circle") === "circle" ? "50%"
                   : (comp.Avatar?.shape) === "rounded-square" ? Math.max(radius, 6) : 0,
                 background: `${accent}25`,
-                border: `${bw}px solid ${t.border}`,
+                border: `${bw}px solid ${bc}`,
                 filter: (comp.Avatar?.filter) === "grayscale" ? "grayscale(1)"
                   : (comp.Avatar?.filter) === "b&w" ? "grayscale(1) contrast(1.2)" : "none",
               }} />
@@ -499,6 +505,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           <div style={{ display: "flex", gap: Math.round(pad2 * densityMul) }}>
             {[1, 2].map(n => {
               const isHoriz = (comp.Card?.orientation) === "horizontal";
+              const ratio = comp.Card?.thumbnailRatio || "16:9";
+              const [rw, rh] = ratio.split(":").map(Number);
+              const thumbPct = `${(rh / rw) * 100}%`;
               return (
                 <div
                   key={n}
@@ -506,37 +515,46 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   onMouseLeave={() => setHoverDemo(false)}
                   style={{
                     display: isHoriz ? "flex" : "block",
-                    gap: isHoriz ? 12 : 0,
+                    gap: isHoriz ? Math.round(pad2 * densityMul) : 0,
                     flex: 1,
                     padding: Math.round(pad2 * densityMul),
-                    background: t.surface,
+                    background: surface,
                     borderRadius: radius,
-                    border: `${bw}px solid ${t.border}`,
+                    border: `${bw}px solid ${bc}`,
                     cursor: "pointer",
                     transition: `all ${dur}ms ${easing}`,
                     transform: hoverDemo === n && (comp.Card?.hoverEffect !== false) ? "translateY(-2px)" : "none",
                   }}
                 >
-                  <div style={{
-                    width: isHoriz ? 80 : "100%",
-                    height: isHoriz ? 60 : 40,
-                    borderRadius: Math.max(radius - 4, 2),
-                    background: `${accent}18`,
-                    marginBottom: isHoriz ? 0 : (pad || 8),
-                    flexShrink: 0,
-                  }} />
+                  {isHoriz ? (
+                    <div style={{
+                      width: 100,
+                      height: Math.round(100 * (rh / rw)),
+                      borderRadius: Math.max(radius - 4, 2),
+                      background: `${accent}18`,
+                      flexShrink: 0,
+                    }} />
+                  ) : (
+                    <div style={{
+                      width: "100%",
+                      paddingBottom: thumbPct,
+                      borderRadius: Math.max(radius - 4, 2),
+                      background: `${accent}18`,
+                      marginBottom: pad || 8,
+                    }} />
+                  )}
                   <div>
                     <div style={{
                       fontFamily: `'${hFont}', sans-serif`,
                       fontSize: 15,
                       fontWeight: 600,
-                      color: t.text,
+                      color: textPrimary,
                       marginBottom: 4,
                     }}>Card {n}</div>
                     <div style={{
                       fontFamily: `'${bFont}', monospace`,
                       fontSize: 12,
-                      color: t.dim,
+                      color: textSecondary,
                     }}>Caption text</div>
                   </div>
                 </div>
@@ -552,23 +570,23 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             <div style={{
               flex: 1,
               padding: `${Math.round(pad * densityMul)}px ${Math.round(pad * 1.5 * densityMul)}px`,
-              background: t.bg,
-              border: `${bw}px solid ${t.border}`,
+              background: surface,
+              border: `${bw}px solid ${bc}`,
               borderRadius: radius,
               fontFamily: `'${bFont}', monospace`,
               fontSize: 13,
-              color: t.dim,
+              color: textSecondary,
               opacity: 0.6,
             }}>Placeholder text...</div>
             <div style={{
               flex: 1,
               padding: `${Math.round(pad * densityMul)}px ${Math.round(pad * 1.5 * densityMul)}px`,
-              background: t.bg,
+              background: surface,
               border: `${bw}px solid ${accent}60`,
               borderRadius: radius,
               fontFamily: `'${bFont}', monospace`,
               fontSize: 13,
-              color: t.text,
+              color: textPrimary,
             }}>Focused input</div>
           </div>
         </div>
@@ -587,14 +605,14 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             ].map((d, i) => (
               <svg key={i} width="24" height="24" viewBox="0 0 24 24"
                 fill={(comp.Icon?.style) === "filled" ? accent : "none"}
-                stroke={(comp.Icon?.style) === "filled" ? "none" : t.text}
+                stroke={(comp.Icon?.style) === "filled" ? "none" : textPrimary}
                 strokeWidth={parseFloat(comp.Icon?.weight) || 1.5}
                 strokeLinecap="round" strokeLinejoin="round"
               >
                 <path d={d} />
               </svg>
             ))}
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.4 }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textSecondary, opacity: 0.4 }}>
               stroke: {comp.Icon?.weight || "1.5"}
             </span>
           </div>
@@ -732,20 +750,55 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         {/* Gallery */}
         <div style={{ marginBottom: 20 }}>
           <div style={subLabel}>Gallery · {comp.Gallery?.style || "grid"} · {comp.Gallery?.columns || 3} cols</div>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${comp.Gallery?.columns || 3}, 1fr)`,
-            gap: Math.round(pad * densityMul),
-          }}>
-            {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
-              <div key={i} style={{
-                aspectRatio: "4/3",
-                borderRadius: radius,
-                background: `${accent}${10 + (i % 3) * 5}`,
-                border: `${bw}px solid ${bc}`,
-              }} />
-            ))}
-          </div>
+          {(comp.Gallery?.style === "horizontal-scroll") ? (
+            <div style={{
+              display: "flex",
+              gap: Math.round(pad * densityMul),
+              overflowX: "auto",
+              paddingBottom: 4,
+            }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} style={{
+                  width: 120, height: 90,
+                  borderRadius: radius,
+                  background: `${accent}${10 + (i % 3) * 5}`,
+                  border: `${bw}px solid ${bc}`,
+                  flexShrink: 0,
+                }} />
+              ))}
+            </div>
+          ) : (comp.Gallery?.style === "masonry") ? (
+            <div style={{
+              columnCount: parseInt(comp.Gallery?.columns || 3),
+              columnGap: Math.round(pad * densityMul),
+            }}>
+              {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
+                <div key={i} style={{
+                  height: [100, 140, 80, 120, 160, 90][i % 6],
+                  borderRadius: radius,
+                  background: `${accent}${10 + (i % 3) * 5}`,
+                  border: `${bw}px solid ${bc}`,
+                  marginBottom: Math.round(pad * densityMul),
+                  breakInside: "avoid",
+                }} />
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${comp.Gallery?.columns || 3}, 1fr)`,
+              gap: Math.round(pad * densityMul),
+            }}>
+              {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
+                <div key={i} style={{
+                  aspectRatio: "4/3",
+                  borderRadius: radius,
+                  background: `${accent}${10 + (i % 3) * 5}`,
+                  border: `${bw}px solid ${bc}`,
+                }} />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -776,9 +829,6 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               {comp.Footer?.hasNewsletter && (
                 <div style={{
                   display: "flex", gap: 8, marginBottom: 12,
-                  padding: `${Math.round(pad * 0.5 * densityMul)}px 0`,
-                  borderTop: `1px solid ${textSecondary}20`,
-                  paddingTop: 12,
                 }}>
                   <div style={{
                     flex: 1, padding: `${Math.round(pad * 0.6 * densityMul)}px ${Math.round(pad * densityMul)}px`,
@@ -836,6 +886,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             }}>Sign Up Free</span>
           </div>
         </div>
+      </div>{/* end bg wrapper */}
       </div>
       )}
 
