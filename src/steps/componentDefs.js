@@ -51,11 +51,6 @@ export const BLOCK_COMPONENTS = [
       { key: "style", type: "pill", options: ["grid", "masonry", "horizontal-scroll"], label: "Style" },
     ]
   },
-  { id: "Quote", label: "Quote", icon: "❝", desc: "Testimonial or pull quote",
-    fields: [
-      { key: "style", type: "pill", options: ["simple", "card", "large-text"], label: "Style" },
-    ]
-  },
 ];
 
 export const FIXED_COMPONENTS = [
