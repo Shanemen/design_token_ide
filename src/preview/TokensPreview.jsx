@@ -353,7 +353,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           background: bg,
           borderRadius: radius,
           padding: Math.round(pad2 * densityMul),
-          border: `${bw}px solid ${bc}`,
+          border: `1px solid ${t.border}`,
         }}>
 
         {/* Button — reads variants & sizes from config */}

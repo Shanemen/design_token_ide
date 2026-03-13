@@ -168,7 +168,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
             letterSpacing: 1.5,
           }}>Border Color</label>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {[...state.darkColors, ...state.lightColors].map((c, i) => (
+            {[...state.darkColors, ...state.lightColors].filter((c, i, arr) => arr.findIndex(x => x.value === c.value) === i).map((c, i) => (
               <div
                 key={i}
                 onClick={() => update("borderColor", c.value)}
@@ -206,7 +206,34 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
             ))}
           </div>
         </div>
-        <Input label="Shadow Levels" value={state.shadowLevels} onChange={v => update("shadowLevels", v)} placeholder="none / sm / md / lg" mono />
+        <div>
+          <label style={{
+            display: "block",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            color: t.label,
+            marginBottom: 8,
+            textTransform: "uppercase",
+            letterSpacing: 1.5,
+          }}>Shadow Levels</label>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            {["none", "sm", "md", "lg"].map(level => {
+              const levels = (state.shadowLevels || "").split("/").map(s => s.trim()).filter(Boolean);
+              const active = levels.includes(level);
+              return (
+                <Pill
+                  key={level}
+                  label={level}
+                  active={active}
+                  onClick={() => {
+                    const next = active ? levels.filter(l => l !== level) : [...levels, level];
+                    update("shadowLevels", next.join(" / "));
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
       </Section>
     </>
   );
