@@ -14,7 +14,7 @@ export default function Step2BorderConfig({ state, dispatch, onBack, scrollToSec
   const update = (key, value) => dispatch({ type: "SET_FIELD", key, value });
   const borderComps = state.borderComponents || {};
   const defaultWidth = state.borderWidth || "1";
-  const bc = state.borderColor || "#222233";
+  const bc = state.borderColor || "#1A1A2E";
 
   const toggle = (compId) => {
     dispatch({

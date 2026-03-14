@@ -63,7 +63,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
 
   const defaultRadius = parseInt(tokens.borderRadius) || 8;
   const bw = parseInt(tokens.borderWidth) || 1;
-  const bc = tokens.borderColor || "#222233";
+  const bc = tokens.borderColor || "#1A1A2E";
   const borderComps = tokens.borderComponents || {};
   const radiusOverrides = tokens.radiusOverrides || {};
   // Returns radius for a component — uses override if set, otherwise default

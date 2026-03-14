@@ -28,7 +28,7 @@ export const defaultState = {
   // 4. Borders (defaults defined in Step 1, per-component in Step 2)
   borderRadius: "8",
   borderWidth: "1",
-  borderColor: "#222233",
+  borderColor: "#1A1A2E",
   // Per-component radius overrides (empty string = use default)
   radiusOverrides: {},
   // Per-component border toggle (true = has border)
