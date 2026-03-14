@@ -676,7 +676,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                     display: isHoriz ? "flex" : "block",
                     gap: isHoriz ? sp.block : 0,
                     flex: 1,
-                    padding: sp.content,
+                    padding: sp.block,
                     background: t.surface,
                     borderRadius: r("Card"),
                     border: hasBorder("Card") ? `${bw}px solid ${t.border}` : "none",

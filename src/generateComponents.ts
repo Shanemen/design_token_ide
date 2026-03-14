@@ -718,7 +718,7 @@ function generateCardCode(s: DesignState): string {
     c += `  return (\n`;
     c += `    <div onClick={onClick} style={{\n`;
     c += `      display: "flex", gap: "var(--space-block)",\n`;
-    c += `      padding: "var(--space-content)",\n`;
+    c += `      padding: "var(--space-block)",\n`;
     c += `      background: "var(--color-surface)",\n`;
     c += `      borderRadius: ${r},\n`;
     if (hasBdr) c += `      border: "${bw}px solid var(--border-color)",\n`;
@@ -746,7 +746,7 @@ function generateCardCode(s: DesignState): string {
     c += `      ...style,\n`;
     c += `    }}>\n`;
     c += `      {thumbnail && <div style={{ width: "100%", aspectRatio: "${rw}/${rh}", background: \`url(\${thumbnail}) center/cover\` }} />}\n`;
-    c += `      <div style={{ padding: "var(--space-content)" }}>\n`;
+    c += `      <div style={{ padding: "var(--space-block)" }}>\n`;
     c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-element) / 2)" }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
     c += `        {children}\n`;
