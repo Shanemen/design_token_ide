@@ -369,7 +369,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             }}>
               <div style={{
                 width: "100%",
-                maxWidth: tokens.maxContentWidth === "full" ? "100%" : `${Math.min(parseInt(tokens.maxContentWidth) || 1200, 280)}px`,
+                maxWidth: tokens.maxContentWidth === "full" ? "100%" : `${Math.round((parseInt(tokens.maxContentWidth) || 1200) / 1440 * 100)}%`,
                 background: bg,
                 borderRadius: Math.max(radius - 4, 2),
                 border: `1px solid ${t.border}`,
