@@ -67,7 +67,7 @@ export const defaultState = {
   microInteractions: "",
   motionNotes: "",
   // 7. Don't List
-  dontList: "不用渐变\n不用投影超过2层\n不用超过2种字体\n不用纯黑 #000",
+  dontList: "No gradients\nNo more than 2 shadow layers\nNo more than 2 font families\nNo pure black (#000)",
   // 8. Responsive
   breakpoints: "640 / 768 / 1024 / 1280",
   mobileFirst: true,

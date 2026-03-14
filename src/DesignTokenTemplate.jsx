@@ -123,22 +123,22 @@ export default function DesignTokenTemplate() {
 
           {activeTab === "editor" && (<>
             {/* Step 1: Design Tokens */}
-            <Section number={1} title="Design Tokens" subtitle="原子级设计决策" isOpen={openSections["step-1"]} onToggle={() => toggle("step-1")}>
+            <Section number={1} title="Design Tokens" subtitle="atomic design decisions" isOpen={openSections["step-1"]} onToggle={() => toggle("step-1")}>
               <Step1DesignTokens state={state} dispatch={dispatch} openSub={openSub} toggleSub={toggleSub} />
             </Section>
 
             {/* Step 2: Components */}
-            <Section number={2} title="Components" subtitle="零件" isOpen={openSections["step-2"]} onToggle={() => toggle("step-2")}>
+            <Section number={2} title="Components" subtitle="parts" isOpen={openSections["step-2"]} onToggle={() => toggle("step-2")}>
               <Step2Components activeComponent={state.activeComponent} components={state.components} dispatch={dispatch} state={state} />
             </Section>
 
             {/* Step 3: Responsive */}
-            <Section number={3} title="Responsive" subtitle="响应式 + 状态" isOpen={openSections["step-3"]} onToggle={() => toggle("step-3")}>
+            <Section number={3} title="Responsive" subtitle="responsive + states" isOpen={openSections["step-3"]} onToggle={() => toggle("step-3")}>
               <Step4Responsive state={state} dispatch={dispatch} />
             </Section>
 
             {/* Step 4: Constraints */}
-            <Section number={4} title="Constraints" subtitle="不做什么" isOpen={openSections["step-4"]} onToggle={() => toggle("step-4")}>
+            <Section number={4} title="Constraints" subtitle="what not to do" isOpen={openSections["step-4"]} onToggle={() => toggle("step-4")}>
               <Step5Constraints state={state} dispatch={dispatch} />
             </Section>
 

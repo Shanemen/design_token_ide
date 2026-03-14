@@ -27,7 +27,7 @@ export default function TypeRow({ level, onChange, onRemove }) {
       <input
         value={level.name}
         onChange={e => onChange({ ...level, name: e.target.value })}
-        placeholder="名称"
+        placeholder="Name"
         style={{ ...inputStyle, flex: "1 1 80px", fontFamily: "'Space Grotesk', sans-serif", textAlign: "left" }}
       />
       <input value={level.size} onChange={e => onChange({ ...level, size: e.target.value })} placeholder="px" style={{ ...inputStyle, flex: "0 0 50px" }} />

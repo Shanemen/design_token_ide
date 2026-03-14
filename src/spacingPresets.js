@@ -4,7 +4,7 @@
 export const DENSITY_PRESETS = {
   compact: {
     label: "Compact",
-    desc: "信息密集，适合工具型产品",
+    desc: "dense, for data-heavy tools",
     base: 4,
     scales: [4, 8, 12, 16, 24, 32],
     semantic: {
@@ -19,7 +19,7 @@ export const DENSITY_PRESETS = {
   },
   balanced: {
     label: "Balanced",
-    desc: "适中，大部分网站的默认选择",
+    desc: "default for most websites",
     base: 8,
     scales: [8, 16, 24, 32, 48, 64],
     semantic: {
@@ -34,7 +34,7 @@ export const DENSITY_PRESETS = {
   },
   airy: {
     label: "Airy",
-    desc: "大量留白，适合品牌站和作品集",
+    desc: "generous whitespace, for brand sites & portfolios",
     base: 12,
     scales: [12, 24, 36, 48, 72, 96],
     semantic: {
@@ -50,21 +50,21 @@ export const DENSITY_PRESETS = {
 };
 
 export const MAX_WIDTH_OPTIONS = [
-  { value: "960", label: "960px", desc: "博客、阅读型内容" },
-  { value: "1200", label: "1200px", desc: "大部分网站的默认选择" },
-  { value: "1440", label: "1440px", desc: "信息密集型、dashboard" },
-  { value: "full", label: "Full width", desc: "全宽，沉浸式体验" },
+  { value: "960", label: "960px", desc: "blogs, reading-focused content" },
+  { value: "1200", label: "1200px", desc: "default for most websites" },
+  { value: "1440", label: "1440px", desc: "data-dense, dashboards" },
+  { value: "full", label: "Full width", desc: "full-width, immersive" },
 ];
 
 // Semantic token names and their descriptions for reference tables
 export const SEMANTIC_LABELS = [
-  { key: "inlineY", css: "--space-inline-y", label: "组件内部 padding (Y)" },
-  { key: "inlineX", css: "--space-inline-x", label: "组件内部 padding (X)" },
-  { key: "content", css: "--space-content", label: "卡片 / Section 内边距" },
-  { key: "element", css: "--space-element", label: "元素间 gap" },
-  { key: "block", css: "--space-block", label: "组件间 gap" },
-  { key: "section", css: "--space-section", label: "Section 间距" },
-  { key: "page", css: "--space-page", label: "页面边距" },
+  { key: "inlineY", css: "--space-inline-y", label: "inline padding (Y)" },
+  { key: "inlineX", css: "--space-inline-x", label: "inline padding (X)" },
+  { key: "content", css: "--space-content", label: "card / section padding" },
+  { key: "element", css: "--space-element", label: "element gap" },
+  { key: "block", css: "--space-block", label: "block gap" },
+  { key: "section", css: "--space-section", label: "section spacing" },
+  { key: "page", css: "--space-page", label: "page margin" },
 ];
 
 export function getSpacing(density) {

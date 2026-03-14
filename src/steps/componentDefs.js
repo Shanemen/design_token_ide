@@ -89,48 +89,48 @@ export const FIXED_COMPONENTS = [
 // Layout inspiration data — preserved for future standalone Sections step
 export const LAYOUT_IDEAS = [
   {
-    category: "经典结构",
+    category: "Classic",
     items: [
-      { name: "Single Column", desc: "一栏居中，阅读感强，适合博客和长文", sketch: "┃  ████████  ┃" },
-      { name: "Split Screen", desc: "左右对半，一侧固定一侧滚动", sketch: "┃████ ┃ ████┃" },
-      { name: "Grid Cards", desc: "等宽卡片网格排列，适合作品集和列表", sketch: "┃██ ██ ██┃" },
-      { name: "Sidebar + Content", desc: "侧边导航 + 主内容区", sketch: "┃██┃████████┃" },
+      { name: "Single Column", desc: "centered single column, great for blogs and long reads", sketch: "┃  ████████  ┃" },
+      { name: "Split Screen", desc: "50/50 split, one side fixed one scrolls", sketch: "┃████ ┃ ████┃" },
+      { name: "Grid Cards", desc: "equal-width card grid, for portfolios and listings", sketch: "┃██ ██ ██┃" },
+      { name: "Sidebar + Content", desc: "side nav + main content area", sketch: "┃██┃████████┃" },
     ],
   },
   {
-    category: "Editorial 编辑式",
+    category: "Editorial",
     items: [
-      { name: "Magazine Spread", desc: "大图 + 文字错落排版，像杂志翻页的感觉", sketch: "┃██████      ┃\n┃    ████████┃" },
-      { name: "Text Wrap", desc: "文字环绕图片流动，有叙事感", sketch: "┃████ ██████┃\n┃████ ██████┃" },
-      { name: "Pull Quote", desc: "关键引文放大突出，打断阅读节奏制造停顿", sketch: "┃  ████████  ┃\n┃    ██████  ┃" },
-      { name: "Column Shift", desc: "内容在2-3栏间交替偏移，不对称但有韵律", sketch: "┃████        ┃\n┃    ████████┃" },
+      { name: "Magazine Spread", desc: "large image + offset text, magazine-like feel", sketch: "┃██████      ┃\n┃    ████████┃" },
+      { name: "Text Wrap", desc: "text flows around images, narrative feel", sketch: "┃████ ██████┃\n┃████ ██████┃" },
+      { name: "Pull Quote", desc: "enlarged key quotes break reading rhythm", sketch: "┃  ████████  ┃\n┃    ██████  ┃" },
+      { name: "Column Shift", desc: "content shifts between 2-3 columns, asymmetric but rhythmic", sketch: "┃████        ┃\n┃    ████████┃" },
     ],
   },
   {
-    category: "Artistic 艺术感",
+    category: "Artistic",
     items: [
-      { name: "Overlapping Layers", desc: "元素互相叠加，有纵深感和层次感，像拼贴", sketch: "┃  ████      ┃\n┃    ██████  ┃" },
-      { name: "Broken Grid", desc: "故意打破网格，元素出格、出血，张力十足", sketch: "┃██          ┃\n┃      ██████┃" },
-      { name: "Diagonal Flow", desc: "内容沿对角线排列，视线被引导斜向移动", sketch: "┃██          ┃\n┃    ████    ┃\n┃        ████┃" },
-      { name: "Scattered / Organic", desc: "像桌面上随意放置的物件，自由但有构图", sketch: "┃  ██    ██  ┃\n┃██    ██    ┃" },
-      { name: "Full Bleed Sections", desc: "内容区交替全宽和窄宽，呼吸感很强", sketch: "┃████████████┃\n┃  ████████  ┃" },
+      { name: "Overlapping Layers", desc: "elements overlap with depth, collage-like", sketch: "┃  ████      ┃\n┃    ██████  ┃" },
+      { name: "Broken Grid", desc: "intentionally breaking the grid, elements bleed out", sketch: "┃██          ┃\n┃      ██████┃" },
+      { name: "Diagonal Flow", desc: "content along diagonals, guiding the eye", sketch: "┃██          ┃\n┃    ████    ┃\n┃        ████┃" },
+      { name: "Scattered / Organic", desc: "freeform placement like items on a desk, composed chaos", sketch: "┃  ██    ██  ┃\n┃██    ██    ┃" },
+      { name: "Full Bleed Sections", desc: "alternating full-width and narrow sections", sketch: "┃████████████┃\n┃  ████████  ┃" },
     ],
   },
   {
-    category: "Immersive 沉浸式",
+    category: "Immersive",
     items: [
-      { name: "Scroll-Driven Story", desc: "滚动驱动叙事，每个视口是一个场景", sketch: "┃  [scene 1] ┃\n┃  [scene 2] ┃" },
-      { name: "Parallax Layers", desc: "前景和背景以不同速度移动，制造深度", sketch: "┃bg ▒▒▒▒▒▒▒▒ ┃\n┃fg ████████ ┃" },
-      { name: "Horizontal Scroll", desc: "横向滚动，像画廊或电影分镜", sketch: "┃██ → ██ → ██┃" },
-      { name: "Sticky Reveal", desc: "标题固定，内容从下方滑入替换", sketch: "┃  TITLE     ┃\n┃  ↑ content ┃" },
+      { name: "Scroll-Driven Story", desc: "scroll-driven narrative, each viewport is a scene", sketch: "┃  [scene 1] ┃\n┃  [scene 2] ┃" },
+      { name: "Parallax Layers", desc: "foreground and background move at different speeds", sketch: "┃bg ▒▒▒▒▒▒▒▒ ┃\n┃fg ████████ ┃" },
+      { name: "Horizontal Scroll", desc: "horizontal scrolling, like a gallery or storyboard", sketch: "┃██ → ██ → ██┃" },
+      { name: "Sticky Reveal", desc: "sticky header with content sliding in from below", sketch: "┃  TITLE     ┃\n┃  ↑ content ┃" },
     ],
   },
   {
-    category: "Minimal 极简",
+    category: "Minimal",
     items: [
-      { name: "Giant Typography", desc: "超大文字本身就是布局，几乎没有图片", sketch: "┃ AAAA       ┃\n┃      BBBBB ┃" },
-      { name: "Whitespace Canvas", desc: "大量留白，内容像放在画布上，每个元素都珍贵", sketch: "┃            ┃\n┃    ██      ┃\n┃            ┃" },
-      { name: "Single Element Focus", desc: "每屏只有一个焦点元素，极度克制", sketch: "┃            ┃\n┃     ██     ┃\n┃            ┃" },
+      { name: "Giant Typography", desc: "oversized type IS the layout, almost no images", sketch: "┃ AAAA       ┃\n┃      BBBBB ┃" },
+      { name: "Whitespace Canvas", desc: "generous whitespace, every element feels precious", sketch: "┃            ┃\n┃    ██      ┃\n┃            ┃" },
+      { name: "Single Element Focus", desc: "one focal point per screen, extremely restrained", sketch: "┃            ┃\n┃     ██     ┃\n┃            ┃" },
     ],
   },
 ];

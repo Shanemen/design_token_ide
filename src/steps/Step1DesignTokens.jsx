@@ -9,13 +9,13 @@ import AddButton from "../shared/AddButton";
 import { DENSITY_PRESETS, MAX_WIDTH_OPTIONS, SEMANTIC_LABELS } from "../spacingPresets";
 
 const COLOR_ROLES = [
-  { key: "bg", label: "Page background", desc: "页面底色、section 背景" },
-  { key: "surface", label: "Surface", desc: "Card / Navbar / Footer / 输入框背景" },
-  { key: "textPrimary", label: "Text primary", desc: "标题、导航链接、按钮文字" },
-  { key: "textSecondary", label: "Text secondary", desc: "正文、副标题、placeholder" },
-  { key: "accent", label: "Accent", desc: "CTA 按钮、链接、Badge、选中状态" },
-  { key: "warning", label: "Warning", desc: "警告提示背景和文字" },
-  { key: "success", label: "Success", desc: "成功提示背景和文字" },
+  { key: "bg", label: "Page background", desc: "page bg, section bg" },
+  { key: "surface", label: "Surface", desc: "card / navbar / footer / input bg" },
+  { key: "textPrimary", label: "Text primary", desc: "headings, nav links, button text" },
+  { key: "textSecondary", label: "Text secondary", desc: "body text, subtitles, placeholder" },
+  { key: "accent", label: "Accent", desc: "CTA buttons, links, badges, active state" },
+  { key: "warning", label: "Warning", desc: "warning bg and text" },
+  { key: "success", label: "Success", desc: "success bg and text" },
 ];
 
 export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub }) {
@@ -29,7 +29,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
   return (
     <>
       {/* Colors — fixed semantic roles */}
-      <Section number="1a" title="Colors" subtitle="调色板" isOpen={openSub.colors} onToggle={() => toggleSub("colors")} nested>
+      <Section number="1a" title="Colors" subtitle="palette" isOpen={openSub.colors} onToggle={() => toggleSub("colors")} nested>
         {COLOR_ROLES.map(role => (
           <ColorRow
             key={role.key}
@@ -42,7 +42,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       </Section>
 
       {/* Typography */}
-      <Section number="1b" title="Typography" subtitle="文字层级" isOpen={openSub.typography} onToggle={() => toggleSub("typography")} nested>
+      <Section number="1b" title="Typography" subtitle="type scale" isOpen={openSub.typography} onToggle={() => toggleSub("typography")} nested>
         <div style={{ display: "flex", gap: t.gap.md, flexWrap: "wrap", marginBottom: t.font.lg + 1 }}>
           <Input label="Heading Font" value={state.headingFont} onChange={v => update("headingFont", v)} placeholder="e.g. Syne, Playfair Display" />
           <Input label="Body Font" value={state.bodyFont} onChange={v => update("bodyFont", v)} placeholder="e.g. JetBrains Mono, Inter" />
@@ -73,7 +73,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       </Section>
 
       {/* Spacing */}
-      <Section number="1c" title="Spacing" subtitle="间距" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")} nested>
+      <Section number="1c" title="Spacing" subtitle="spacing" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")} nested>
         {/* Density — required, pick one */}
         <div style={{ marginBottom: t.space.lg }}>
           <label style={{
