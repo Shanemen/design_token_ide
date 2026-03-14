@@ -3,6 +3,8 @@ import { getSpacing } from "../spacingPresets";
 
 export default function TokensPreview({ tokens, openSections, selectedLayout, theme, scrollTarget }) {
   const [hoverDemo, setHoverDemo] = useState(false);
+  const [btnHover, setBtnHover] = useState(null);
+  const [btnActive, setBtnActive] = useState(null);
   const scrollRef = useRef(null);
 
   // IDE theme (for chrome/labels)
@@ -74,6 +76,16 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
     : tokens.easingStyle === "ease-out" ? "cubic-bezier(0.22, 1, 0.36, 1)"
     : tokens.easingStyle === "ease-in-out" ? "cubic-bezier(0.45, 0, 0.55, 1)"
     : "linear";
+
+  // Three-tier shadow system for depth
+  const shadow = {
+    sm: "0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1)",
+    md: "0 2px 4px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08)",
+    lg: "0 4px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1)",
+  };
+
+  // Precise per-property transition
+  const transitionPrecise = `transform ${dur}ms ${easing}, box-shadow 250ms ease-out, background-color 150ms ease, color 150ms ease, border-color 150ms ease`;
 
   const googleFonts = [hFont, bFont]
     .filter(f => f && !["JetBrains Mono", "Space Grotesk"].includes(f))
@@ -468,19 +480,35 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             return (
               <div key={size} style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, minWidth: 20, opacity: 0.4 }}>{size}</span>
-                {(comp.Button?.variants || ["primary", "secondary", "ghost"]).map(v => (
-                  <button key={v} style={{
-                    padding: `${Math.round(sp.inlineY * scale)}px ${Math.round(sp.inlineX * scale)}px`,
-                    borderRadius: r("Button"),
-                    fontFamily: `'${bFont}', monospace`,
-                    fontSize: Math.round(13 * scale),
-                    cursor: "pointer",
-                    transition: `all ${dur}ms ${easing}`,
-                    ...(v === "primary" ? { background: accent, color: "#fff", border: "none", fontWeight: 500 }
-                      : v === "secondary" ? { background: "transparent", color: textPrimary, border: hasBorder("Button") ? `${bw}px solid ${bc}` : "none" }
-                      : { background: "transparent", color: accent, border: "none" }),
-                  }}>{v.charAt(0).toUpperCase() + v.slice(1)}</button>
-                ))}
+                {(comp.Button?.variants || ["primary", "secondary", "ghost"]).map(v => {
+                  const btnKey = `${size}-${v}`;
+                  const isHover = btnHover === btnKey;
+                  const isActive = btnActive === btnKey;
+                  return (
+                    <button
+                      key={v}
+                      onMouseEnter={() => setBtnHover(btnKey)}
+                      onMouseLeave={() => { setBtnHover(null); setBtnActive(null); }}
+                      onMouseDown={() => setBtnActive(btnKey)}
+                      onMouseUp={() => setBtnActive(null)}
+                      style={{
+                        padding: `${Math.round(sp.inlineY * scale)}px ${Math.round(sp.inlineX * scale)}px`,
+                        borderRadius: r("Button"),
+                        fontFamily: `'${bFont}', monospace`,
+                        fontSize: Math.round(13 * scale),
+                        cursor: "pointer",
+                        transition: transitionPrecise,
+                        transform: isActive ? "scale(0.97)" : isHover ? "translateY(-1px)" : "none",
+                        boxShadow: v === "primary"
+                          ? (isActive ? shadow.sm : isHover ? shadow.md : shadow.sm)
+                          : "none",
+                        ...(v === "primary" ? { background: accent, color: "#fff", border: "none", fontWeight: 500 }
+                          : v === "secondary" ? { background: "transparent", color: textPrimary, border: hasBorder("Button") ? `${bw}px solid ${bc}` : "none" }
+                          : { background: "transparent", color: accent, border: "none" }),
+                      }}
+                    >{v.charAt(0).toUpperCase() + v.slice(1)}</button>
+                  );
+                })}
               </div>
             );
           })}
@@ -653,8 +681,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                     borderRadius: r("Card"),
                     border: hasBorder("Card") ? `${bw}px solid ${t.border}` : "none",
                     cursor: "pointer",
-                    transition: `all ${dur}ms ${easing}`,
+                    transition: transitionPrecise,
                     transform: hoverDemo === n && (comp.Card?.hoverEffect !== false) ? "translateY(-2px)" : "none",
+                    boxShadow: hoverDemo === n && (comp.Card?.hoverEffect !== false) ? shadow.lg : shadow.md,
                   }}
                 >
                   {isHoriz ? (
@@ -662,17 +691,32 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                       width: 100,
                       height: Math.round(100 * (rh / rw)),
                       borderRadius: Math.max(radius - 4, 2),
-                      background: `${accent}18`,
+                      overflow: "hidden",
                       flexShrink: 0,
-                    }} />
+                    }}>
+                      <div style={{
+                        width: "100%",
+                        height: "100%",
+                        background: `${accent}18`,
+                        transition: "transform 300ms ease-out",
+                        transform: hoverDemo === n ? "scale(1.05)" : "scale(1)",
+                      }} />
+                    </div>
                   ) : (
                     <div style={{
                       width: "100%",
-                      paddingBottom: thumbPct,
                       borderRadius: Math.max(radius - 4, 2),
-                      background: `${accent}18`,
+                      overflow: "hidden",
                       marginBottom: sp.element,
-                    }} />
+                    }}>
+                      <div style={{
+                        width: "100%",
+                        paddingBottom: thumbPct,
+                        background: `${accent}18`,
+                        transition: "transform 300ms ease-out",
+                        transform: hoverDemo === n ? "scale(1.05)" : "scale(1)",
+                      }} />
+                    </div>
                   )}
                   <div>
                     <div style={{
