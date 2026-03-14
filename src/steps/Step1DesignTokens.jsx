@@ -18,7 +18,7 @@ const COLOR_ROLES = [
   { key: "success", label: "Success", desc: "success bg and text" },
 ];
 
-export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub }) {
+export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub, scrollToSection }) {
   const t = useContext(ThemeContext);
   const update = (key, value) => dispatch({ type: "SET_FIELD", key, value });
 
@@ -89,7 +89,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
             {Object.entries(DENSITY_PRESETS).map(([key, preset]) => (
               <button
                 key={key}
-                onClick={() => update("density", key)}
+                onClick={() => { update("density", key); scrollToSection?.("spacing"); }}
                 style={{
                   flex: 1,
                   padding: `${t.font.xs}px ${t.space.md}px`,
@@ -162,7 +162,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
             {MAX_WIDTH_OPTIONS.map(opt => (
               <button
                 key={opt.value}
-                onClick={() => update("maxContentWidth", opt.value)}
+                onClick={() => { update("maxContentWidth", opt.value); scrollToSection?.("spacing"); }}
                 style={{
                   flex: 1,
                   padding: `${t.font.xs}px ${t.space.md}px`,

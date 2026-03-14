@@ -380,19 +380,20 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 : Math.round((parseInt(tokens.maxContentWidth) || 1200) / 1440 * 100);
               return (
                 <div style={{
-                  background: `${t.border}33`,
+                  background: `${textSecondary}15`,
                   borderRadius: radius,
                   padding: `${sp.element + 4}px ${sp.page}px`,
                   display: "flex",
                   justifyContent: "center",
                   minHeight: 48,
                   alignItems: "stretch",
+                  border: `1px solid ${textSecondary}20`,
                 }}>
                   <div style={{
                     width: `${widthPercent}%`,
-                    background: bg,
+                    background: surface,
                     borderRadius: Math.max(radius - 4, 2),
-                    border: `1px solid ${t.border}`,
+                    border: `1px solid ${textSecondary}20`,
                     padding: `${sp.element}px ${sp.block}px`,
                     textAlign: "center",
                     display: "flex",

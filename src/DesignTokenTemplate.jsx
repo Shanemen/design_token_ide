@@ -126,7 +126,7 @@ export default function DesignTokenTemplate() {
           {activeTab === "editor" && (<>
             {/* Step 1: Design Tokens */}
             <Section number={1} title="Design Tokens" subtitle="atomic design decisions" isOpen={openSections["step-1"]} onToggle={() => toggle("step-1")}>
-              <Step1DesignTokens state={state} dispatch={dispatch} openSub={openSub} toggleSub={toggleSub} />
+              <Step1DesignTokens state={state} dispatch={dispatch} openSub={openSub} toggleSub={toggleSub} scrollToSection={(key) => { scrollCounterRef.current += 1; setScrollTarget({ key, counter: scrollCounterRef.current }); }} />
             </Section>
 
             {/* Step 2: Components */}
