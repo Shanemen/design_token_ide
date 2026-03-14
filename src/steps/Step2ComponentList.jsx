@@ -18,49 +18,67 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
     }}>{label}</div>
   );
 
-  const ComponentCard = ({ comp }) => (
-    <button
-      onClick={() => onSelect(comp.id)}
-      style={{
-        flex: "1 1 calc(50% - 6px)",
-        minWidth: 160,
-        padding: "14px 16px",
-        borderRadius: 10,
-        border: `1px solid ${t.border}`,
-        background: t.inputBg,
-        cursor: "pointer",
-        textAlign: "left",
-        transition: "all 0.15s",
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-      }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent + "50"; e.currentTarget.style.background = t.accent + "08"; }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.background = t.inputBg; }}
-    >
-      <span style={{
-        fontSize: 18,
-        color: t.accent,
-        opacity: 0.7,
-        width: 28,
-        textAlign: "center",
-      }}>{comp.icon}</span>
-      <div>
-        <div style={{
-          fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: 14,
-          fontWeight: 500,
-          color: t.text,
-        }}>{comp.label}</div>
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
-          color: t.dim,
-          marginTop: 2,
-        }}>{comp.desc}</div>
-      </div>
-    </button>
-  );
+  const visited = state.visitedSections || {};
+
+  const ComponentCard = ({ comp }) => {
+    const isVisited = !!visited[`comp-${comp.id}`];
+    return (
+      <button
+        onClick={() => onSelect(comp.id)}
+        style={{
+          flex: "1 1 calc(50% - 6px)",
+          minWidth: 160,
+          padding: "14px 16px",
+          borderRadius: 10,
+          border: `1px solid ${t.border}`,
+          background: t.inputBg,
+          cursor: "pointer",
+          textAlign: "left",
+          transition: "all 0.15s",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          position: "relative",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent + "50"; e.currentTarget.style.background = t.accent + "08"; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; e.currentTarget.style.background = t.inputBg; }}
+      >
+        <span style={{
+          fontSize: 18,
+          color: t.accent,
+          opacity: 0.7,
+          width: 28,
+          textAlign: "center",
+        }}>{comp.icon}</span>
+        <div>
+          <div style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 14,
+            fontWeight: 500,
+            color: t.text,
+          }}>{comp.label}</div>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            color: t.dim,
+            marginTop: 2,
+          }}>{comp.desc}</div>
+        </div>
+        {isVisited && (
+          <span style={{
+            position: "absolute",
+            top: 8,
+            right: 10,
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            background: t.accent,
+            opacity: 0.7,
+          }} />
+        )}
+      </button>
+    );
+  };
 
   return (
     <div>
