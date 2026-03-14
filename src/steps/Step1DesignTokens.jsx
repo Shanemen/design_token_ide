@@ -162,7 +162,7 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub,
             {MAX_WIDTH_OPTIONS.map(opt => (
               <button
                 key={opt.value}
-                onClick={() => { update("maxContentWidth", opt.value); scrollToSection?.("spacing"); }}
+                onClick={() => { update("maxContentWidth", opt.value); scrollToSection?.("spacing-maxwidth"); }}
                 style={{
                   flex: 1,
                   padding: `${t.font.xs}px ${t.space.md}px`,

@@ -370,7 +370,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           </div>
 
           {/* Page padding + max width */}
-          <div>
+          <div data-section="spacing-maxwidth">
             <div style={subLabel}>PAGE PADDING · MAX WIDTH</div>
             {(() => {
               const widthPercent = tokens.maxContentWidth === "full" ? 100
