@@ -69,12 +69,11 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
             position: "absolute",
             top: 8,
             right: 10,
-            width: 7,
-            height: 7,
-            borderRadius: "50%",
-            background: t.accent,
-            opacity: 0.7,
-          }} />
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 12,
+            color: t.accent,
+            lineHeight: 1,
+          }}>✓</span>
         )}
       </button>
     );
