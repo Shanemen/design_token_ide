@@ -9,7 +9,7 @@ const BORDER_COMPONENTS = [
   { id: "Avatar", desc: "Profile image border", defaultOn: false },
 ];
 
-export default function Step2BorderConfig({ state, dispatch, onBack }) {
+export default function Step2BorderConfig({ state, dispatch, onBack, scrollToSection }) {
   const t = useContext(ThemeContext);
   const update = (key, value) => dispatch({ type: "SET_FIELD", key, value });
   const borderComps = state.borderComponents || {};
@@ -22,6 +22,7 @@ export default function Step2BorderConfig({ state, dispatch, onBack }) {
       key: "borderComponents",
       value: { ...borderComps, [compId]: !borderComps[compId] },
     });
+    scrollToSection?.(`comp-${compId}`);
   };
 
   return (

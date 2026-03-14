@@ -131,7 +131,7 @@ export default function DesignTokenTemplate() {
 
             {/* Step 2: Components */}
             <Section number={2} title="Components" subtitle="parts" isOpen={openSections["step-2"]} onToggle={() => toggle("step-2")}>
-              <Step2Components activeComponent={state.activeComponent} components={state.components} dispatch={dispatch} state={state} />
+              <Step2Components activeComponent={state.activeComponent} components={state.components} dispatch={dispatch} state={state} scrollToSection={(key) => { scrollCounterRef.current += 1; setScrollTarget({ key, counter: scrollCounterRef.current }); }} />
             </Section>
 
             {/* Step 3: Responsive */}

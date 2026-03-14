@@ -14,13 +14,18 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const visited = tokens.visitedSections || {};
   const hasAnyVisited = Object.keys(visited).length > 0;
 
-  // Auto-scroll when user opens a section on the left
+  // Auto-scroll when user opens a section or changes a value — skip if already visible
   useEffect(() => {
     if (!scrollTarget || !scrollRef.current) return;
     const key = scrollTarget.key;
     setTimeout(() => {
-      const el = scrollRef.current?.querySelector(`[data-section="${key}"]`);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const container = scrollRef.current;
+      const el = container?.querySelector(`[data-section="${key}"]`);
+      if (!el) return;
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const isVisible = elRect.top >= containerRect.top && elRect.top < containerRect.bottom - 40;
+      if (!isVisible) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 150);
   }, [scrollTarget]);
 

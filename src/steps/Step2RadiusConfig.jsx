@@ -4,13 +4,14 @@ import Input from "../shared/Input";
 
 const RADIUS_COMPONENTS = ["Button", "Badge", "Avatar", "Card"];
 
-export default function Step2RadiusConfig({ state, dispatch, onBack }) {
+export default function Step2RadiusConfig({ state, dispatch, onBack, scrollToSection }) {
   const t = useContext(ThemeContext);
   const overrides = state.radiusOverrides || {};
   const defaultRadius = state.borderRadius || "8";
 
   const setOverride = (compId, value) => {
     dispatch({ type: "SET_FIELD", key: "radiusOverrides", value: { ...overrides, [compId]: value } });
+    scrollToSection?.(`comp-${compId}`);
   };
 
   return (
