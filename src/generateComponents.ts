@@ -925,7 +925,7 @@ function generateFooterCode(s: DesignState): string {
     c += `        <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)" }}>© {new Date().getFullYear()} Company</span>\n`;
     c += `      </div>\n`;
   } else {
-    c += `      <div style={{ display: "flex", gap: "var(--space-section)", marginBottom: "var(--space-block)" }}>\n`;
+    c += `      <div style={{ display: "flex", gap: "var(--space-content)", marginBottom: "var(--space-block)" }}>\n`;
     c += `        {columns.map(col => (\n`;
     c += `          <div key={col.title} style={{ flex: 1 }}>\n`;
     c += `            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "var(--space-element)" }}>{col.title}</div>\n`;
