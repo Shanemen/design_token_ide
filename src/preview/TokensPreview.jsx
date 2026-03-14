@@ -360,25 +360,41 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           {/* Page padding + max width */}
           <div>
             <div style={subLabel}>PAGE PADDING · MAX WIDTH</div>
-            <div style={{
-              background: `${t.border}33`,
-              borderRadius: radius,
-              padding: `${sp.element}px ${sp.page}px`,
-              display: "flex",
-              justifyContent: "center",
-            }}>
-              <div style={{
-                width: "100%",
-                maxWidth: tokens.maxContentWidth === "full" ? "100%" : `${Math.round((parseInt(tokens.maxContentWidth) || 1200) / 1440 * 100)}%`,
-                background: bg,
-                borderRadius: Math.max(radius - 4, 2),
-                border: `1px solid ${t.border}`,
-                padding: `${sp.element}px ${sp.block}px`,
-                textAlign: "center",
-              }}>
-                <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>Content area</div>
-              </div>
-            </div>
+            {(() => {
+              const widthPercent = tokens.maxContentWidth === "full" ? 100
+                : tokens.maxContentWidth === "1440" ? 100
+                : tokens.maxContentWidth === "1200" ? 78
+                : tokens.maxContentWidth === "960" ? 60
+                : Math.round((parseInt(tokens.maxContentWidth) || 1200) / 1440 * 100);
+              return (
+                <div style={{
+                  background: `${t.border}33`,
+                  borderRadius: radius,
+                  padding: `${sp.element + 4}px ${sp.page}px`,
+                  display: "flex",
+                  justifyContent: "center",
+                  minHeight: 48,
+                  alignItems: "stretch",
+                }}>
+                  <div style={{
+                    width: `${widthPercent}%`,
+                    background: bg,
+                    borderRadius: Math.max(radius - 4, 2),
+                    border: `1px solid ${t.border}`,
+                    padding: `${sp.element}px ${sp.block}px`,
+                    textAlign: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "width 0.3s ease",
+                  }}>
+                    <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>
+                      Content area
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginTop: 4, display: "block" }}>
               page padding: {sp.page}px · max-width: {tokens.maxContentWidth === "full" ? "100%" : tokens.maxContentWidth + "px"}
             </span>
