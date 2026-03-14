@@ -1,8 +1,10 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ThemeContext } from "./theme";
 
 export default function Header({ projectName, onProjectNameChange, activeTab, onTabChange, mode, onModeToggle }) {
   const t = useContext(ThemeContext);
+  const [hovered, setHovered] = useState(null);
+  const [pressed, setPressed] = useState(null);
 
   return (
     <div style={{
@@ -59,38 +61,52 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
         {[
           { id: "about", label: "About" },
           { id: "feedback", label: "Feedback" },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(activeTab === tab.id ? "editor" : tab.id)}
-            style={{
-              padding: `${t.space.sm}px ${t.space.md}px`,
-              borderRadius: t.radius.sm,
-              border: "none",
-              background: activeTab === tab.id ? `${t.accent}12` : "transparent",
-              color: activeTab === tab.id ? t.accent : t.dim,
-              fontSize: t.font.sm + 1,
-              fontFamily: "'JetBrains Mono', monospace",
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+        ].map(tab => {
+          const isActive = activeTab === tab.id;
+          const isHovered = hovered === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(isActive ? "editor" : tab.id)}
+              onMouseEnter={() => setHovered(tab.id)}
+              onMouseLeave={() => { setHovered(null); setPressed(null); }}
+              onMouseDown={() => setPressed(tab.id)}
+              onMouseUp={() => setPressed(null)}
+              style={{
+                padding: `${t.space.sm}px ${t.space.md}px`,
+                borderRadius: t.radius.sm,
+                border: "none",
+                background: isActive ? t.pillActiveBg : isHovered ? `${t.dim}10` : "transparent",
+                color: isActive ? t.accent : isHovered ? t.text : t.dim,
+                fontSize: t.font.sm + 1,
+                fontFamily: "'JetBrains Mono', monospace",
+                cursor: "pointer",
+                transition: "background 0.15s, color 0.15s, transform 0.1s",
+                transform: pressed === tab.id ? "scale(0.95)" : "none",
+              }}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
         <button
           onClick={onModeToggle}
+          onMouseEnter={() => setHovered("mode")}
+          onMouseLeave={() => { setHovered(null); setPressed(null); }}
+          onMouseDown={() => setPressed("mode")}
+          onMouseUp={() => setPressed(null)}
           style={{
             padding: `${t.space.sm}px ${t.space.md}px`,
             borderRadius: t.radius.full,
-            border: `1px solid ${t.border}`,
-            background: t.surface,
-            color: t.dim,
+            border: `1px solid ${hovered === "mode" ? t.pillActiveBorder : t.border}`,
+            background: hovered === "mode" ? t.pillActiveBg : t.surface,
+            color: hovered === "mode" ? t.pillActiveText : t.dim,
             fontSize: t.font.sm + 1,
             fontFamily: "'JetBrains Mono', monospace",
             cursor: "pointer",
-            transition: "all 0.2s",
+            transition: "background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s",
             marginLeft: t.gap.sm,
+            transform: pressed === "mode" ? "scale(0.95)" : "none",
           }}
         >
           {mode === "light" ? "☽ Dark" : "☀ Light"}

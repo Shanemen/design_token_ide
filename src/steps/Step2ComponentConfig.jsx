@@ -79,8 +79,8 @@ export default function Step2ComponentConfig({ componentId, config, onChange, on
                   marginTop: t.gap.sm,
                   padding: `${t.gap.sm}px ${t.space.md}px`,
                   borderRadius: t.radius.sm,
-                  background: selected.canAI ? "#22c55e10" : `${t.accent}08`,
-                  border: `1px solid ${selected.canAI ? "#22c55e20" : t.accent + "20"}`,
+                  background: selected.canAI ? "#22c55e10" : t.pillActiveBg,
+                  border: `1px solid ${selected.canAI ? "#22c55e20" : t.pillActiveBorder}`,
                 }}>
                   <span style={{
                     fontFamily: "'JetBrains Mono', monospace",

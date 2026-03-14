@@ -74,8 +74,8 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
           marginBottom: t.gap.sm,
           padding: `${t.gap.sm}px ${t.space.md}px`,
           borderRadius: t.radius.md,
-          background: overrides[compId] ? `${t.accent}08` : "transparent",
-          border: `1px solid ${overrides[compId] ? t.accent + "30" : t.border}`,
+          background: overrides[compId] ? t.pillActiveBg : "transparent",
+          border: `1px solid ${overrides[compId] ? t.pillActiveBorder : t.border}`,
         }}>
           <span style={{
             fontFamily: "'Space Grotesk', sans-serif",

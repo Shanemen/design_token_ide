@@ -147,8 +147,8 @@ export default function Step2BorderConfig({ state, dispatch, onBack }) {
               marginBottom: t.gap.sm,
               padding: `${t.font.xs}px ${t.font.md}px`,
               borderRadius: t.radius.md,
-              background: isOn ? `${t.accent}08` : "transparent",
-              border: `1px solid ${isOn ? t.accent + "30" : t.border}`,
+              background: isOn ? t.pillActiveBg : "transparent",
+              border: `1px solid ${isOn ? t.pillActiveBorder : t.border}`,
               cursor: "pointer",
               transition: "all 0.15s",
             }}

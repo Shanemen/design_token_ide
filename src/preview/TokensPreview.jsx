@@ -1016,17 +1016,19 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               </div>
               {comp.Footer?.hasNewsletter && (
                 <div style={{
-                  display: "flex", gap: 8, marginBottom: 12,
+                  display: "flex", gap: 8, marginBottom: 12, alignItems: "center",
                 }}>
                   <div style={{
-                    flex: 1, padding: `${Math.round(sp.inlineY * 0.6)}px ${sp.inlineX}px`,
+                    flex: 1, padding: `${Math.max(Math.round(sp.inlineY * 0.6), 4)}px ${sp.inlineX}px`,
                     border: `${bw}px solid ${textSecondary}30`, borderRadius: radius,
                     fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary,
+                    lineHeight: 1.4,
                   }}>Enter your email</div>
                   <span style={{
-                    padding: `${Math.round(sp.inlineY * 0.6)}px ${sp.inlineX}px`,
+                    padding: `${Math.max(Math.round(sp.inlineY * 0.6), 4)}px ${sp.inlineX}px`,
                     background: accent, color: "#fff", borderRadius: radius, fontSize: 11,
                     fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
+                    lineHeight: 1.4, whiteSpace: "nowrap",
                   }}>Subscribe</span>
                 </div>
               )}
@@ -1076,6 +1078,42 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
               flexShrink: 0,
             }}>Sign Up Free</span>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {/* -- Responsive (no visual preview) -- */}
+      {visited["step-3"] && (
+      <div data-section="step-3" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
+        {sectionLabel("Responsive")}
+        <div style={{
+          padding: 20,
+          background: t.surface,
+          borderRadius: 10,
+          border: `1px dashed ${t.border}`,
+          textAlign: "center",
+        }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.dim, opacity: 0.6, lineHeight: 1.6 }}>
+            No visual preview — responsive settings are applied in the generated code output.
+          </div>
+        </div>
+      </div>
+      )}
+
+      {/* -- Constraints (no visual preview) -- */}
+      {visited["step-4"] && (
+      <div data-section="step-4" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
+        {sectionLabel("Constraints")}
+        <div style={{
+          padding: 20,
+          background: t.surface,
+          borderRadius: 10,
+          border: `1px dashed ${t.border}`,
+          textAlign: "center",
+        }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: t.dim, opacity: 0.6, lineHeight: 1.6 }}>
+            No visual preview — constraints are included as guidelines in the generated output.
           </div>
         </div>
       </div>

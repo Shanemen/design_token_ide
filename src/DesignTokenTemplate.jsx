@@ -33,6 +33,8 @@ export default function DesignTokenTemplate() {
   const [activeTab, setActiveTab] = useState("editor");
   const [generating, setGenerating] = useState(false);
   const [generated, setGenerated] = useState(false);
+  const [btnHover, setBtnHover] = useState(null);
+  const [btnPress, setBtnPress] = useState(null);
 
   const scrollCounterRef = useRef(0);
   const [scrollTarget, setScrollTarget] = useState(null);
@@ -153,6 +155,10 @@ export default function DesignTokenTemplate() {
               <button
                 onClick={handleGenerate}
                 disabled={generating}
+                onMouseEnter={() => setBtnHover("generate")}
+                onMouseLeave={() => { setBtnHover(null); setBtnPress(null); }}
+                onMouseDown={() => setBtnPress("generate")}
+                onMouseUp={() => setBtnPress(null)}
                 style={{
                   width: "100%",
                   padding: `${t.space.md}px 0`,
@@ -164,9 +170,11 @@ export default function DesignTokenTemplate() {
                   fontWeight: 600,
                   fontFamily: "'Space Grotesk', sans-serif",
                   cursor: generating ? "wait" : "pointer",
-                  transition: "all 0.2s",
+                  transition: "background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.2s",
                   letterSpacing: 0.5,
                   opacity: generating ? 0.7 : 1,
+                  transform: btnPress === "generate" ? "scale(0.97)" : btnHover === "generate" && !generating ? "translateY(-1px)" : "none",
+                  boxShadow: btnHover === "generate" && !generating && !generated ? "0 4px 12px rgba(192,75,34,0.3)" : "none",
                 }}
               >
                 {generated ? "✓ Downloaded" : generating ? "Generating…" : "Generate Component API"}
@@ -222,15 +230,21 @@ export default function DesignTokenTemplate() {
                   setOpenSub({});
                 }
               }}
+              onMouseEnter={() => setBtnHover("reset")}
+              onMouseLeave={() => { setBtnHover(null); setBtnPress(null); }}
+              onMouseDown={() => setBtnPress("reset")}
+              onMouseUp={() => setBtnPress(null)}
               style={{
                 padding: `${t.space.xs}px ${t.gap.sm + 2}px`,
                 borderRadius: t.radius.lg,
-                border: `1px solid ${t.border}`,
-                background: "transparent",
-                color: t.dim,
+                border: `1px solid ${btnHover === "reset" ? t.pillActiveBorder : t.border}`,
+                background: btnHover === "reset" ? t.pillActiveBg : "transparent",
+                color: btnHover === "reset" ? t.pillActiveText : t.dim,
                 fontSize: t.font.sm,
                 fontFamily: "'JetBrains Mono', monospace",
                 cursor: "pointer",
+                transition: "background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s",
+                transform: btnPress === "reset" ? "scale(0.95)" : "none",
               }}
             >
               reset

@@ -30,8 +30,8 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
           minWidth: 160,
           padding: `${t.font.md}px ${t.gap.lg}px`,
           borderRadius: t.radius.md + 2,
-          border: `1px solid ${isVisited ? t.accent + "50" : t.border}`,
-          background: isVisited ? t.accent + "08" : t.inputBg,
+          border: `1px solid ${isVisited ? t.pillActiveBorder : t.border}`,
+          background: isVisited ? t.pillActiveBg : t.inputBg,
           cursor: "pointer",
           textAlign: "left",
           transition: "all 0.15s",
@@ -40,8 +40,8 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
           gap: t.gap.md,
           position: "relative",
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent + "50"; e.currentTarget.style.background = t.accent + "08"; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = isVisited ? t.accent + "50" : t.border; e.currentTarget.style.background = isVisited ? t.accent + "08" : t.inputBg; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = t.pillActiveBorder; e.currentTarget.style.background = t.pillActiveBg; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = isVisited ? t.pillActiveBorder : t.border; e.currentTarget.style.background = isVisited ? t.pillActiveBg : t.inputBg; }}
       >
         <span style={{
           fontSize: t.font.lg + 1,
