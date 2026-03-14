@@ -187,9 +187,9 @@ export default function DesignTokenTemplate() {
                 textAlign: "center",
                 lineHeight: 1.6,
               }}>
-                CLAUDE.md + TypeScript + CSS Variables
+                Downloads a ready-to-use design system for any coding tool
                 <br />
-                tokens · primitives · blocks · sections
+                Tokens, components, and instructions in one zip
               </div>
             </div>
           </>)}

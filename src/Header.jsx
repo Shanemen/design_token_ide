@@ -32,7 +32,7 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
             padding: 0,
           }}
         >
-          Design Token IDE
+          <span style={{ fontSize: t.font.base }}>✦</span> Design Token IDE
         </button>
         <span style={{ color: t.border, fontSize: t.font.md }}>·</span>
         <input
