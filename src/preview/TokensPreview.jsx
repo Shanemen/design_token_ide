@@ -618,7 +618,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 fontSize: 11,
                 fontWeight: 500,
                 ...(comp.Badge?.variant === "outline"
-                  ? { background: "transparent", color: accent, border: hasBorder("Badge") ? `1px solid ${accent}` : "none" }
+                  ? { background: "transparent", color: accent, border: `1px solid ${accent}` }
                   : { background: `${accent}20`, color: accent, border: "1px solid transparent" }),
               }}>{label}</span>
             ))}
