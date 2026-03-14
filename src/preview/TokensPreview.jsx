@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { getSpacing } from "../spacingPresets";
 
 export default function TokensPreview({ tokens, openSections, selectedLayout, theme, scrollTarget }) {
   const [hoverDemo, setHoverDemo] = useState(false);
@@ -51,7 +52,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const warning = colors.warning || "#F59E0B";
   const success = colors.success || "#10B981";
 
-  const densityMul = tokens.density === "airy" ? 1.5 : tokens.density === "compact" ? 0.7 : 1;
+  const sp = getSpacing(tokens.density).semantic;
 
   const defaultRadius = parseInt(tokens.borderRadius) || 8;
   const bw = parseInt(tokens.borderWidth) || 1;
@@ -66,7 +67,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const b = (compId) => hasBorder(compId) ? `${bw}px solid ${bc}` : "none";
   // Alias for backward compat in non-component contexts
   const radius = defaultRadius;
-  const spacings = tokens.spacingScales.split("/").map(s => parseInt(s.trim())).filter(Boolean);
+
 
   const dur = parseInt(tokens.defaultDuration) || 300;
   const easing = tokens.easingStyle === "spring" ? "cubic-bezier(0.34, 1.56, 0.64, 1)"
@@ -120,8 +121,6 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
   const previewGap = 28;
   const sectionWrap = { marginBottom: previewGap };
   const comp = tokens.components || {};
-  const pad = spacings[0] || 8;
-  const pad2 = spacings[1] || 16;
 
   return (
     <div ref={scrollRef} style={{
@@ -224,11 +223,11 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
       </div>
       )}
 
-      {/* -- Spacing Scale -- */}
+      {/* -- Spacing — visual scenarios -- */}
       {visited["spacing"] && (
       <div data-section="spacing" style={{ animation: "previewFadeIn 0.4s ease", ...sectionWrap }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-          {sectionLabel("Spacing Scale")}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 14 }}>
+          {sectionLabel("Spacing")}
           <span style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 9,
@@ -236,25 +235,154 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             letterSpacing: 1.5,
             textTransform: "uppercase",
             opacity: 0.5,
-          }}>DENSITY: {(tokens.density || "balanced").toUpperCase()}</span>
+          }}>{(tokens.density || "balanced").toUpperCase()}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
-          {spacings.map((sp, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+
+        <div style={{
+          display: "flex", flexDirection: "column", gap: 16,
+          padding: 16,
+          background: t.surface,
+          borderRadius: 10,
+          border: `1px solid ${t.border}`,
+        }}>
+          {/* Button inline padding */}
+          <div>
+            <div style={subLabel}>INLINE PADDING (BUTTON)</div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
               <div style={{
-                width: Math.min(Math.round(sp * densityMul), 64),
-                height: Math.min(Math.round(sp * densityMul), 64),
-                borderRadius: 4,
+                padding: `${sp.inlineY}px ${sp.inlineX}px`,
                 background: accent,
-                opacity: 0.25 + (i * 0.18),
-              }} />
-              <span style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                color: t.dim,
-              }}>{Math.round(sp * densityMul)}px</span>
+                color: "#fff",
+                borderRadius: radius,
+                fontFamily: `'${bFont}', sans-serif`,
+                fontSize: 13,
+                fontWeight: 500,
+              }}>Button</div>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5 }}>
+                {sp.inlineY}px / {sp.inlineX}px
+              </span>
             </div>
-          ))}
+          </div>
+
+          {/* Card content padding */}
+          <div>
+            <div style={subLabel}>CONTENT PADDING (CARD)</div>
+            <div style={{
+              padding: sp.content,
+              background: bg,
+              borderRadius: radius,
+              border: `1px solid ${t.border}`,
+              display: "flex", flexDirection: "column", gap: sp.element,
+            }}>
+              <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 14, fontWeight: 600, color: textPrimary }}>Card Title</div>
+              <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 12, color: textSecondary }}>Body text inside card</div>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginTop: 2 }}>
+                content: {sp.content}px · element gap: {sp.element}px
+              </span>
+            </div>
+          </div>
+
+          {/* Block gap (cards side by side) */}
+          <div>
+            <div style={subLabel}>BLOCK GAP (BETWEEN CARDS)</div>
+            <div style={{ display: "flex", gap: sp.block }}>
+              {[1, 2, 3].map(n => (
+                <div key={n} style={{
+                  flex: 1,
+                  padding: sp.content,
+                  background: bg,
+                  borderRadius: radius,
+                  border: `1px solid ${t.border}`,
+                  textAlign: "center",
+                }}>
+                  <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>Card {n}</div>
+                </div>
+              ))}
+            </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginTop: 4, display: "block" }}>
+              block gap: {sp.block}px
+            </span>
+          </div>
+
+          {/* Section spacing */}
+          <div>
+            <div style={subLabel}>SECTION SPACING</div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{
+                padding: `${sp.element}px ${sp.page}px`,
+                background: bg,
+                borderRadius: radius,
+                border: `1px solid ${t.border}`,
+                textAlign: "center",
+              }}>
+                <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 13, fontWeight: 600, color: textPrimary }}>Section A</div>
+              </div>
+              {/* Dimension line between sections */}
+              <div style={{
+                height: sp.section,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}>
+                {/* Vertical dashed line */}
+                <div style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: 0,
+                  bottom: 0,
+                  borderLeft: `1px dashed ${t.dim}55`,
+                }} />
+                {/* Label */}
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 9,
+                  color: t.dim,
+                  opacity: 0.6,
+                  background: t.surface,
+                  padding: "2px 6px",
+                  borderRadius: 3,
+                  position: "relative",
+                }}>{sp.section}px</span>
+              </div>
+              <div style={{
+                padding: `${sp.element}px ${sp.page}px`,
+                background: bg,
+                borderRadius: radius,
+                border: `1px solid ${t.border}`,
+                textAlign: "center",
+              }}>
+                <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 13, fontWeight: 600, color: textPrimary }}>Section B</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Page padding + max width */}
+          <div>
+            <div style={subLabel}>PAGE PADDING · MAX WIDTH</div>
+            <div style={{
+              background: `${t.border}33`,
+              borderRadius: radius,
+              padding: `${sp.element}px ${sp.page}px`,
+              display: "flex",
+              justifyContent: "center",
+            }}>
+              <div style={{
+                width: "100%",
+                maxWidth: tokens.maxContentWidth === "full" ? "100%" : `${Math.min(parseInt(tokens.maxContentWidth) || 1200, 280)}px`,
+                background: bg,
+                borderRadius: Math.max(radius - 4, 2),
+                border: `1px solid ${t.border}`,
+                padding: `${sp.element}px ${sp.block}px`,
+                textAlign: "center",
+              }}>
+                <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>Content area</div>
+              </div>
+            </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, opacity: 0.5, marginTop: 4, display: "block" }}>
+              page padding: {sp.page}px · max-width: {tokens.maxContentWidth === "full" ? "100%" : tokens.maxContentWidth + "px"}
+            </span>
+          </div>
         </div>
       </div>
       )}
@@ -326,7 +454,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: t.dim, minWidth: 20, opacity: 0.4 }}>{size}</span>
                 {(comp.Button?.variants || ["primary", "secondary", "ghost"]).map(v => (
                   <button key={v} style={{
-                    padding: `${Math.round(pad * densityMul * scale)}px ${Math.round(pad2 * densityMul * scale)}px`,
+                    padding: `${Math.round(sp.inlineY * scale)}px ${Math.round(sp.inlineX * scale)}px`,
                     borderRadius: r("Button"),
                     fontFamily: `'${bFont}', monospace`,
                     fontSize: Math.round(13 * scale),
@@ -440,7 +568,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           <div style={{ display: "flex", gap: 8 }}>
             {["New", "Beta", "Pro"].map(label => (
               <span key={label} style={{
-                padding: `2px ${Math.round(pad * 0.8)}px`,
+                padding: `2px ${Math.round(sp.inlineY * 0.8)}px`,
                 borderRadius: Math.min(r("Badge"), 12),
                 fontFamily: `'${bFont}', monospace`,
                 fontSize: 11,
@@ -489,7 +617,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
         {/* Card — reads orientation & hover from config */}
         <div style={{ marginBottom: previewGap }}>
           {compLabel("Card", comp.Card?.orientation || "vertical")}
-          <div style={{ display: "flex", gap: Math.round(pad2 * densityMul) }}>
+          <div style={{ display: "flex", gap: sp.block }}>
             {[1, 2].map(n => {
               const isHoriz = (comp.Card?.orientation) === "horizontal";
               const ratio = comp.Card?.thumbnailRatio || "16:9";
@@ -502,9 +630,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   onMouseLeave={() => setHoverDemo(false)}
                   style={{
                     display: isHoriz ? "flex" : "block",
-                    gap: isHoriz ? Math.round(pad2 * densityMul) : 0,
+                    gap: isHoriz ? sp.block : 0,
                     flex: 1,
-                    padding: Math.round(pad2 * densityMul),
+                    padding: sp.content,
                     background: t.surface,
                     borderRadius: r("Card"),
                     border: hasBorder("Card") ? `${bw}px solid ${t.border}` : "none",
@@ -527,7 +655,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                       paddingBottom: thumbPct,
                       borderRadius: Math.max(radius - 4, 2),
                       background: `${accent}18`,
-                      marginBottom: pad || 8,
+                      marginBottom: sp.element,
                     }} />
                   )}
                   <div>
@@ -632,7 +760,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             flexDirection: (comp.Navbar?.layout) === "centered" ? "column" : "row",
             justifyContent: (comp.Navbar?.layout) === "centered" ? "center" : "space-between",
             gap: (comp.Navbar?.layout) === "centered" ? 8 : 0,
-            padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+            padding: `${sp.inlineY}px ${sp.inlineX}px`,
             background: comp.Navbar?.transparent ? "transparent" : surface,
             borderRadius: r("Navbar"),
             border: b("Navbar"),
@@ -642,12 +770,12 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               <div style={{ fontSize: 18, color: textPrimary, cursor: "pointer" }}>☰</div>
             </>) : (<>
               <div style={{ fontFamily: `'${hFont}', sans-serif`, fontSize: 14, fontWeight: 600, color: textPrimary }}>Logo</div>
-              <div style={{ display: "flex", gap: Math.round(pad2 * densityMul), alignItems: "center" }}>
+              <div style={{ display: "flex", gap: sp.block, alignItems: "center" }}>
                 {["Home", "About", "Work", "Contact"].map(item => (
                   <span key={item} style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 12, color: textSecondary, cursor: "pointer" }}>{item}</span>
                 ))}
                 <span style={{
-                  padding: `${Math.round(pad * 0.5 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                  padding: `${Math.round(sp.inlineY * 0.5)}px ${sp.inlineX}px`,
                   background: accent, color: "#fff", borderRadius: radius, fontSize: 11,
                   fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
                 }}>CTA</span>
@@ -667,9 +795,9 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             background: bg,
             borderRadius: r("Hero"),
             border: b("Hero"),
-            padding: Math.round(pad2 * 1.5 * densityMul),
+            padding: sp.content,
             display: "flex",
-            gap: Math.round(pad2 * densityMul),
+            gap: sp.block,
             alignItems: "center",
           }}>
             <div style={{ flex: 1 }}>
@@ -690,12 +818,12 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               }}>A short tagline that describes what this product does and why it matters.</div>
               <div style={{ display: "flex", gap: 8 }}>
                 <span style={{
-                  padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+                  padding: `${sp.inlineY}px ${sp.inlineX}px`,
                   background: accent, color: "#fff", borderRadius: radius, fontSize: 12,
                   fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
                 }}>Get Started</span>
                 <span style={{
-                  padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+                  padding: `${sp.inlineY}px ${sp.inlineX}px`,
                   border: `${bw}px solid ${textSecondary}40`, color: textSecondary, borderRadius: radius, fontSize: 12,
                   fontFamily: `'${bFont}', sans-serif`,
                 }}>Learn More</span>
@@ -748,7 +876,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           {(comp.Gallery?.style === "horizontal-scroll") ? (
             <div style={{
               display: "flex",
-              gap: Math.round(pad * densityMul),
+              gap: sp.block,
               overflowX: "auto",
               paddingBottom: 4,
             }}>
@@ -765,7 +893,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
           ) : (comp.Gallery?.style === "masonry") ? (
             <div style={{
               columnCount: parseInt(comp.Gallery?.columns || 3),
-              columnGap: Math.round(pad * densityMul),
+              columnGap: sp.block,
             }}>
               {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
                 <div key={i} style={{
@@ -773,7 +901,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   borderRadius: r("Gallery"),
                   background: `${accent}${10 + (i % 3) * 5}`,
                   border: b("Gallery"),
-                  marginBottom: Math.round(pad * densityMul),
+                  marginBottom: sp.block,
                   breakInside: "avoid",
                 }} />
               ))}
@@ -782,7 +910,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             <div style={{
               display: "grid",
               gridTemplateColumns: `repeat(${comp.Gallery?.columns || 3}, 1fr)`,
-              gap: Math.round(pad * densityMul),
+              gap: sp.block,
             }}>
               {Array.from({ length: parseInt(comp.Gallery?.columns || 3) * 2 }).map((_, i) => (
                 <div key={i} style={{
@@ -808,7 +936,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             background: bg,
             borderRadius: r("Footer"),
             border: b("Footer"),
-            padding: Math.round(pad2 * densityMul),
+            padding: sp.content,
           }}>
             {(comp.Footer?.structure === "simple") ? (
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -816,7 +944,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                 <span style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary }}>© 2026 Company. All rights reserved.</span>
               </div>
             ) : (<>
-              <div style={{ display: "flex", gap: Math.round(pad2 * 2 * densityMul), marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: sp.content, marginBottom: 16 }}>
                 {["Product", "Company", "Resources"].map(col => (
                   <div key={col} style={{ flex: 1 }}>
                     <div style={{ fontFamily: `'${bFont}', sans-serif`, fontSize: 11, fontWeight: 600, color: textPrimary, marginBottom: 8 }}>{col}</div>
@@ -831,12 +959,12 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
                   display: "flex", gap: 8, marginBottom: 12,
                 }}>
                   <div style={{
-                    flex: 1, padding: `${Math.round(pad * 0.6 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                    flex: 1, padding: `${Math.round(sp.inlineY * 0.6)}px ${sp.inlineX}px`,
                     border: `${bw}px solid ${textSecondary}30`, borderRadius: radius,
                     fontFamily: `'${bFont}', sans-serif`, fontSize: 11, color: textSecondary,
                   }}>Enter your email</div>
                   <span style={{
-                    padding: `${Math.round(pad * 0.6 * densityMul)}px ${Math.round(pad * densityMul)}px`,
+                    padding: `${Math.round(sp.inlineY * 0.6)}px ${sp.inlineX}px`,
                     background: accent, color: "#fff", borderRadius: radius, fontSize: 11,
                     fontFamily: `'${bFont}', sans-serif`, fontWeight: 500,
                   }}>Subscribe</span>
@@ -861,7 +989,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
             background: (comp.CTA?.structure === "with-background") ? accent : surface,
             borderRadius: r("CTA"),
             border: hasBorder("CTA") ? `${bw}px solid ${(comp.CTA?.structure === "with-background") ? accent : bc}` : "none",
-            padding: Math.round(pad2 * 1.5 * densityMul),
+            padding: sp.content,
             display: "flex",
             flexDirection: (comp.CTA?.structure === "left-text-right-button") ? "row" : "column",
             alignItems: "center",
@@ -881,7 +1009,7 @@ export default function TokensPreview({ tokens, openSections, selectedLayout, th
               }}>Join thousands of happy customers today.</div>
             </div>
             <span style={{
-              padding: `${Math.round(pad * densityMul)}px ${Math.round(pad2 * densityMul)}px`,
+              padding: `${sp.inlineY}px ${sp.inlineX}px`,
               background: (comp.CTA?.structure === "with-background") ? "#fff" : accent,
               color: (comp.CTA?.structure === "with-background") ? accent : "#fff",
               borderRadius: radius, fontSize: 12,

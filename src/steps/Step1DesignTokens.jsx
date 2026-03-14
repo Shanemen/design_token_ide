@@ -6,6 +6,7 @@ import ColorRow from "../shared/ColorRow";
 import TypeRow from "../shared/TypeRow";
 import Pill from "../shared/Pill";
 import AddButton from "../shared/AddButton";
+import { DENSITY_PRESETS, MAX_WIDTH_OPTIONS, SEMANTIC_LABELS } from "../spacingPresets";
 
 const COLOR_ROLES = [
   { key: "bg", label: "Page background", desc: "页面底色、section 背景" },
@@ -73,15 +74,8 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
 
       {/* Spacing */}
       <Section number="1c" title="Spacing" subtitle="间距" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")} nested>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <Input label="Base Unit (px)" value={state.spacingUnit} onChange={v => update("spacingUnit", v)} mono small />
-          <Input label="Max Width (px)" value={state.maxContentWidth} onChange={v => update("maxContentWidth", v)} mono small />
-          <Input label="Grid Columns" value={state.gridColumns} onChange={v => update("gridColumns", v)} mono small />
-        </div>
-        <Input label="Spacing Scales" value={state.spacingScales} onChange={v => update("spacingScales", v)} placeholder="8 / 16 / 32 / 64" mono />
-
-        {/* Density */}
-        <div style={{ marginBottom: 16 }}>
+        {/* Density — required, pick one */}
+        <div style={{ marginBottom: 20 }}>
           <label style={{
             display: "block",
             fontFamily: "'JetBrains Mono', monospace",
@@ -92,9 +86,103 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
             letterSpacing: 1.5,
           }}>Density</label>
           <div style={{ display: "flex", gap: 8 }}>
-            <Pill label="airy" active={state.density === "airy"} onClick={() => update("density", "airy")} />
-            <Pill label="balanced" active={state.density === "balanced"} onClick={() => update("density", "balanced")} />
-            <Pill label="compact" active={state.density === "compact"} onClick={() => update("density", "compact")} />
+            {Object.entries(DENSITY_PRESETS).map(([key, preset]) => (
+              <button
+                key={key}
+                onClick={() => update("density", key)}
+                style={{
+                  flex: 1,
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: state.density === key ? `1px solid ${t.pillActiveBorder}` : `1px solid ${t.pillBorder}`,
+                  background: state.density === key ? t.pillActiveBg : "transparent",
+                  color: state.density === key ? t.pillActiveText : t.pillText,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s",
+                }}
+              >
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+                  {preset.label}
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, opacity: 0.7 }}>
+                  {preset.desc}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Derived spacing scale — read-only reference */}
+        {(() => {
+          const preset = DENSITY_PRESETS[state.density || "balanced"];
+          return (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9,
+                color: t.dim,
+                letterSpacing: 1.5,
+                textTransform: "uppercase",
+                marginBottom: 6,
+                opacity: 0.6,
+              }}>DERIVED SPACING</div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "2px 16px",
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 10,
+                color: t.dim,
+                opacity: 0.7,
+              }}>
+                {SEMANTIC_LABELS.map(({ key, css, label }) => (
+                  <div key={key} style={{ display: "flex", justifyContent: "space-between", padding: "2px 0" }}>
+                    <span style={{ opacity: 0.6 }}>{label}</span>
+                    <span>{preset.semantic[key]}px</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Max Content Width — required, pick one */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{
+            display: "block",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            color: t.label,
+            marginBottom: 8,
+            textTransform: "uppercase",
+            letterSpacing: 1.5,
+          }}>Max Content Width</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            {MAX_WIDTH_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => update("maxContentWidth", opt.value)}
+                style={{
+                  flex: 1,
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  border: state.maxContentWidth === opt.value ? `1px solid ${t.pillActiveBorder}` : `1px solid ${t.pillBorder}`,
+                  background: state.maxContentWidth === opt.value ? t.pillActiveBg : "transparent",
+                  color: state.maxContentWidth === opt.value ? t.pillActiveText : t.pillText,
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s",
+                }}
+              >
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+                  {opt.label}
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, opacity: 0.7 }}>
+                  {opt.desc}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </Section>

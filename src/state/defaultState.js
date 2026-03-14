@@ -3,10 +3,7 @@ export const STORAGE_KEY = "design-token-template";
 export const defaultState = {
   projectName: "",
   // 1. Spacing & Layout
-  spacingUnit: "8",
-  spacingScales: "8 / 16 / 32 / 64",
   maxContentWidth: "1200",
-  gridColumns: "12",
   layoutNotes: "",
   selectedLayout: "",
   // 2. Typography

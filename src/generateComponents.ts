@@ -1,4 +1,6 @@
 import JSZip from "jszip";
+// @ts-ignore
+import { DENSITY_PRESETS, SEMANTIC_LABELS } from "./spacingPresets";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -20,12 +22,19 @@ interface Colors {
   success: string;
 }
 
+interface SpacingSemantic {
+  inlineY: number;
+  inlineX: number;
+  content: number;
+  element: number;
+  block: number;
+  section: number;
+  page: number;
+}
+
 interface DesignState {
   projectName: string;
-  spacingUnit: string;
-  spacingScales: string;
   maxContentWidth: string;
-  gridColumns: string;
   headingFont: string;
   bodyFont: string;
   typeLevels: TypeLevel[];
@@ -69,9 +78,10 @@ function easingValue(style: string): string {
   return "linear";
 }
 
-function densityMul(s: DesignState): number {
-  return s.density === "airy" ? 1.5 : s.density === "compact" ? 0.7 : 1;
+function spacingOf(s: DesignState): SpacingSemantic {
+  return (DENSITY_PRESETS[s.density || "balanced"] || DENSITY_PRESETS.balanced).semantic;
 }
+
 
 function visited(s: DesignState, key: string): boolean {
   return !!(s.visitedSections || {})[key];
@@ -109,8 +119,7 @@ function generateClaudeMD(s: DesignState): string {
   const c = s.colors;
   const hFont = s.headingFont || "sans-serif";
   const bFont = s.bodyFont || "sans-serif";
-  const dm = densityMul(s);
-  const spacings = s.spacingScales.split("/").map(v => v.trim()).filter(Boolean);
+  const sp = spacingOf(s);
   const icon = comp(s, "Icon");
 
   let md = `# Design System${s.projectName ? ` — ${s.projectName}` : ""}\n\n`;
@@ -157,11 +166,17 @@ function generateClaudeMD(s: DesignState): string {
 
   // Spacing
   md += `## Spacing & Layout\n\n`;
-  md += `- Base unit: \`--space-unit\` = ${Math.round(parseInt(s.spacingUnit) * dm)}px\n`;
-  md += `- Density: ${s.density || "balanced"} (multiplier: ${dm})\n`;
-  md += `- Scale: ${spacings.map((sp, i) => `\`--space-${i + 1}\` = ${Math.round(parseInt(sp) * dm)}px`).join(", ")}\n`;
-  md += `- Max content width: \`--max-content-width\` = ${s.maxContentWidth}px\n`;
-  md += `- Grid columns: \`--grid-columns\` = ${s.gridColumns}\n\n`;
+  md += `- Density: ${s.density || "balanced"}\n`;
+  md += `- Max content width: \`--max-content-width\` = ${s.maxContentWidth === "full" ? "100%" : s.maxContentWidth + "px"}\n\n`;
+  md += `| Variable | Value | Usage |\n`;
+  md += `|----------|-------|-------|\n`;
+  md += `| \`--space-inline-y\` | ${sp.inlineY}px | Button/Badge vertical padding |\n`;
+  md += `| \`--space-inline-x\` | ${sp.inlineX}px | Button/Badge horizontal padding |\n`;
+  md += `| \`--space-content\` | ${sp.content}px | Card/Section internal padding |\n`;
+  md += `| \`--space-element\` | ${sp.element}px | Gap between title and body, icon and text |\n`;
+  md += `| \`--space-block\` | ${sp.block}px | Gap between Cards, Gallery grid gap |\n`;
+  md += `| \`--space-section\` | ${sp.section}px | Gap between page sections |\n`;
+  md += `| \`--space-page\` | ${sp.page}px | Page margin, content to screen edge |\n\n`;
 
   // Border
   md += `## Borders & Radius\n\n`;
@@ -313,8 +328,7 @@ function generateClaudeMD(s: DesignState): string {
 // ── tokens.css ──────────────────────────────────────────────────
 
 function generateTokensCSS(s: DesignState): string {
-  const spacings = s.spacingScales.split("/").map(v => v.trim()).filter(Boolean);
-  const dm = densityMul(s);
+  const sp = spacingOf(s);
   const easing = easingValue(s.easingStyle);
   const hFont = s.headingFont || "sans-serif";
   const bFont = s.bodyFont || "sans-serif";
@@ -359,14 +373,16 @@ function generateTokensCSS(s: DesignState): string {
   css += `  --color-warning: ${s.colors.warning};\n`;
   css += `  --color-success: ${s.colors.success};\n\n`;
 
-  // Spacing (pre-multiplied by density)
-  css += `  /* ── Spacing (density: ${s.density || "balanced"}, ×${dm}) ── */\n`;
-  css += `  --space-unit: ${Math.round(parseInt(s.spacingUnit) * dm)}px;\n`;
-  spacings.forEach((sp, i) => {
-    css += `  --space-${i + 1}: ${Math.round(parseInt(sp) * dm)}px;\n`;
-  });
-  css += `  --max-content-width: ${s.maxContentWidth}px;\n`;
-  css += `  --grid-columns: ${s.gridColumns};\n\n`;
+  // Spacing — semantic tokens derived from density
+  css += `  /* ── Spacing (density: ${s.density || "balanced"}) ── */\n`;
+  css += `  --space-inline-y: ${sp.inlineY}px;\n`;
+  css += `  --space-inline-x: ${sp.inlineX}px;\n`;
+  css += `  --space-content: ${sp.content}px;\n`;
+  css += `  --space-element: ${sp.element}px;\n`;
+  css += `  --space-block: ${sp.block}px;\n`;
+  css += `  --space-section: ${sp.section}px;\n`;
+  css += `  --space-page: ${sp.page}px;\n`;
+  css += `  --max-content-width: ${s.maxContentWidth === "full" ? "100%" : s.maxContentWidth + "px"};\n\n`;
 
   // Border & Radius
   css += `  /* ── Border & Radius ── */\n`;
@@ -401,8 +417,7 @@ function generateTokensCSS(s: DesignState): string {
 // ── tokens.ts ───────────────────────────────────────────────────
 
 function generateTokensTS(s: DesignState): string {
-  const spacings = s.spacingScales.split("/").map(v => v.trim()).filter(Boolean);
-  const dm = densityMul(s);
+  const sp = spacingOf(s);
 
   let ts = `// Design Tokens — ${s.projectName || "Untitled"}\n`;
   ts += `// Generated by Design Token IDE\n\n`;
@@ -437,16 +452,18 @@ function generateTokensTS(s: DesignState): string {
 
   // Spacing
   ts += `export const spacing = {\n`;
-  ts += `  unit: ${Math.round(parseInt(s.spacingUnit) * dm)},\n`;
-  spacings.forEach((sp, i) => {
-    ts += `  s${i + 1}: ${Math.round(parseInt(sp) * dm)},\n`;
-  });
+  ts += `  inlineY: ${sp.inlineY},\n`;
+  ts += `  inlineX: ${sp.inlineX},\n`;
+  ts += `  content: ${sp.content},\n`;
+  ts += `  element: ${sp.element},\n`;
+  ts += `  block: ${sp.block},\n`;
+  ts += `  section: ${sp.section},\n`;
+  ts += `  page: ${sp.page},\n`;
   ts += `} as const;\n\n`;
 
   // Layout
   ts += `export const layout = {\n`;
-  ts += `  maxContentWidth: ${s.maxContentWidth},\n`;
-  ts += `  gridColumns: ${s.gridColumns},\n`;
+  ts += `  maxContentWidth: ${s.maxContentWidth === "full" ? '"100%"' : s.maxContentWidth},\n`;
   ts += `  radius: ${s.borderRadius},\n`;
   ts += `  borderWidth: ${s.borderWidth},\n`;
   ts += `  borderColor: "${s.borderColor}",\n`;
@@ -507,9 +524,9 @@ function generateButtonCode(s: DesignState): string {
   c += `};\n\n`;
 
   c += `const buttonSizes: Record<string, React.CSSProperties> = {\n`;
-  if (sizes.includes("sm")) c += `  sm: { padding: "calc(var(--space-1) * 0.5) var(--space-1)", fontSize: 13 },\n`;
-  if (sizes.includes("md")) c += `  md: { padding: "var(--space-1) var(--space-2)", fontSize: 14 },\n`;
-  if (sizes.includes("lg")) c += `  lg: { padding: "var(--space-2) var(--space-3)", fontSize: 16 },\n`;
+  if (sizes.includes("sm")) c += `  sm: { padding: "calc(var(--space-inline-y) * 0.5) var(--space-inline-x)", fontSize: 13 },\n`;
+  if (sizes.includes("md")) c += `  md: { padding: "var(--space-inline-y) var(--space-inline-x)", fontSize: 14 },\n`;
+  if (sizes.includes("lg")) c += `  lg: { padding: "calc(var(--space-inline-y) * 1.5) calc(var(--space-inline-x) * 1.5)", fontSize: 16 },\n`;
   c += `};\n\n`;
 
   c += `const buttonVariants: Record<string, React.CSSProperties> = {\n`;
@@ -552,11 +569,11 @@ function generateTextCode(s: DesignState): string {
   if (variants.includes("blockquote")) {
     c += `  if (variant === "blockquote") {\n`;
     if (quoteStyle === "large-italic") {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontStyle: "italic", fontWeight: 500, color: "var(--color-text-primary)", padding: "calc(var(--space-1) * 1.5) 0", margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 20, fontStyle: "italic", fontWeight: 500, color: "var(--color-text-primary)", padding: "var(--space-block) 0", margin: 0, ...style }}>{children}</blockquote>;\n`;
     } else if (quoteStyle === "centered") {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontStyle: "italic", color: "var(--color-text-primary)", textAlign: "center", padding: "var(--space-2) var(--space-3)", margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-heading)", fontSize: 16, fontStyle: "italic", color: "var(--color-text-primary)", textAlign: "center", padding: "var(--space-block) var(--space-content)", margin: 0, ...style }}>{children}</blockquote>;\n`;
     } else {
-      c += `    return <blockquote style={{ fontFamily: "var(--font-body)", fontSize: 14, lineHeight: 1.7, color: "var(--color-text-primary)", borderLeft: "3px solid var(--color-accent)", paddingLeft: "var(--space-2)", margin: 0, ...style }}>{children}</blockquote>;\n`;
+      c += `    return <blockquote style={{ fontFamily: "var(--font-body)", fontSize: 14, lineHeight: 1.7, color: "var(--color-text-primary)", borderLeft: "3px solid var(--color-accent)", paddingLeft: "var(--space-block)", margin: 0, ...style }}>{children}</blockquote>;\n`;
     }
     c += `  }\n`;
   }
@@ -581,7 +598,7 @@ function generateDividerCode(s: DesignState): string {
   c += `export function Divider({ style }: { style?: React.CSSProperties }) {\n`;
 
   if (divStyle === "space") {
-    c += `  return <div style={{ height: "var(--space-3)", ...style }} />;\n`;
+    c += `  return <div style={{ height: "var(--space-block)", ...style }} />;\n`;
   } else {
     const borderStyle = divStyle === "dashed" ? "dashed" : divStyle === "dot" ? "dotted" : "solid";
     c += `  return <hr style={{ border: "none", borderTop: "${bw}px ${borderStyle} var(--border-color)", margin: 0, ...style }} />;\n`;
@@ -601,13 +618,13 @@ function generateBadgeCode(s: DesignState): string {
 
   if (variant === "outline") {
     c += `  return (\n`;
-    c += `    <span style={{ padding: "2px var(--space-1)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "transparent", color: "var(--color-accent)"${hasBdr ? `, border: "1px solid var(--color-accent)"` : ""}, ...style }}>\n`;
+    c += `    <span style={{ padding: "2px var(--space-inline-y)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "transparent", color: "var(--color-accent)"${hasBdr ? `, border: "1px solid var(--color-accent)"` : ""}, ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </span>\n`;
     c += `  );\n`;
   } else {
     c += `  return (\n`;
-    c += `    <span style={{ padding: "2px var(--space-1)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "var(--color-surface)", color: "var(--color-accent)", ...style }}>\n`;
+    c += `    <span style={{ padding: "2px var(--space-inline-y)", borderRadius: ${r}, fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 500, background: "var(--color-surface)", color: "var(--color-accent)", ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </span>\n`;
     c += `  );\n`;
@@ -700,8 +717,8 @@ function generateCardCode(s: DesignState): string {
   if (orientation === "horizontal") {
     c += `  return (\n`;
     c += `    <div onClick={onClick} style={{\n`;
-    c += `      display: "flex", gap: "var(--space-2)",\n`;
-    c += `      padding: "var(--space-2)",\n`;
+    c += `      display: "flex", gap: "var(--space-block)",\n`;
+    c += `      padding: "var(--space-content)",\n`;
     c += `      background: "var(--color-surface)",\n`;
     c += `      borderRadius: ${r},\n`;
     if (hasBdr) c += `      border: "${bw}px solid var(--border-color)",\n`;
@@ -711,7 +728,7 @@ function generateCardCode(s: DesignState): string {
     c += `    }}>\n`;
     c += `      {thumbnail && <div style={{ width: 100, height: ${Math.round(100 * rh / rw)}, borderRadius: "calc(var(--radius) - 4px)", background: \`url(\${thumbnail}) center/cover\`, flexShrink: 0 }} />}\n`;
     c += `      <div>\n`;
-    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>}\n`;
+    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-element) / 2)" }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
     c += `        {children}\n`;
     c += `      </div>\n`;
@@ -729,8 +746,8 @@ function generateCardCode(s: DesignState): string {
     c += `      ...style,\n`;
     c += `    }}>\n`;
     c += `      {thumbnail && <div style={{ width: "100%", aspectRatio: "${rw}/${rh}", background: \`url(\${thumbnail}) center/cover\` }} />}\n`;
-    c += `      <div style={{ padding: "var(--space-2)" }}>\n`;
-    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>}\n`;
+    c += `      <div style={{ padding: "var(--space-content)" }}>\n`;
+    c += `        {title && <div style={{ fontFamily: "var(--font-heading)", fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "calc(var(--space-element) / 2)" }}>{title}</div>}\n`;
     c += `        {caption && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)" }}>{caption}</div>}\n`;
     c += `        {children}\n`;
     c += `      </div>\n`;
@@ -757,19 +774,19 @@ function generateGalleryCode(s: DesignState): string {
 
   if (galStyle === "horizontal-scroll") {
     c += `  return (\n`;
-    c += `    <div style={{ display: "flex", gap: "var(--space-1)", overflowX: "auto", ...style }}>\n`;
+    c += `    <div style={{ display: "flex", gap: "var(--space-block)", overflowX: "auto", ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </div>\n`;
     c += `  );\n`;
   } else if (galStyle === "masonry") {
     c += `  return (\n`;
-    c += `    <div style={{ columnCount: ${cols}, columnGap: "var(--space-1)", ...style }}>\n`;
+    c += `    <div style={{ columnCount: ${cols}, columnGap: "var(--space-block)", ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </div>\n`;
     c += `  );\n`;
   } else {
     c += `  return (\n`;
-    c += `    <div style={{ display: "grid", gridTemplateColumns: "repeat(${cols}, 1fr)", gap: "var(--space-1)", ...style }}>\n`;
+    c += `    <div style={{ display: "grid", gridTemplateColumns: "repeat(${cols}, 1fr)", gap: "var(--space-block)", ...style }}>\n`;
     c += `      {children}\n`;
     c += `    </div>\n`;
     c += `  );\n`;
@@ -813,29 +830,29 @@ function generateNavbarCode(s: DesignState): string {
 
   if (layout === "hamburger-only") {
     c += `  return (\n`;
-    c += `    <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-1) var(--space-2)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
+    c += `    <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-inline-y) var(--space-inline-x)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
     c += `      <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)" }}>{logo}</div>\n`;
     c += `      <button style={{ fontSize: 18, color: "var(--color-text-primary)", background: "none", border: "none", cursor: "pointer" }}>☰</button>\n`;
     c += `    </nav>\n`;
     c += `  );\n`;
   } else if (layout === "centered") {
     c += `  return (\n`;
-    c += `    <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-1)", padding: "var(--space-1) var(--space-2)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
+    c += `    <nav style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "var(--space-element)", padding: "var(--space-inline-y) var(--space-inline-x)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
     c += `      <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)" }}>{logo}</div>\n`;
-    c += `      <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>\n`;
+    c += `      <div style={{ display: "flex", gap: "var(--space-block)", alignItems: "center" }}>\n`;
     c += `        {links.map(l => <a key={l.href} href={l.href} style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)", textDecoration: "none" }}>{l.label}</a>)}\n`;
-    c += `        {cta && <a href={cta.href} style={{ padding: "var(--space-1)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{cta.label}</a>}\n`;
+    c += `        {cta && <a href={cta.href} style={{ padding: "var(--space-inline-y) var(--space-inline-x)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{cta.label}</a>}\n`;
     c += `      </div>\n`;
     c += `    </nav>\n`;
     c += `  );\n`;
   } else {
     // logo-left (default)
     c += `  return (\n`;
-    c += `    <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-1) var(--space-2)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
+    c += `    <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "var(--space-inline-y) var(--space-inline-x)", background: ${transparent ? '"transparent"' : '"var(--color-surface)"'}, borderRadius: ${r}, ${hasBorder(s, "Navbar") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}...style }}>\n`;
     c += `      <div style={{ fontFamily: "var(--font-heading)", fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)" }}>{logo}</div>\n`;
-    c += `      <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center" }}>\n`;
+    c += `      <div style={{ display: "flex", gap: "var(--space-block)", alignItems: "center" }}>\n`;
     c += `        {links.map(l => <a key={l.href} href={l.href} style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--color-text-secondary)", textDecoration: "none" }}>{l.label}</a>)}\n`;
-    c += `        {cta && <a href={cta.href} style={{ padding: "var(--space-1)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{cta.label}</a>}\n`;
+    c += `        {cta && <a href={cta.href} style={{ padding: "var(--space-inline-y) var(--space-inline-x)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{cta.label}</a>}\n`;
     c += `      </div>\n`;
     c += `    </nav>\n`;
     c += `  );\n`;
@@ -865,13 +882,13 @@ function generateHeroCode(s: DesignState): string {
 
   c += `export function Hero({ title, subtitle, primaryAction, secondaryAction, visual, style }: HeroProps) {\n`;
   c += `  return (\n`;
-  c += `    <div style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Hero") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-3)", display: "flex", gap: "var(--space-2)", alignItems: "center", ...style }}>\n`;
+  c += `    <div style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Hero") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-content)", display: "flex", gap: "var(--space-block)", alignItems: "center", ...style }}>\n`;
   c += `      <div style={{ flex: 1 }}>\n`;
-  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, margin: "0 0 var(--space-1)" }}>{title}</h1>\n`;
-  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 calc(var(--space-1) * 1.5)" }}>{subtitle}</p>}\n`;
-  c += `        <div style={{ display: "flex", gap: "var(--space-1)" }}>\n`;
-  c += `          {primaryAction && <a href={primaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{primaryAction.label}</a>}\n`;
-  c += `          {secondaryAction && <a href={secondaryAction.href} style={{ padding: "var(--space-1) var(--space-2)", border: "1px solid var(--border-color)", color: "var(--color-text-secondary)", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", textDecoration: "none" }}>{secondaryAction.label}</a>}\n`;
+  c += `        <h1 style={{ fontFamily: "var(--font-heading)", fontSize: 22, fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.2, margin: "0 0 var(--space-element)" }}>{title}</h1>\n`;
+  c += `        {subtitle && <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.6, margin: "0 0 var(--space-block)" }}>{subtitle}</p>}\n`;
+  c += `        <div style={{ display: "flex", gap: "var(--space-element)" }}>\n`;
+  c += `          {primaryAction && <a href={primaryAction.href} style={{ padding: "var(--space-inline-y) var(--space-inline-x)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none" }}>{primaryAction.label}</a>}\n`;
+  c += `          {secondaryAction && <a href={secondaryAction.href} style={{ padding: "var(--space-inline-y) var(--space-inline-x)", border: "1px solid var(--border-color)", color: "var(--color-text-secondary)", borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", textDecoration: "none" }}>{secondaryAction.label}</a>}\n`;
   c += `        </div>\n`;
   c += `      </div>\n`;
   if (vt !== "none") {
@@ -900,7 +917,7 @@ function generateFooterCode(s: DesignState): string {
 
   c += `export function Footer({ logo = "Logo", columns = [], ${newsletter ? "onSubscribe, " : ""}style }: FooterProps) {\n`;
   c += `  return (\n`;
-  c += `    <footer style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Footer") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-2)", ...style }}>\n`;
+  c += `    <footer style={{ background: "var(--color-bg)", borderRadius: ${r}, ${hasBorder(s, "Footer") ? `border: "${parseInt(s.borderWidth) || 1}px solid var(--border-color)", ` : ""}padding: "var(--space-content)", ...style }}>\n`;
 
   if (structure === "simple") {
     c += `      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>\n`;
@@ -908,21 +925,21 @@ function generateFooterCode(s: DesignState): string {
     c += `        <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)" }}>© {new Date().getFullYear()} Company</span>\n`;
     c += `      </div>\n`;
   } else {
-    c += `      <div style={{ display: "flex", gap: "var(--space-3)", marginBottom: "var(--space-2)" }}>\n`;
+    c += `      <div style={{ display: "flex", gap: "var(--space-section)", marginBottom: "var(--space-block)" }}>\n`;
     c += `        {columns.map(col => (\n`;
     c += `          <div key={col.title} style={{ flex: 1 }}>\n`;
-    c += `            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "var(--space-1)" }}>{col.title}</div>\n`;
-    c += `            {col.links.map(l => <a key={l.href} href={l.href} style={{ display: "block", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", marginBottom: "calc(var(--space-1) / 2)", textDecoration: "none" }}>{l.label}</a>)}\n`;
+    c += `            <div style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, color: "var(--color-text-primary)", marginBottom: "var(--space-element)" }}>{col.title}</div>\n`;
+    c += `            {col.links.map(l => <a key={l.href} href={l.href} style={{ display: "block", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", marginBottom: "calc(var(--space-element) / 2)", textDecoration: "none" }}>{l.label}</a>)}\n`;
     c += `          </div>\n`;
     c += `        ))}\n`;
     c += `      </div>\n`;
     if (newsletter) {
-      c += `      <div style={{ display: "flex", gap: "var(--space-1)", marginBottom: "calc(var(--space-1) * 1.5)" }}>\n`;
-      c += `        <input placeholder="Enter your email" style={{ flex: 1, padding: "var(--space-1)", border: "1px solid var(--border-color)", borderRadius: "var(--radius)", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", background: "transparent" }} />\n`;
-      c += `        <button style={{ padding: "var(--space-1)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, border: "none", cursor: "pointer" }}>Subscribe</button>\n`;
+      c += `      <div style={{ display: "flex", gap: "var(--space-element)", marginBottom: "var(--space-block)" }}>\n`;
+      c += `        <input placeholder="Enter your email" style={{ flex: 1, padding: "var(--space-inline-y) var(--space-inline-x)", border: "1px solid var(--border-color)", borderRadius: "var(--radius)", fontFamily: "var(--font-body)", fontSize: 11, color: "var(--color-text-secondary)", background: "transparent" }} />\n`;
+      c += `        <button style={{ padding: "var(--space-inline-y) var(--space-inline-x)", background: "var(--color-accent)", color: "#fff", borderRadius: "var(--radius)", fontSize: 11, fontFamily: "var(--font-body)", fontWeight: 500, border: "none", cursor: "pointer" }}>Subscribe</button>\n`;
       c += `      </div>\n`;
     }
-    c += `      <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "var(--space-1)", fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
+    c += `      <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "var(--space-element)", fontFamily: "var(--font-body)", fontSize: 10, color: "var(--color-text-secondary)", opacity: 0.6 }}>© {new Date().getFullYear()} Company. All rights reserved.</div>\n`;
   }
 
   c += `    </footer>\n`;
@@ -955,20 +972,20 @@ function generateCTACode(s: DesignState): string {
   c += `      background: ${isBg ? '"var(--color-accent)"' : '"var(--color-surface)"'},\n`;
   c += `      borderRadius: ${r},\n`;
   if (hasBorder(s, "CTA")) c += `      border: "${parseInt(s.borderWidth) || 1}px solid ${isBg ? 'var(--color-accent)' : 'var(--border-color)'}",\n`;
-  c += `      padding: "var(--space-3)",\n`;
+  c += `      padding: "var(--space-content)",\n`;
   c += `      display: "flex",\n`;
   c += `      flexDirection: ${isLR ? '"row"' : '"column"'},\n`;
   c += `      alignItems: "center",\n`;
   if (isLR) c += `      justifyContent: "space-between",\n`;
   else c += `      justifyContent: "center", textAlign: "center" as const,\n`;
-  c += `      gap: "calc(var(--space-1) * 1.5)",\n`;
+  c += `      gap: "var(--space-block)",\n`;
   c += `      ...style,\n`;
   c += `    }}>\n`;
   c += `      <div>\n`;
-  c += `        <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, fontWeight: 700, color: ${isBg ? '"#fff"' : '"var(--color-text-primary)"'}, marginBottom: "calc(var(--space-1) / 2)" }}>{title}</div>\n`;
+  c += `        <div style={{ fontFamily: "var(--font-heading)", fontSize: 17, fontWeight: 700, color: ${isBg ? '"#fff"' : '"var(--color-text-primary)"'}, marginBottom: "calc(var(--space-element) / 2)" }}>{title}</div>\n`;
   c += `        {subtitle && <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: ${isBg ? '"rgba(255,255,255,0.8)"' : '"var(--color-text-secondary)"'} }}>{subtitle}</div>}\n`;
   c += `      </div>\n`;
-  c += `      <a href={action.href} style={{ padding: "var(--space-1) var(--space-2)", background: ${isBg ? '"#fff"' : '"var(--color-accent)"'}, color: ${isBg ? '"var(--color-accent)"' : '"#fff"'}, borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>{action.label}</a>\n`;
+  c += `      <a href={action.href} style={{ padding: "var(--space-inline-y) var(--space-inline-x)", background: ${isBg ? '"#fff"' : '"var(--color-accent)"'}, color: ${isBg ? '"var(--color-accent)"' : '"#fff"'}, borderRadius: "var(--radius)", fontSize: 12, fontFamily: "var(--font-body)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>{action.label}</a>\n`;
   c += `    </div>\n`;
   c += `  );\n`;
   c += `}\n`;

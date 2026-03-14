@@ -82,6 +82,9 @@ export function migrateState(saved, defaults) {
   // Clean up removed fields
   delete merged.shadowLevels;
   delete merged.borderAppliesTo;
+  delete merged.spacingUnit;
+  delete merged.spacingScales;
+  delete merged.gridColumns;
   // Reset visitedSections for users migrating from before progressive preview
   if (!saved.visitedSections) merged.visitedSections = {};
   return merged;
