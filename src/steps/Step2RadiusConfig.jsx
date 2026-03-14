@@ -16,18 +16,18 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <span style={{ fontSize: 22, color: t.accent, opacity: 0.7 }}>◰</span>
+      <div style={{ display: "flex", alignItems: "center", gap: t.gap.md, marginBottom: t.space.lg }}>
+        <span style={{ fontSize: t.font.xl, color: t.accent, opacity: 0.7 }}>◰</span>
         <div style={{ flex: 1 }}>
           <div style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 17,
+            fontSize: t.font.lg,
             fontWeight: 600,
             color: t.text,
           }}>Border Radius</div>
           <div style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: t.font.sm,
             color: t.dim,
           }}>Default: {defaultRadius}px (set in Design Tokens)</div>
         </div>
@@ -37,11 +37,11 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
             background: "transparent",
             border: `1px solid ${t.border}`,
             color: t.dim,
-            fontSize: 11,
+            fontSize: t.font.sm,
             fontFamily: "'JetBrains Mono', monospace",
             cursor: "pointer",
-            padding: "5px 12px",
-            borderRadius: 8,
+            padding: `${t.space.sm}px ${t.space.md}px`,
+            borderRadius: t.radius.md,
             transition: "all 0.15s",
             whiteSpace: "nowrap",
           }}
@@ -51,7 +51,7 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
       </div>
 
       {/* Default value */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: t.space.lg }}>
         <Input label="Default Radius (px)" value={state.borderRadius} onChange={v => dispatch({ type: "SET_FIELD", key: "borderRadius", value: v })} mono small />
       </div>
 
@@ -59,9 +59,9 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
       <label style={{
         display: "block",
         fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 11,
+        fontSize: t.font.sm,
         color: t.label,
-        marginBottom: 12,
+        marginBottom: t.space.md,
         textTransform: "uppercase",
         letterSpacing: 1.5,
       }}>Component Overrides</label>
@@ -70,16 +70,16 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
         <div key={compId} style={{
           display: "flex",
           alignItems: "center",
-          gap: 12,
-          marginBottom: 10,
-          padding: "8px 12px",
-          borderRadius: 8,
+          gap: t.gap.md,
+          marginBottom: t.gap.sm,
+          padding: `${t.gap.sm}px ${t.space.md}px`,
+          borderRadius: t.radius.md,
           background: overrides[compId] ? `${t.accent}08` : "transparent",
           border: `1px solid ${overrides[compId] ? t.accent + "30" : t.border}`,
         }}>
           <span style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 13,
+            fontSize: t.font.base,
             fontWeight: 500,
             color: t.text,
             minWidth: 70,
@@ -90,19 +90,19 @@ export default function Step2RadiusConfig({ state, dispatch, onBack }) {
             placeholder={defaultRadius}
             style={{
               width: 60,
-              padding: "4px 8px",
-              borderRadius: 6,
+              padding: `${t.space.xs}px ${t.gap.sm}px`,
+              borderRadius: t.radius.sm,
               border: `1px solid ${t.border}`,
               background: t.inputBg,
               color: t.text,
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 12,
+              fontSize: t.font.sm + 1,
               textAlign: "center",
             }}
           />
           <span style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 10,
+            fontSize: t.font.xs,
             color: t.dim,
             opacity: 0.5,
           }}>px {!overrides[compId] && "· default"}</span>

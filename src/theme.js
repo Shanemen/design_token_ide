@@ -1,7 +1,16 @@
 import { createContext } from "react";
 
+// Layout tokens (theme-independent)
+const layout = {
+  space: { xs: 4, sm: 6, md: 12, lg: 20, xl: 24, xxl: 80 },
+  gap:   { xs: 4, sm: 8, md: 12, lg: 16 },
+  font:  { xxs: 9, xs: 10, sm: 11, base: 13, md: 14, lg: 17, xl: 22 },
+  radius:{ sm: 6, md: 8, lg: 12, full: 20 },
+};
+
 export const themes = {
   light: {
+    ...layout,
     bg: "#F5F5F7",
     surface: "#FFFFFF",
     text: "#1A1A2E",
@@ -32,6 +41,7 @@ export const themes = {
     removeBtnColor: "#757575",
   },
   dark: {
+    ...layout,
     bg: "#0A0A0F",
     surface: "#111116",
     text: "#E8E8ED",

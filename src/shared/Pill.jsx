@@ -7,12 +7,12 @@ export default function Pill({ label, active, onClick }) {
     <button
       onClick={onClick}
       style={{
-        padding: "6px 14px",
-        borderRadius: 20,
+        padding: `${t.space.sm}px ${t.space.md}px`,
+        borderRadius: t.radius.full,
         border: active ? `1px solid ${t.pillActiveBorder}` : `1px solid ${t.pillBorder}`,
         background: active ? t.pillActiveBg : "transparent",
         color: active ? t.pillActiveText : t.pillText,
-        fontSize: 13,
+        fontSize: t.font.base,
         fontFamily: "'JetBrains Mono', monospace",
         cursor: "pointer",
         transition: "all 0.15s",

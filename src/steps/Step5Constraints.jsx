@@ -10,10 +10,10 @@ export default function Step5Constraints({ state, dispatch }) {
     <div>
       <div style={{
         fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 11,
+        fontSize: t.font.sm,
         color: t.accent,
         opacity: 0.6,
-        marginBottom: 10,
+        marginBottom: t.space.md,
       }}>
         The most important step for AI. The clearer your red lines, the less AI will improvise.
       </div>

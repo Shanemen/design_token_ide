@@ -4,12 +4,12 @@ import { ThemeContext } from "../theme";
 export default function TypeRow({ level, onChange, onRemove }) {
   const t = useContext(ThemeContext);
   const inputStyle = {
-    padding: "8px 10px",
+    padding: `${t.gap.sm}px ${t.space.md}px`,
     background: t.inputBg,
     border: `1px solid ${t.border}`,
-    borderRadius: 6,
+    borderRadius: t.radius.sm,
     color: t.text,
-    fontSize: 13,
+    fontSize: t.font.base,
     fontFamily: "'JetBrains Mono', monospace",
     outline: "none",
     textAlign: "center",
@@ -20,8 +20,8 @@ export default function TypeRow({ level, onChange, onRemove }) {
     <div style={{
       display: "flex",
       alignItems: "center",
-      gap: 8,
-      marginBottom: 10,
+      gap: t.gap.sm,
+      marginBottom: t.space.md,
       width: "100%",
     }}>
       <input
@@ -39,9 +39,9 @@ export default function TypeRow({ level, onChange, onRemove }) {
           background: "none",
           border: "none",
           color: t.removeBtnColor,
-          fontSize: 18,
+          fontSize: t.font.lg + 1,
           cursor: "pointer",
-          padding: "0 4px",
+          padding: `0 ${t.space.xs}px`,
         }}
       >
         ×

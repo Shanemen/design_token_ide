@@ -115,7 +115,7 @@ export default function DesignTokenTemplate() {
         <div style={{
           width: activeTab === "editor" ? "40%" : "100%",
           overflowY: "auto",
-          padding: activeTab === "editor" ? "24px 20px 80px" : "40px 20px 80px",
+          padding: activeTab === "editor" ? `${t.space.xl}px ${t.space.lg}px ${t.space.xxl}px` : `40px ${t.space.lg}px ${t.space.xxl}px`,
           boxSizing: "border-box",
         }}>
           {activeTab === "about" && <AboutTab />}
@@ -144,10 +144,10 @@ export default function DesignTokenTemplate() {
 
             {/* Generate Components */}
             <div style={{
-              marginTop: 24,
-              padding: 20,
+              marginTop: t.space.xl,
+              padding: t.space.lg,
               background: t.surface,
-              borderRadius: 12,
+              borderRadius: t.radius.lg,
               border: `1px solid ${t.border}`,
             }}>
               <button
@@ -155,12 +155,12 @@ export default function DesignTokenTemplate() {
                 disabled={generating}
                 style={{
                   width: "100%",
-                  padding: "12px 0",
-                  borderRadius: 8,
+                  padding: `${t.space.md}px 0`,
+                  borderRadius: t.radius.md,
                   border: "none",
                   background: generated ? t.successBg : t.accent,
                   color: generated ? t.successText : t.accentText,
-                  fontSize: 14,
+                  fontSize: t.font.md,
                   fontWeight: 600,
                   fontFamily: "'Space Grotesk', sans-serif",
                   cursor: generating ? "wait" : "pointer",
@@ -173,9 +173,9 @@ export default function DesignTokenTemplate() {
               </button>
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
+                fontSize: t.font.xs,
                 color: t.faint,
-                marginTop: 10,
+                marginTop: t.gap.sm + 2,
                 textAlign: "center",
                 lineHeight: 1.6,
               }}>
@@ -192,7 +192,7 @@ export default function DesignTokenTemplate() {
         <div style={{
           width: "60%",
           borderLeft: `1px solid ${t.border}`,
-          padding: 20,
+          padding: t.space.lg,
           overflowY: "auto",
           boxSizing: "border-box",
           display: "flex",
@@ -202,11 +202,11 @@ export default function DesignTokenTemplate() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 16,
+            marginBottom: t.gap.lg,
           }}>
             <div style={{
               fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 11,
+              fontSize: t.font.sm,
               color: t.accent,
               letterSpacing: 2,
               textTransform: "uppercase",
@@ -223,12 +223,12 @@ export default function DesignTokenTemplate() {
                 }
               }}
               style={{
-                padding: "4px 10px",
-                borderRadius: 12,
+                padding: `${t.space.xs}px ${t.gap.sm + 2}px`,
+                borderRadius: t.radius.lg,
                 border: `1px solid ${t.border}`,
                 background: "transparent",
                 color: t.dim,
-                fontSize: 11,
+                fontSize: t.font.sm,
                 fontFamily: "'JetBrains Mono', monospace",
                 cursor: "pointer",
               }}

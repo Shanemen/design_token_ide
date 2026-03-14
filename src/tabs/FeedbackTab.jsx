@@ -8,30 +8,30 @@ export default function FeedbackTab() {
       maxWidth: 680,
       margin: "0 auto",
       fontFamily: "'JetBrains Mono', monospace",
-      fontSize: 13,
+      fontSize: t.font.base,
       color: t.muted,
       lineHeight: 2,
     }}>
       <div style={{
         fontFamily: "'Space Grotesk', sans-serif",
-        fontSize: 22,
+        fontSize: t.font.xl,
         fontWeight: 600,
         color: t.text,
-        marginBottom: 24,
+        marginBottom: t.space.xl,
       }}>Feedback</div>
 
-      <p style={{ margin: "0 0 20px 0" }}>
+      <p style={{ margin: `0 0 ${t.space.lg}px 0` }}>
         This tool is open source and actively evolving. Your feedback shapes what gets built next.
       </p>
 
       <div style={{
-        padding: "20px",
+        padding: t.space.lg,
         background: t.surface,
-        borderRadius: 8,
+        borderRadius: t.radius.md,
         border: `1px solid ${t.border}`,
-        marginBottom: 16,
+        marginBottom: t.gap.lg,
       }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: t.gap.lg }}>
           {[
             {
               icon: "→",
@@ -53,11 +53,11 @@ export default function FeedbackTab() {
               rel="noopener noreferrer"
               style={{
                 display: "flex",
-                gap: 12,
+                gap: t.gap.md,
                 alignItems: "flex-start",
                 textDecoration: "none",
-                padding: "12px 14px",
-                borderRadius: 8,
+                padding: `${t.space.md}px ${t.space.md}px`,
+                borderRadius: t.radius.md,
                 border: `1px solid ${t.border}`,
                 transition: "all 0.15s",
                 background: t.bg,
@@ -65,10 +65,10 @@ export default function FeedbackTab() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = t.border; }}
             >
-              <span style={{ color: t.accent, fontSize: 14, flexShrink: 0, paddingTop: 1 }}>{item.icon}</span>
+              <span style={{ color: t.accent, fontSize: t.font.md, flexShrink: 0, paddingTop: 1 }}>{item.icon}</span>
               <div>
-                <div style={{ color: t.text, fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: 14 }}>{item.title}</div>
-                <div style={{ color: t.dim, fontSize: 12, marginTop: 2 }}>{item.desc}</div>
+                <div style={{ color: t.text, fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: t.font.md }}>{item.title}</div>
+                <div style={{ color: t.dim, fontSize: t.font.sm + 1, marginTop: 2 }}>{item.desc}</div>
               </div>
             </a>
           ))}
@@ -76,13 +76,13 @@ export default function FeedbackTab() {
       </div>
 
       <div style={{
-        marginTop: 24,
-        padding: "16px",
-        borderRadius: 8,
+        marginTop: t.space.xl,
+        padding: t.gap.lg,
+        borderRadius: t.radius.md,
         background: `${t.accent}08`,
         border: `1px solid ${t.accent}15`,
         color: t.dim,
-        fontSize: 12,
+        fontSize: t.font.sm + 1,
         lineHeight: 1.8,
       }}>
         Built by <span style={{ color: t.text }}>Sicong</span> with Claude. Designed to bridge the gap between design intent and AI-generated code.

@@ -7,30 +7,30 @@ export default function ColorRow({ label, description, value, onChange }) {
     <div style={{
       display: "flex",
       alignItems: "center",
-      gap: 12,
-      marginBottom: 8,
-      padding: "8px 0",
+      gap: t.gap.md,
+      marginBottom: t.gap.sm,
+      padding: `${t.gap.sm}px 0`,
     }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: 13,
+          fontSize: t.font.base,
           fontWeight: 500,
           color: t.text,
         }}>{label}</div>
         <div style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 10,
+          fontSize: t.font.xs,
           color: t.dim,
           marginTop: 2,
           lineHeight: 1.3,
         }}>{description}</div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: t.gap.sm, flexShrink: 0 }}>
         <div style={{ position: "relative", width: 32, height: 32 }}>
           <div style={{
             width: 32, height: 32,
-            borderRadius: 8,
+            borderRadius: t.radius.md,
             background: value,
             border: `1px solid ${t.swatchBorder}`,
           }} />
@@ -52,12 +52,12 @@ export default function ColorRow({ label, description, value, onChange }) {
           onChange={e => onChange(e.target.value)}
           style={{
             width: 80,
-            padding: "6px 8px",
+            padding: `${t.space.sm}px ${t.gap.sm}px`,
             background: t.inputBg,
             border: `1px solid ${t.border}`,
-            borderRadius: 6,
+            borderRadius: t.radius.sm,
             color: t.text,
-            fontSize: 12,
+            fontSize: t.font.sm + 1,
             fontFamily: "'JetBrains Mono', monospace",
             outline: "none",
             boxSizing: "border-box",

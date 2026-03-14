@@ -43,17 +43,17 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
 
       {/* Typography */}
       <Section number="1b" title="Typography" subtitle="文字层级" isOpen={openSub.typography} onToggle={() => toggleSub("typography")} nested>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+        <div style={{ display: "flex", gap: t.gap.md, flexWrap: "wrap", marginBottom: t.font.lg + 1 }}>
           <Input label="Heading Font" value={state.headingFont} onChange={v => update("headingFont", v)} placeholder="e.g. Syne, Playfair Display" />
           <Input label="Body Font" value={state.bodyFont} onChange={v => update("bodyFont", v)} placeholder="e.g. JetBrains Mono, Inter" />
         </div>
         <div style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.dim,
-          marginBottom: 10,
+          marginBottom: t.font.xs,
           display: "flex",
-          gap: 8,
+          gap: t.gap.sm,
           paddingRight: 26,
         }}>
           <span style={{ flex: "1 1 80px" }}>NAME</span>
@@ -75,25 +75,25 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
       {/* Spacing */}
       <Section number="1c" title="Spacing" subtitle="间距" isOpen={openSub.spacing} onToggle={() => toggleSub("spacing")} nested>
         {/* Density — required, pick one */}
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: t.space.lg }}>
           <label style={{
             display: "block",
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: t.font.sm,
             color: t.label,
-            marginBottom: 8,
+            marginBottom: t.gap.sm,
             textTransform: "uppercase",
             letterSpacing: 1.5,
           }}>Density</label>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: t.gap.sm }}>
             {Object.entries(DENSITY_PRESETS).map(([key, preset]) => (
               <button
                 key={key}
                 onClick={() => update("density", key)}
                 style={{
                   flex: 1,
-                  padding: "10px 12px",
-                  borderRadius: 8,
+                  padding: `${t.font.xs}px ${t.space.md}px`,
+                  borderRadius: t.radius.md,
                   border: state.density === key ? `1px solid ${t.pillActiveBorder}` : `1px solid ${t.pillBorder}`,
                   background: state.density === key ? t.pillActiveBg : "transparent",
                   color: state.density === key ? t.pillActiveText : t.pillText,
@@ -102,10 +102,10 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
                   transition: "all 0.15s",
                 }}
               >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: t.font.base, fontWeight: 600, marginBottom: 2 }}>
                   {preset.label}
                 </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, opacity: 0.7 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: t.font.xs, opacity: 0.7 }}>
                   {preset.desc}
                 </div>
               </button>
@@ -117,22 +117,22 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
         {(() => {
           const preset = DENSITY_PRESETS[state.density || "balanced"];
           return (
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: t.space.lg }}>
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 9,
+                fontSize: t.font.xxs,
                 color: t.dim,
                 letterSpacing: 1.5,
                 textTransform: "uppercase",
-                marginBottom: 6,
+                marginBottom: t.space.sm,
                 opacity: 0.6,
               }}>DERIVED SPACING</div>
               <div style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: "2px 16px",
+                gap: `2px ${t.gap.lg}px`,
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
+                fontSize: t.font.xs,
                 color: t.dim,
                 opacity: 0.7,
               }}>
@@ -148,25 +148,25 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
         })()}
 
         {/* Max Content Width — required, pick one */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: t.gap.lg }}>
           <label style={{
             display: "block",
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: t.font.sm,
             color: t.label,
-            marginBottom: 8,
+            marginBottom: t.gap.sm,
             textTransform: "uppercase",
             letterSpacing: 1.5,
           }}>Max Content Width</label>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: t.gap.sm }}>
             {MAX_WIDTH_OPTIONS.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => update("maxContentWidth", opt.value)}
                 style={{
                   flex: 1,
-                  padding: "10px 12px",
-                  borderRadius: 8,
+                  padding: `${t.font.xs}px ${t.space.md}px`,
+                  borderRadius: t.radius.md,
                   border: state.maxContentWidth === opt.value ? `1px solid ${t.pillActiveBorder}` : `1px solid ${t.pillBorder}`,
                   background: state.maxContentWidth === opt.value ? t.pillActiveBg : "transparent",
                   color: state.maxContentWidth === opt.value ? t.pillActiveText : t.pillText,
@@ -175,10 +175,10 @@ export default function Step1DesignTokens({ state, dispatch, openSub, toggleSub 
                   transition: "all 0.15s",
                 }}
               >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: t.font.base, fontWeight: 600, marginBottom: 2 }}>
                   {opt.label}
                 </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, opacity: 0.7 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: t.font.xs, opacity: 0.7 }}>
                   {opt.desc}
                 </div>
               </button>

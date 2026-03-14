@@ -8,13 +8,13 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
   const GroupLabel = ({ label }) => (
     <div style={{
       fontFamily: "'JetBrains Mono', monospace",
-      fontSize: 10,
+      fontSize: t.font.xs,
       color: t.accent,
       opacity: 0.5,
       letterSpacing: 2,
       textTransform: "uppercase",
-      marginBottom: 10,
-      marginTop: 16,
+      marginBottom: t.gap.sm,
+      marginTop: t.gap.lg,
     }}>{label}</div>
   );
 
@@ -28,8 +28,8 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
         style={{
           flex: "1 1 calc(50% - 6px)",
           minWidth: 160,
-          padding: "14px 16px",
-          borderRadius: 10,
+          padding: `${t.font.md}px ${t.gap.lg}px`,
+          borderRadius: t.radius.md + 2,
           border: `1px solid ${isVisited ? t.accent + "50" : t.border}`,
           background: isVisited ? t.accent + "08" : t.inputBg,
           cursor: "pointer",
@@ -37,14 +37,14 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
           transition: "all 0.15s",
           display: "flex",
           alignItems: "center",
-          gap: 12,
+          gap: t.gap.md,
           position: "relative",
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = t.accent + "50"; e.currentTarget.style.background = t.accent + "08"; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = isVisited ? t.accent + "50" : t.border; e.currentTarget.style.background = isVisited ? t.accent + "08" : t.inputBg; }}
       >
         <span style={{
-          fontSize: 18,
+          fontSize: t.font.lg + 1,
           color: t.accent,
           opacity: 0.7,
           width: 28,
@@ -53,13 +53,13 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
         <div>
           <div style={{
             fontFamily: "'Space Grotesk', sans-serif",
-            fontSize: 14,
+            fontSize: t.font.md,
             fontWeight: 500,
             color: t.text,
           }}>{comp.label}</div>
           <div style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: t.font.sm,
             color: t.dim,
             marginTop: 2,
           }}>{comp.desc}</div>
@@ -67,10 +67,10 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
         {isVisited && (
           <span style={{
             position: "absolute",
-            top: 8,
-            right: 10,
+            top: t.gap.sm,
+            right: t.font.xs,
             fontFamily: "system-ui, sans-serif",
-            fontSize: 12,
+            fontSize: t.font.sm + 1,
             color: t.accent,
             lineHeight: 1,
           }}>✓</span>
@@ -82,22 +82,22 @@ export default function Step2ComponentList({ onSelect, state, dispatch }) {
   return (
     <div>
       <GroupLabel label="Atomic Components" />
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: t.gap.sm, flexWrap: "wrap" }}>
         {ATOMIC_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
       </div>
 
       {/* Border Radius + Border — two separate cards */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+      <div style={{ display: "flex", gap: t.gap.sm, flexWrap: "wrap", marginTop: t.gap.sm }}>
         <ComponentCard comp={{ id: "BorderRadius", label: "Border Radius", icon: "◰", desc: "Per-component radius" }} />
         <ComponentCard comp={{ id: "Border", label: "Border", icon: "▭", desc: "Per-component border toggle" }} />
       </div>
 
       <GroupLabel label="Block Components" />
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: t.gap.sm, flexWrap: "wrap" }}>
         {BLOCK_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
       </div>
       <GroupLabel label="Fixed (every page)" />
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+      <div style={{ display: "flex", gap: t.gap.sm, flexWrap: "wrap", marginBottom: t.gap.sm }}>
         {FIXED_COMPONENTS.map(c => <ComponentCard key={c.id} comp={c} />)}
       </div>
     </div>

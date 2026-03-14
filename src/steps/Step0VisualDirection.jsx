@@ -12,18 +12,18 @@ export default function Step0VisualDirection({ state, dispatch }) {
   return (
     <div>
       {/* Mood board links */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: t.space.lg }}>
         <label style={{
           display: "block",
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.label,
-          marginBottom: 8,
+          marginBottom: t.gap.sm,
           textTransform: "uppercase",
           letterSpacing: 1.5,
         }}>Reference Links / Mood Board</label>
         {(state.moodboardLinks || []).map((link, i) => (
-          <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center", flexWrap: "nowrap" }}>
+          <div key={i} style={{ display: "flex", gap: t.gap.sm, marginBottom: t.gap.sm, alignItems: "center", flexWrap: "nowrap" }}>
             <input
               value={link.url}
               onChange={e => {
@@ -34,12 +34,12 @@ export default function Step0VisualDirection({ state, dispatch }) {
               placeholder="https://..."
               style={{
                 flex: 2,
-                padding: "8px 12px",
+                padding: `${t.gap.sm}px ${t.space.md}px`,
                 background: t.inputBg,
                 border: `1px solid ${t.border}`,
-                borderRadius: 6,
+                borderRadius: t.radius.sm,
                 color: t.text,
-                fontSize: 13,
+                fontSize: t.font.base,
                 fontFamily: "'JetBrains Mono', monospace",
                 outline: "none",
               }}
@@ -54,12 +54,12 @@ export default function Step0VisualDirection({ state, dispatch }) {
               placeholder="Label"
               style={{
                 flex: 1,
-                padding: "8px 12px",
+                padding: `${t.gap.sm}px ${t.space.md}px`,
                 background: t.inputBg,
                 border: `1px solid ${t.border}`,
-                borderRadius: 6,
+                borderRadius: t.radius.sm,
                 color: t.text,
-                fontSize: 13,
+                fontSize: t.font.base,
                 fontFamily: "'Space Grotesk', sans-serif",
                 outline: "none",
               }}
@@ -70,9 +70,9 @@ export default function Step0VisualDirection({ state, dispatch }) {
                 background: "none",
                 border: "none",
                 color: t.removeBtnColor,
-                fontSize: 18,
+                fontSize: t.font.lg + 1,
                 cursor: "pointer",
-                padding: "0 4px",
+                padding: `0 ${t.space.xs}px`,
                 flexShrink: 0,
               }}
             >×</button>
@@ -91,17 +91,17 @@ export default function Step0VisualDirection({ state, dispatch }) {
       />
 
       {/* Visual asset direction */}
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: t.gap.lg }}>
         <label style={{
           display: "block",
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.label,
-          marginBottom: 8,
+          marginBottom: t.gap.sm,
           textTransform: "uppercase",
           letterSpacing: 1.5,
         }}>Visual Assets Direction</label>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: t.gap.sm, flexWrap: "wrap" }}>
           {[
             { id: "illustration", canAI: false },
             { id: "3d-render", canAI: false },
@@ -120,9 +120,9 @@ export default function Step0VisualDirection({ state, dispatch }) {
         </div>
         <div style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.faint,
-          marginTop: 8,
+          marginTop: t.gap.sm,
           lineHeight: 1.6,
         }}>
           ⚑ = needs external tools · ✓ = CC can generate with code
@@ -172,24 +172,24 @@ export default function Step0VisualDirection({ state, dispatch }) {
           if (!hint) return null;
           return (
             <div style={{
-              marginTop: 12,
-              padding: "12px 16px",
-              borderRadius: 8,
+              marginTop: t.space.md,
+              padding: `${t.space.md}px ${t.gap.lg}px`,
+              borderRadius: t.radius.md,
               background: hint.canCode === true ? `${t.accent}10` : hint.canCode === false ? `${t.accent}08` : `${t.accent}06`,
               border: `1px solid ${hint.canCode === true ? `${t.accent}30` : `${t.accent}20`}`,
             }}>
               <div style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                marginBottom: 6,
+                gap: t.gap.sm,
+                marginBottom: t.space.sm,
               }}>
                 <span style={{
                   fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 10,
+                  fontSize: t.font.xs,
                   fontWeight: 500,
-                  padding: "2px 8px",
-                  borderRadius: 4,
+                  padding: `2px ${t.gap.sm}px`,
+                  borderRadius: t.radius.sm - 2,
                   background: hint.canCode === true ? "#22c55e20" : hint.canCode === false ? `${t.accent}20` : `${t.accent}15`,
                   color: hint.canCode === true ? "#22c55e" : t.accent,
                   letterSpacing: 1,
@@ -200,17 +200,17 @@ export default function Step0VisualDirection({ state, dispatch }) {
               </div>
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 12,
+                fontSize: t.font.sm + 1,
                 color: t.muted,
                 lineHeight: 1.6,
-                marginBottom: hint.tools.length > 0 ? 8 : 0,
+                marginBottom: hint.tools.length > 0 ? t.gap.sm : 0,
               }}>
                 {hint.message}
               </div>
               {hint.tools.length > 0 && (
                 <div style={{
                   fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 11,
+                  fontSize: t.font.sm,
                   color: t.dim,
                   lineHeight: 1.6,
                 }}>

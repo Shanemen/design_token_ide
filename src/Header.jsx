@@ -9,17 +9,17 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "12px 24px",
+      padding: `${t.space.md}px ${t.space.xl}px`,
       borderBottom: `1px solid ${t.border}`,
       background: t.surface,
     }}>
       {/* Left: brand + project name */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: t.gap.md }}>
         <button
           onClick={() => onTabChange("editor")}
           style={{
             fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 11,
+            fontSize: t.font.sm,
             color: t.accent,
             letterSpacing: 3,
             textTransform: "uppercase",
@@ -32,18 +32,18 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
         >
           Design Token IDE
         </button>
-        <span style={{ color: t.border, fontSize: 14 }}>·</span>
+        <span style={{ color: t.border, fontSize: t.font.md }}>·</span>
         <input
           value={projectName}
           onChange={e => onProjectNameChange(e.target.value)}
           placeholder="Project Name"
           style={{
-            padding: "4px 8px",
+            padding: `${t.space.xs}px ${t.gap.sm}px`,
             background: "none",
             border: `1px solid ${t.border}`,
-            borderRadius: 6,
+            borderRadius: t.radius.sm,
             color: t.text,
-            fontSize: 13,
+            fontSize: t.font.base,
             fontWeight: 500,
             fontFamily: "'Space Grotesk', sans-serif",
             outline: "none",
@@ -55,7 +55,7 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
         />
       </div>
       {/* Right: tabs + theme toggle */}
-      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: t.gap.xs }}>
         {[
           { id: "about", label: "About" },
           { id: "feedback", label: "Feedback" },
@@ -64,12 +64,12 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
             key={tab.id}
             onClick={() => onTabChange(activeTab === tab.id ? "editor" : tab.id)}
             style={{
-              padding: "5px 12px",
-              borderRadius: 6,
+              padding: `${t.space.sm}px ${t.space.md}px`,
+              borderRadius: t.radius.sm,
               border: "none",
               background: activeTab === tab.id ? `${t.accent}12` : "transparent",
               color: activeTab === tab.id ? t.accent : t.dim,
-              fontSize: 12,
+              fontSize: t.font.sm + 1,
               fontFamily: "'JetBrains Mono', monospace",
               cursor: "pointer",
               transition: "all 0.15s",
@@ -81,16 +81,16 @@ export default function Header({ projectName, onProjectNameChange, activeTab, on
         <button
           onClick={onModeToggle}
           style={{
-            padding: "5px 12px",
-            borderRadius: 20,
+            padding: `${t.space.sm}px ${t.space.md}px`,
+            borderRadius: t.radius.full,
             border: `1px solid ${t.border}`,
             background: t.surface,
             color: t.dim,
-            fontSize: 12,
+            fontSize: t.font.sm + 1,
             fontFamily: "'JetBrains Mono', monospace",
             cursor: "pointer",
             transition: "all 0.2s",
-            marginLeft: 8,
+            marginLeft: t.gap.sm,
           }}
         >
           {mode === "light" ? "☽ Dark" : "☀ Light"}

@@ -4,14 +4,14 @@ import { ThemeContext } from "../theme";
 export default function Input({ label, value, onChange, placeholder, mono, small }) {
   const t = useContext(ThemeContext);
   return (
-    <div style={{ marginBottom: 14 }}>
+    <div style={{ marginBottom: t.space.md }}>
       {label && (
         <label style={{
           display: "block",
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.label,
-          marginBottom: 6,
+          marginBottom: t.space.sm,
           textTransform: "uppercase",
           letterSpacing: 1.5,
         }}>
@@ -25,12 +25,12 @@ export default function Input({ label, value, onChange, placeholder, mono, small
         placeholder={placeholder}
         style={{
           width: small ? 120 : "100%",
-          padding: "10px 14px",
+          padding: `${t.space.md}px ${t.space.md}px`,
           background: t.inputBg,
           border: `1px solid ${t.border}`,
-          borderRadius: 6,
+          borderRadius: t.radius.sm,
           color: t.text,
-          fontSize: 14,
+          fontSize: t.font.md,
           fontFamily: mono ? "'JetBrains Mono', monospace" : "'Space Grotesk', sans-serif",
           outline: "none",
           boxSizing: "border-box",

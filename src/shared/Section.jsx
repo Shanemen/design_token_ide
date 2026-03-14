@@ -5,9 +5,9 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
   const t = useContext(ThemeContext);
   return (
     <div style={{
-      marginBottom: 12,
+      marginBottom: t.space.md,
       background: isOpen ? t.surface : "transparent",
-      borderRadius: 12,
+      borderRadius: t.radius.lg,
       border: isOpen ? `1px solid ${t.border}` : "1px solid transparent",
       transition: "all 0.2s ease",
     }}>
@@ -17,8 +17,8 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
           width: "100%",
           display: "flex",
           alignItems: "center",
-          gap: 14,
-          padding: "20px 22px",
+          gap: t.gap.md,
+          padding: `${t.space.lg}px ${t.space.lg + 2}px`,
           background: "none",
           border: "none",
           cursor: "pointer",
@@ -27,16 +27,16 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
       >
         <span style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 12,
+          fontSize: t.font.sm + 1,
           color: t.accent,
           opacity: 0.8,
-          minWidth: 24,
+          minWidth: t.space.xl,
         }}>
           {String(number).padStart(2, "0")}
         </span>
         <span style={{
           fontFamily: "'Space Grotesk', sans-serif",
-          fontSize: 17,
+          fontSize: t.font.lg,
           fontWeight: 500,
           color: t.text,
           flex: 1,
@@ -45,15 +45,15 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
         </span>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
+          fontSize: t.font.sm,
           color: t.dim,
-          marginRight: 8,
+          marginRight: t.gap.sm,
         }}>
           {subtitle}
         </span>
         <span style={{
           color: t.dim,
-          fontSize: 18,
+          fontSize: t.font.lg + 1,
           transition: "transform 0.2s",
           transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
         }}>
@@ -61,7 +61,7 @@ export default function Section({ number, title, subtitle, children, isOpen, onT
         </span>
       </button>
       {isOpen && (
-        <div style={{ padding: nested ? "4px 16px 20px 36px" : "4px 22px 24px 60px" }}>
+        <div style={{ padding: nested ? `${t.space.xs}px ${t.gap.lg}px ${t.space.lg}px 36px` : `${t.space.xs}px ${t.space.lg + 2}px ${t.space.xl}px 60px` }}>
           {children}
         </div>
       )}
